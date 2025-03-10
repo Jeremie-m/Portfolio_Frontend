@@ -1,0 +1,24 @@
+/* PostCSS directives */
+@import 'tailwindcss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --header-bg: linear-gradient(to bottom right, #0b61ee, #083ba3);
+}
+
+@layer components {
+  .header-bg {
+    background-image: var(--header-bg);
+  }
+  
+  .font-jetbrains-mono {
+    font-family: var(--font-jetbrains-mono);
+  }
+
+  .font-montserrat {
+    font-family: var(--font-montserrat);
+  }
+} 
