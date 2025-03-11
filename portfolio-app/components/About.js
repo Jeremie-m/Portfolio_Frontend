@@ -2,11 +2,11 @@ import React from 'react';
 
 const About = () => {
   return (
-    <section id="about" className="w-full flex flex-col items-center gap-[30px] px-5 py-8">
-      <h2 className="font-medium text-[24px] leading-[29px] text-center text-white">
+    <section id="about" className="w-full flex flex-col items-center gap-[30px] px-5">
+      <h2 className="font-medium text-[24px] text-center text-white font-montserrat">
         Qui suis-je ?
       </h2>
-      <p className="font-medium text-xs text-white">
+      <p className="font-medium text-xs leading-4 text-white font-montserrat">
         Passionné par les nouvelles technologies, j&apos;ai débuté ma vie professionnelle en tant que technicien informatique, avant d&apos;innover et de faire naître le premier bar eSport de Normandie, le WarpZone.
         <br /><br />
         Cette expérience unique et entrepreneuriale m&apos;a appris à jongler avec plusieurs casquettes et à faire preuve d&apos;une grande adaptation, et ce durant sept belles années.

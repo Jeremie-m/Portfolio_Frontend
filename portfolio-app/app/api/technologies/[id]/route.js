@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { technologies } from '../../../../mocks/technologies';
+import { technologies } from '../../../../mocks/skills';
 
 // GET /api/technologies/:id - Récupérer une technologie spécifique
 export async function GET(request, { params }) {

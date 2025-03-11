@@ -1,8 +1,5 @@
 /* PostCSS directives */
 @import 'tailwindcss';
-
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 :root {
@@ -20,5 +17,13 @@
 
   .font-montserrat {
     font-family: var(--font-montserrat);
+  }
+
+  .font-inter {
+    font-family: var(--font-inter);
+  }
+
+  .font-noto-sans {
+    font-family: var(--font-noto-sans);
   }
 } 
