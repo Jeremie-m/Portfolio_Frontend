@@ -57,7 +57,8 @@ export default function FanCards() {
       filter: `brightness(${brightness})`,
       zIndex,
       transformOrigin: "bottom center",
-    }
+      boxShadow: index === activeIndex ? "0 4px 10px #0B61EE" : "none", // Ajout du drop-shadow pour la carte active
+    };
   }
 
   const handleCardClick = (index) => {

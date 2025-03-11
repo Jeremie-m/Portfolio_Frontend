@@ -7,39 +7,35 @@ const Contact = () => {
       id: 1,
       type: 'email',
       value: 'contact@jeremie-m.dev',
-      icon: '/images/email.png',
+      icon: '/images/contact/mail.svg',
       link: 'mailto:contact@jeremie-m.dev',
-      isUnderlined: true,
     },
     {
       id: 2,
       type: 'discord',
-      value: '__Putre__',
-      icon: '/images/discord.png',
-      link: 'https://discord.com/users/__Putre__',
-      isUnderlined: false,
+      value: 'wpzputre',
+      icon: '/images/contact/discord.svg',
+      link: 'https://discord.com/users/wpzputre',
     },
     {
       id: 3,
       type: 'twitter',
-      value: 'wpzputre',
-      icon: '/images/twitter.png',
+      value: '@__Putre__',
+      icon: '/images/contact/x.svg',
       link: 'https://twitter.com/wpzputre',
-      isUnderlined: false,
     },
     {
       id: 4,
       type: 'github',
       value: 'github.com/jeremie-m',
-      icon: '/images/github.png',
+      icon: '/images/contact/github-logo.svg',
       link: 'https://github.com/jeremie-m',
-      isUnderlined: false,
     },
   ];
 
   return (
-    <section id="contact" className="flex flex-col justify-between items-center self-stretch h-[270px] px-5 py-8">
-      <h2 className="font-medium text-[24px] leading-[16px] text-center text-white mb-8">
+    <section id="contact" className="flex flex-col justify-between items-center self-stretch h-[270px] px-5">
+      <h2 className="font-medium text-[24px] font-montserrat leading-[16px] text-center text-white mb-8">
         Contact
       </h2>
       
@@ -52,14 +48,8 @@ const Contact = () => {
             rel="noopener noreferrer"
             className="flex justify-between items-center w-full"
           >
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              {/* Remplacer par vos propres images */}
-              {/* <Image src={item.icon} alt={item.type} width={24} height={24} /> */}
-              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs">
-                {item.type.substring(0, 1).toUpperCase()}
-              </div>
-            </div>
-            <span className={`font-medium text-[14px] leading-[16px] text-right ${item.isUnderlined ? 'underline' : ''} text-white`}>
+            <Image src={item.icon} alt={item.type} width={40} height={40} />
+            <span className={`text-[14px] leading-[16px] font-montserrat text-right text-white`}>
               {item.value}
             </span>
           </a>

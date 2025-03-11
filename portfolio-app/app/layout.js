@@ -1,8 +1,10 @@
 import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import VideoBackground from "../components/VideoBackground";
 
 const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "700"],
   variable: "--font-inter",
 });
 
@@ -14,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["400", "500", "700"],
   variable: "--font-montserrat",
 });
 
@@ -33,6 +35,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
+        <VideoBackground />
         {children}
       </body>
     </html>

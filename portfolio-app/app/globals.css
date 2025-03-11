@@ -4,6 +4,7 @@
 
 :root {
   --header-bg: linear-gradient(to bottom right, #0b61ee, #083ba3);
+  --bg-dark: #000000;
 }
 
 @layer components {
@@ -25,5 +26,11 @@
 
   .font-noto-sans {
     font-family: var(--font-noto-sans);
+  }
+  
+  /* Styles pour les éléments avec fond transparent */
+  .bg-transparent-dark {
+    background-color: rgba(18, 18, 18, 0.7);
+    backdrop-filter: blur(3px);
   }
 } 
