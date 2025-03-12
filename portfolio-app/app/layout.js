@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
 import "./globals.css";
-import VideoBackground from "../components/VideoBackground";
+import VideoBackground from "@/components/VideoBackground";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,17 +28,19 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata = {
-  title: "Jérémie Marie - Développeur Full Stack",
-  description: "Portfolio de Jérémie Marie, développeur Full Stack spécialisé en React, Next.js, Node.js et plus encore.",
+  title: "Jérémie Marie - Le Développeur Full-Stack que vous allez recruter.",
+  description: "Portfolio de Jérémie Marie, développeur Full-Stack spécialisé en React, Next.js, Node.js, déjà prêt pour l'onboarding.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
-        <VideoBackground />
-        {children}
-      </body>
+    <html lang="fr" className="scroll-smooth">
+      <AuthProvider>
+        <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
+          <VideoBackground />
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

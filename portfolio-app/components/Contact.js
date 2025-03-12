@@ -22,7 +22,7 @@ const Contact = () => {
       type: 'twitter',
       value: '@__Putre__',
       icon: '/images/contact/x.svg',
-      link: 'https://twitter.com/wpzputre',
+      link: 'https://twitter.com/__Putre__',
     },
     {
       id: 4,

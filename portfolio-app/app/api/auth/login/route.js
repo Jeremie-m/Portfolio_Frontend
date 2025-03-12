@@ -1,30 +1,29 @@
 import { NextResponse } from 'next/server';
+import { admin } from '@/mocks/admin';
 
 // POST /api/auth/login - Authentifier un utilisateur
 export async function POST(request) {
   try {
-    const { username, password } = await request.json();
+    const { email, password } = await request.json();
     
     // Validation des données
-    if (!username || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Les champs username et password sont requis' },
+        { error: 'Les champs email et password sont requis' },
         { status: 400 }
       );
     }
     
-    // Dans une vraie application, nous vérifierions les identifiants dans la base de données
-    // Pour le mock, nous acceptons seulement admin/password
-    if (username === 'admin' && password === 'password') {
+    // Vérification avec les données du mock
+    if (email === admin.email && password === admin.password) {
       // Simuler la création d'un token JWT
       const token = 'mock_jwt_token';
       
-      // Dans une vraie application, nous utiliserions un cookie sécurisé
       return NextResponse.json(
         { 
           success: true, 
           message: 'Authentification réussie',
-          user: { username: 'admin', role: 'admin' },
+          user: { email: admin.email, role: 'admin' },
           token 
         },
         { 
@@ -36,7 +35,7 @@ export async function POST(request) {
       );
     } else {
       return NextResponse.json(
-        { error: 'Identifiants invalides' },
+        { error: 'Email ou mot de passe incorrect' },
         { status: 401 }
       );
     }

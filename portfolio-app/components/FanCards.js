@@ -8,8 +8,8 @@ import Image from "next/image"
 
 export default function FanCards() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const totalAngleRange = 80
-  const startAngle = -40
+  const totalAngleRange = 70
+  const startAngle = -30
 
   useEffect(() => {
     const handleWheel = (e) => {
@@ -57,7 +57,6 @@ export default function FanCards() {
       filter: `brightness(${brightness})`,
       zIndex,
       transformOrigin: "bottom center",
-      boxShadow: index === activeIndex ? "0 4px 10px #0B61EE" : "none", // Ajout du drop-shadow pour la carte active
     };
   }
 
@@ -66,7 +65,7 @@ export default function FanCards() {
   }
 
   return (
-    <div id="fan-container" className="flex flex-col h-[240px] w-screen">
+    <div id="fan-container" className="flex flex-col h-[280px] w-screen">
       <div className="relative w-[96px] mx-auto">
         <AnimatePresence>
           {skills.map((skill, index) => (
@@ -85,12 +84,12 @@ export default function FanCards() {
             </motion.div>
           ))}
         </AnimatePresence>
-        <div className="relative w-full">
+        <div className="relative w-[130px]">
           <Image 
             src="/images/hand.svg" 
             alt="Hand" 
-            width={100} 
-            height={100} 
+            width={130} 
+            height={130} 
             className="absolute left-1/2 -translate-x-1/2 mt-[120px] z-999"
           />
         </div>

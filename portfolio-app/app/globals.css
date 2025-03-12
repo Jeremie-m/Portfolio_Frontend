@@ -33,4 +33,8 @@
     background-color: rgba(18, 18, 18, 0.7);
     backdrop-filter: blur(3px);
   }
+
+  .text-primary {
+    color: #0A52D0;
+  }
 } 
