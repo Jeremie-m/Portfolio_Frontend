@@ -1,7 +1,6 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Header from '../components/Header';
 import HeroBanner from '../components/HeroBanner';
 import About from '../components/About';
@@ -11,50 +10,48 @@ import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Separation from '../components/Separation';
 import AdminTheme from '@/components/AdminTheme';
+import HeroEditModal from '@/components/modals/HeroEditModal';
 
 export default function Home() {
-  const { isAdmin, setIsAdmin } = useAuth();
-  const router = useRouter();
+  const [activeModal, setActiveModal] = useState(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    setIsAdmin(false);
+  const handleOpenModal = (modalType) => {
+    setActiveModal(modalType);
+  };
+
+  const handleCloseModal = () => {
+    setActiveModal(null);
   };
 
   return (
     <>
       <AdminTheme />
       <div className="flex flex-col items-center w-full min-h-screen gap-[30px]">
-        <Header>
-          {isAdmin && (
-            <div className="flex items-center gap-2 ml-4">
-              <button
-                onClick={handleLogout}
-                className="text-[12px] font-jetbrains-mono text-white hover:text-red-500 transition-colors duration-200"
-              >
-                Déconnexion
-              </button>
-            </div>
-          )}
-        </Header>
+        <Header onOpenModal={handleOpenModal} activeModal={activeModal} />
         <main className="flex flex-col items-center w-full gap-[30px]" id="main-content">
-          <HeroBanner />
+          <HeroBanner onOpenModal={() => handleOpenModal('hero')} />
           <Separation />
           <section id="whoami">
-            <About />
+            <About onOpenModal={() => handleOpenModal('about')} />
           </section>
           <Separation />
           <section id="skills">
-            <Skills />
+            <Skills onOpenModal={() => handleOpenModal('skills')} />
           </section>
           <Separation />
           <section id="projects">
-            <Projects />
+            <Projects onOpenModal={() => handleOpenModal('projects')} />
           </section>
           <Separation />
           <Contact />
         </main>
         <Footer />
+
+        {/* Modales */}
+        <HeroEditModal 
+          isOpen={activeModal === 'hero'} 
+          onClose={handleCloseModal}
+        />
       </div>
     </>
   );

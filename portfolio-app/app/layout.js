@@ -35,12 +35,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr" className="scroll-smooth">
-      <AuthProvider>
-        <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
+        <AuthProvider>
           <VideoBackground />
           {children}
-        </body>
-      </AuthProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

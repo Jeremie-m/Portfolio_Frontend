@@ -90,7 +90,7 @@ export default function FanCards() {
             alt="Hand" 
             width={130} 
             height={130} 
-            className="absolute left-1/2 -translate-x-1/2 mt-[120px] z-999"
+            className="absolute left-1/2 -translate-x-1/2 mt-[120px] z-99"
           />
         </div>
       </div>
