@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import NavLinks from './NavLinks';
-import BurgerMenu from './modals/BurgerMenu';
+import BurgerMenu from '@/components/ui/modals/BurgerMenu';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Header = ({ onOpenModal, activeModal }) => {

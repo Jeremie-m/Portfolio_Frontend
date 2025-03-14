@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import NavLinks from '../NavLinks';
+import NavLinks from '../../NavLinks';
 import Modal from './Modal';
 
 const BurgerMenu = ({ isOpen, onOpen, onClose }) => {

@@ -5,8 +5,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion'; 
 import { useAuth } from '@/contexts/AuthContext';
 import EditBtn from './EditBtn';
+import HeroEditModal from '@/components/ui/modals/HeroEditModal';
 
-const HeroBanner = ({ onOpenModal }) => {
+const HeroBanner = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
 
   return (
@@ -56,6 +57,11 @@ const HeroBanner = ({ onOpenModal }) => {
           </motion.div>
         </div>
       </section>
+
+      <HeroEditModal 
+        isOpen={activeModal === 'hero'}
+        onClose={() => onOpenModal(null)}
+      />
     </div>
   );
 };

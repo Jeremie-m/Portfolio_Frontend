@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "framer-motion": "^12.4.12",
+        "ldrs": "^1.1.2",
         "next": "15.2.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"

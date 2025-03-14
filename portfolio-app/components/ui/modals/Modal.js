@@ -3,7 +3,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function Modal({ isOpen, onClose, title, children }) {
+function Modal({ isOpen, onClose, title, children, level = 1 }) {
+  // Calcul des z-index en fonction du level
+  const baseZIndex = 140;
+  const overlayZIndex = baseZIndex + (level - 1) * 2;
+  const modalZIndex = overlayZIndex + 1;
+
   const overlayVariants = {
     hidden: { 
       opacity: 0
@@ -55,7 +60,8 @@ function Modal({ isOpen, onClose, title, children }) {
           {/* Overlay sombre */}
           <motion.div 
             key="overlay"
-            className="fixed inset-0 bg-black/100 z-140"
+            className="fixed inset-0 bg-black/100"
+            style={{ zIndex: overlayZIndex }}
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -66,7 +72,8 @@ function Modal({ isOpen, onClose, title, children }) {
           {/* Modal */}
           <motion.div 
             key="modal"
-            className="fixed top-[10px] inset-x-0 mx-[10px] header-bg rounded-[10px] z-150 p-[10px]"
+            className="fixed top-[10px] inset-x-0 mx-[10px] header-bg rounded-[10px] p-[10px]"
+            style={{ zIndex: modalZIndex }}
             variants={modalVariants}
             initial="hidden"
             animate="visible"

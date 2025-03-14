@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../mocks/projects';
 import { useAuth } from '@/contexts/AuthContext';
 import EditBtn from './EditBtn';
+import ProjectsEditModal from '@/components/ui/modals/ProjectsEditModal';
 
-const Projects = ({ onOpenModal }) => {
+const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
@@ -74,9 +75,9 @@ const Projects = ({ onOpenModal }) => {
   };
 
   return (
-    <>
+    <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
       {isAdmin && (
-        <div className="w-full flex justify-center mb-4">
+        <div className="w-full flex justify-center mb-2">
           <EditBtn onOpenModal={onOpenModal} section="projects" />
         </div>
       )}
@@ -145,7 +146,12 @@ const Projects = ({ onOpenModal }) => {
           </motion.button>
         ) : null}
       </section>
-    </>
+
+      <ProjectsEditModal
+        isOpen={activeModal === 'projects'}
+        onClose={() => onOpenModal(null)}
+      />
+    </div>
   );
 };
 
