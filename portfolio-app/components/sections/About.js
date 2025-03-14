@@ -3,7 +3,7 @@
 import { useAboutMe } from '@/hooks/useAboutMe';
 import Loader from '@/components/ui/Loader';
 import AboutMeEditModal from '@/components/ui/modals/AboutMeEditModal';
-import EditBtn from '@/components/EditBtn';
+import EditBtn from '@/components/ui/EditBtn';
 import { useAuth } from '@/contexts/AuthContext';
 
 const About = ({ onOpenModal, activeModal }) => {

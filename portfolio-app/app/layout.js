@@ -1,6 +1,6 @@
 import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
 import "./globals.css";
-import VideoBackground from "@/components/VideoBackground";
+import VideoBackground from "@/components/ui/VideoBackground";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = Inter({

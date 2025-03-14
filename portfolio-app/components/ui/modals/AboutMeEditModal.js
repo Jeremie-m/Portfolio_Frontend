@@ -50,14 +50,16 @@ const AboutMeEditModal = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-white mb-4">Éditer la section "Qui suis-je ?"</h2>
-        
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose}
+      title="Gestion du texte"
+    >
+      <div className="p-6 space-y-6">    
         <textarea
           value={editedContent}
           onChange={(e) => setEditedContent(e.target.value)}
-          className="w-full h-48 p-4 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full h-48 p-4 border text-white rounded-lg focus:ring-2 focus:bg-white focus:text-black focus:outline-none"
           placeholder="Décrivez-vous..."
         />
 
@@ -72,6 +74,7 @@ const AboutMeEditModal = ({ isOpen, onClose }) => {
           <Button 
             onClick={handleSave}
             disabled={isSaving || editedContent === content}
+            variant="primary"
           >
             {isSaving ? <Loader size="20" /> : 'Enregistrer'}
           </Button>

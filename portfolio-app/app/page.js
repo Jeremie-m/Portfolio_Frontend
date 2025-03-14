@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '../components/Header';
-import HeroBanner from '../components/HeroBanner';
-import About from '../components/sections/About';
-import Skills from '../components/Skills';
-import Projects from '../components/Projects';
-import Contact from '../components/Contact';
-import Footer from '../components/Footer';
-import Separation from '../components/Separation';
-import AdminTheme from '@/components/AdminTheme';
+import Header from '@/components/layout/Header';
+import HeroBanner from '@/components/sections/HeroBanner';
+import About from '@/components/sections/About';
+import Skills from '@/components/sections/Skills';
+import Projects from '@/components/sections/Projects';
+import Contact from '@/components/sections/Contact';
+import Footer from '@/components/layout/Footer';
+import Separation from '@/components/ui/Separation';
+import AdminTheme from '@/components/layout/AdminTheme';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
