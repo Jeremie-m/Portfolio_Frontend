@@ -2,22 +2,25 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { useAuth } from '@/contexts/AuthContext';
 
 const Card = ({ skill }) => {
+  const { isAdmin } = useAuth();
+
   return (
     <div 
-      className="
-        w-[96px] 
-        h-[170px] 
-        bg-[#0A52D0] 
-        px-4 
-        py-3.5 
-        flex 
-        flex-col 
-        items-center 
-        gap-7
-        rounded-lg
-      "
+    className={`
+      w-[96px] 
+      h-[170px] 
+      ${isAdmin ? 'bg-[#caaa08]' : 'bg-[#0A52D0]'}
+      px-4 
+      py-3.5 
+      flex 
+      flex-col 
+      items-center 
+      gap-7
+      rounded-lg
+    `}
     >
       <div className="w-[76px] h-[76px] relative">
         <Image

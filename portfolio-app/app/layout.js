@@ -2,6 +2,7 @@ import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import VideoBackground from "@/components/ui/VideoBackground";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SkillsProvider } from "@/contexts/SkillsContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,8 +38,10 @@ export default function RootLayout({ children }) {
     <html lang="fr" className="scroll-smooth">
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
         <AuthProvider>
-          <VideoBackground />
-          {children}
+          <SkillsProvider>
+            <VideoBackground />
+            {children}
+          </SkillsProvider>
         </AuthProvider>
       </body>
     </html>

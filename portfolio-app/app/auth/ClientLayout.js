@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-const VideoBackground = dynamic(() => import('@/components/VideoBackground'), {
+const VideoBackground = dynamic(() => import('@/components/ui/VideoBackground'), {
   loading: () => <div className="fixed inset-0 bg-black" />,
   ssr: false
 });

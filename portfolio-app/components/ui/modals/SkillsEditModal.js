@@ -12,13 +12,60 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
   const { skills, isLoading, error, saveSkills, deleteSkill, addSkill } = useSkills();
   const [isSaving, setIsSaving] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState(null);
-  const newInputRef = useRef(null);
+  const [uploadError, setUploadError] = useState(null);
+  const [tempImageUrls, setTempImageUrls] = useState({});
+  const [lastAddedId, setLastAddedId] = useState(null);
+  const [localSkills, setLocalSkills] = useState([]);
+  const fileInputRef = useRef(null);
 
-  const handleSkillChange = async (id, field, value) => {
-    const updatedSkills = skills.map(skill => 
+  // Initialiser localSkills avec les skills actuels quand le modal s'ouvre
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSkills([...skills]);
+    }
+  }, [isOpen, skills]);
+
+  const handleSkillChange = async (id, field, value, event) => {
+    if (event?.key === 'Enter') {
+      handleSave();
+    }
+    
+    const updatedSkills = localSkills.map(skill => 
       skill.id === id ? { ...skill, [field]: value } : skill
     );
-    await saveSkills(updatedSkills);
+    setLocalSkills(updatedSkills);
+  };
+
+  const handleImageClick = (skillId) => {
+    fileInputRef.current = skillId;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/png,image/jpeg,image/svg+xml,image/webp';
+    input.onchange = (e) => handleImageUpload(e, skillId);
+    input.click();
+  };
+
+  const handleImageUpload = async (e, skillId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 4 * 1024 * 1024) {
+      setUploadError('Le fichier est trop volumineux. Taille maximale : 4MB');
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+    setTempImageUrls(prev => ({
+      ...prev,
+      [skillId]: imageUrl
+    }));
+
+    console.log('Image sélectionnée (mock) :', {
+      skillId,
+      fileName: file.name,
+      fileSize: file.size,
+      mimeType: file.type
+    });
   };
 
   const handleDeleteClick = (id) => {
@@ -28,7 +75,8 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
   const handleConfirmDelete = async () => {
     if (skillToDelete) {
       try {
-        await deleteSkill(skillToDelete);
+        const updatedSkills = localSkills.filter(skill => skill.id !== skillToDelete);
+        setLocalSkills(updatedSkills);
         setSkillToDelete(null);
       } catch (err) {
         console.error('Erreur lors de la suppression:', err);
@@ -40,30 +88,48 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
     setSkillToDelete(null);
   };
 
-  const handleAddSkill = async () => {
+  const handleAddSkill = async (event) => {
     try {
-      // Générer un nouvel ID unique
-      const newId = Math.max(...skills.map(skill => skill.id), 0) + 1;
-      
       const newSkill = {
-        id: newId,
+        id: Date.now(), // ID temporaire
         name: "Nouvelle compétence",
         image_url: "/images/skills/defaut.svg",
         level: 1
       };
 
-      const updatedSkills = [newSkill, ...skills];
-      await saveSkills(updatedSkills);
+      setLocalSkills(prev => [...prev, newSkill]);
+      setLastAddedId(newSkill.id);
 
       setTimeout(() => {
-        if (newInputRef.current) {
-          newInputRef.current.focus();
-          newInputRef.current.select();
+        const input = document.querySelector(`input[data-skill-id="${newSkill.id}"]`);
+        if (input) {
+          input.focus();
+          input.select();
         }
       }, 0);
     } catch (err) {
       console.error('Erreur lors de l\'ajout:', err);
     }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Sauvegarder les modifications
+      await saveSkills(localSkills);
+      onClose();
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Réinitialiser l'état local avec les skills originaux
+    setLocalSkills([...skills]);
+    setTempImageUrls({});
+    onClose();
   };
 
   // Gestion du scroll de l'arrière-plan
@@ -98,6 +164,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
           <div className="sticky top-0 z-10 p-6 pb-4 border-b border-white/10">
             <button
               onClick={handleAddSkill}
+              onKeyDown={handleAddSkill}
               className="w-full h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
               disabled={isLoading || isSaving}
             >
@@ -107,27 +174,32 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 pt-4">
+          <div className="flex-1 overflow-y-auto p-6 pt-4 skills-scrollbar">
             {isLoading ? (
               <div className="flex justify-center py-4">
                 <Loader />
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {skills.map((skill, index) => (
+                {localSkills.map((skill, index) => (
                   <div key={skill.id} className="flex items-center gap-2 min-w-0">
-                    <Image 
-                      src={skill.image_url || '/images/skills/default.svg'} 
-                      alt={skill.name}
-                      width={36}
-                      height={36}
-                      className="w-8 h-8 min-w-[32px] min-h-[32px] object-contain"
-                    />
+                    <div 
+                      className="relative w-8 h-8 min-w-[32px] min-h-[32px] cursor-pointer"
+                      onClick={() => handleImageClick(skill.id)}
+                    >
+                      <Image 
+                        src={tempImageUrls[skill.id] || skill.image_url} 
+                        alt={skill.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                     <input
-                      ref={index === 0 ? newInputRef : null}
+                      data-skill-id={skill.id}
                       type="text"
                       value={skill.name}
                       onChange={(e) => handleSkillChange(skill.id, 'name', e.target.value)}
+                      onKeyDown={(e) => handleSkillChange(skill.id, 'name', e.target.value, e)}
                       className="flex-1 min-w-0 bg-transparent border border-white rounded px-2 py-1.5 text-white text-[14px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
                       disabled={isSaving}
                     />
@@ -152,14 +224,14 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
 
           <div className="sticky bottom-0 flex justify-end gap-3 p-6 border-t border-white/10 bg-transparent">
             <Button
-              onClick={onClose}
+              onClick={handleCancel}
               variant="secondary"
               disabled={isSaving}
             >
               Annuler
             </Button>
             <Button
-              onClick={onClose}
+              onClick={handleSave}
               disabled={isLoading || isSaving}
             >
               {isSaving ? <Loader size="20" /> : 'Enregistrer'}
@@ -177,6 +249,14 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
         confirmColor="red"
         level={2}
       />
+
+      <Modal
+        isOpen={uploadError !== null}
+        onClose={() => setUploadError(null)}
+        title="Erreur d'upload"
+      >
+        <div className="text-red-500">{uploadError}</div>
+      </Modal>
     </>
   );
 };

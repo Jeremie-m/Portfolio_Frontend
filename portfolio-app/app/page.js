@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import HeroBanner from '@/components/sections/HeroBanner';
 import About from '@/components/sections/About';
@@ -10,9 +10,17 @@ import Contact from '@/components/sections/Contact';
 import Footer from '@/components/layout/Footer';
 import Separation from '@/components/ui/Separation';
 import AdminTheme from '@/components/layout/AdminTheme';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin: authIsAdmin } = useAuth();
+
+  useEffect(() => {
+    // Synchroniser le state local avec le contexte d'authentification
+    setIsAdmin(authIsAdmin);
+  }, [authIsAdmin]);
 
   const handleOpenModal = (modalType) => {
     setActiveModal(modalType);
@@ -24,7 +32,7 @@ export default function Home() {
 
   return (
     <>
-      <AdminTheme />
+      <AdminTheme key={isAdmin} />
       <div className="flex flex-col items-center w-full min-h-screen gap-[30px]">
         <Header onOpenModal={handleOpenModal} activeModal={activeModal} />
         <main className="flex flex-col items-center w-full gap-[30px]" id="main-content">

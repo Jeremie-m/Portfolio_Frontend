@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import { technologies } from '../../../mocks/skills';
+import { skills } from '../../../mocks/skills';
 
-// GET /api/technologies - Récupérer toutes les technologies
+// GET /api/skills - Récupérer toutes les skills
 export async function GET(request) {
   // Simuler un délai de réseau
   await new Promise(resolve => setTimeout(resolve, 300));
   
-  return NextResponse.json(technologies);
+  return NextResponse.json(skills);
 }
 
-// POST /api/technologies - Ajouter une nouvelle technologie (protégé par authentification)
+// POST /api/skills - Ajouter une nouvelle skill (protégé par authentification)
 export async function POST(request) {
   try {
     // Vérifier l'authentification (à implémenter)
@@ -21,28 +21,28 @@ export async function POST(request) {
     const data = await request.json();
     
     // Validation des données
-    if (!data.name || !data.category) {
+    if (!data.name) {
       return NextResponse.json(
-        { error: 'Les champs name et category sont requis' },
+        { error: 'Le champ name est requis' },
         { status: 400 }
       );
     }
     
-    // Simuler l'ajout d'une nouvelle technologie
-    const newTechnology = {
-      id: technologies.length + 1,
+    // Simuler l'ajout d'une nouvelle skill
+    const newSkill = {
+      id: skills.length + 1,
       ...data,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
     
-    // Dans une vraie application, nous ajouterions la technologie à la base de données
-    // technologies.push(newTechnology);
+    // Dans une vraie application, nous ajouterions la skill à la base de données
+    // skills.push(newSkill);
     
-    return NextResponse.json(newTechnology, { status: 201 });
+    return NextResponse.json(newSkill, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la technologie' },
+      { error: 'Erreur lors de la création de la skill' },
       { status: 500 }
     );
   }

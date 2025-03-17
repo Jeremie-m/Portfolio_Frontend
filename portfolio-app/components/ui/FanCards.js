@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { skills } from "@/mocks/skills"
 import Card from "./Card"
 import Image from "next/image"
+import { useSkills } from "@/hooks/useSkills"
 
 export default function FanCards() {
+  const { skills, isLoading } = useSkills();
   const [activeIndex, setActiveIndex] = useState(0)
   const totalAngleRange = 70
   const startAngle = -30
@@ -31,7 +32,7 @@ export default function FanCards() {
         container.removeEventListener("wheel", handleWheel)
       }
     }
-  }, [])
+  }, [skills.length])
 
   const getBrightness = (index) => {
     const distance = Math.abs(index - activeIndex)
@@ -62,6 +63,10 @@ export default function FanCards() {
 
   const handleCardClick = (index) => {
     setActiveIndex(index)
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-[280px]">Chargement...</div>
   }
 
   return (

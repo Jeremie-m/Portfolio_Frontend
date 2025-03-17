@@ -76,6 +76,7 @@ const VideoBackground = () => {
       
       {videoSrc && (
         <video
+          key={videoSrc}
           ref={videoRef}
           className={`absolute min-w-full min-h-full object-cover transition-opacity duration-1000 ${
             isPlaying ? 'opacity-100' : 'opacity-0'

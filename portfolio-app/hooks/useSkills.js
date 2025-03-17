@@ -1,12 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { skills as mockSkills } from '@/mocks/skills';
+import { useSkillsContext } from '@/contexts/SkillsContext';
 
 export const useSkills = () => {
-  const [skills, setSkills] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { globalSkills, setGlobalSkills } = useSkillsContext();
+  const [skills, setSkills] = useState(globalSkills);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Synchroniser l'état local avec l'état global
+  useEffect(() => {
+    setSkills(globalSkills);
+  }, [globalSkills]);
 
   // Fonction pour charger les compétences
   const fetchSkills = async () => {
@@ -16,13 +22,13 @@ export const useSkills = () => {
       // const response = await fetch('/api/skills');
       // const data = await response.json();
       // setSkills(data);
+      // setGlobalSkills(data);
       
-      // Pour le moment, on utilise les données mockées
-      setSkills(mockSkills);
+      // Pour le moment, on utilise les données globales
+      setSkills(globalSkills);
       setError(null);
     } catch (err) {
       setError('Erreur lors du chargement des compétences');
-      console.error('Erreur lors du chargement des compétences:', err);
     } finally {
       setIsLoading(false);
     }
@@ -41,13 +47,13 @@ export const useSkills = () => {
       // });
       // const data = await response.json();
       // setSkills(data);
+      // setGlobalSkills(data);
       
       // Pour le moment, on simule une sauvegarde réussie
-      console.log('Compétences sauvegardées:', updatedSkills);
-      setSkills(updatedSkills);
+      setGlobalSkills([...updatedSkills]);
+      setSkills([...updatedSkills]);
       return true;
     } catch (err) {
-      console.error('Erreur lors de la sauvegarde:', err);
       throw new Error('Erreur lors de la sauvegarde des compétences');
     }
   };
@@ -59,7 +65,6 @@ export const useSkills = () => {
       await saveSkills(updatedSkills);
       return true;
     } catch (err) {
-      console.error('Erreur lors de la suppression:', err);
       throw new Error('Erreur lors de la suppression de la compétence');
     }
   };
@@ -77,14 +82,15 @@ export const useSkills = () => {
       await saveSkills(updatedSkills);
       return newSkill;
     } catch (err) {
-      console.error('Erreur lors de l\'ajout:', err);
       throw new Error('Erreur lors de l\'ajout de la compétence');
     }
   };
 
-  // Charger les données au montage du composant
+  // Charger les données au montage du composant seulement si l'état global est vide
   useEffect(() => {
-    fetchSkills();
+    if (globalSkills.length === 0) {
+      fetchSkills();
+    }
   }, []);
 
   return {

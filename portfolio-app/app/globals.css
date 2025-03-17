@@ -1,10 +1,35 @@
 /* PostCSS directives */
 @import 'tailwindcss';
-@tailwind utilities;
 
 :root {
   --header-bg: linear-gradient(to bottom right, #0b61ee, #083ba3);
   --bg-dark: #000000;
+}
+
+/* Styles spécifiques pour la scrollbar du modal Skills */
+.skills-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skills-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.skills-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.skills-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Pour Firefox */
+.skills-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.8) rgba(255, 255, 255, 0.1);
 }
 
 @layer components {
@@ -37,6 +62,4 @@
   .text-primary {
     color: #0A52D0;
   }
-
-  
 } 
