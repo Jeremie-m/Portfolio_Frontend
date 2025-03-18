@@ -8,7 +8,7 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/portfolio",
     demo_link: "https://jeremie-m.dev",
     category: "full-stack",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/blog",
     demo_link: "https://blog.jeremie-m.dev",
     category: "full-stack",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   },
   {
     id: 3,
@@ -28,7 +28,7 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/ecommerce",
     demo_link: "https://shop.jeremie-m.dev",
     category: "full-stack",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/admin-dashboard",
     demo_link: "https://admin.jeremie-m.dev",
     category: "front-end",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   },
   {
     id: 5,
@@ -48,7 +48,7 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/rest-api",
     demo_link: "https://api.jeremie-m.dev",
     category: "back-end",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   },
   {
     id: 6,
@@ -58,6 +58,6 @@ export const projects = [
     github_link: "https://github.com/jeremie-m/mobile-app",
     demo_link: "https://mobile.jeremie-m.dev",
     category: "mobile",
-    image_url: "https://loremflickr.com/1024/720"
+    image_url: "https://placehold.co/1024x720/png"
   }
 ]; 

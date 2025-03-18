@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '@/mocks/projects';
 import { useAuth } from '@/contexts/AuthContext';
@@ -54,11 +53,17 @@ const Projects = ({ onOpenModal, activeModal }) => {
   const projectVariants = {
     hidden: { 
       opacity: 0,
-      y: 50
+      y: 50,
+      style: {
+        transformOrigin: "center bottom"
+      }
     },
     visible: { 
       opacity: 1,
       y: 0,
+      style: {
+        transformOrigin: "center bottom"
+      },
       transition: {
         duration: 0.6,
         ease: [0.43, 0.13, 0.23, 0.96]
@@ -67,6 +72,9 @@ const Projects = ({ onOpenModal, activeModal }) => {
     exit: {
       opacity: 0,
       y: -20,
+      style: {
+        transformOrigin: "center bottom"
+      },
       transition: {
         duration: 0.5,
         ease: "easeInOut"
@@ -103,7 +111,13 @@ const Projects = ({ onOpenModal, activeModal }) => {
                 className="w-full header-bg rounded-lg overflow-hidden [filter:drop-shadow(0_4px_8px_#0B61EE)]"
               >
                 <div className="w-full h-40 relative">
-                  <Image src={project.image_url} alt={project.title} layout="fill" objectFit="cover" />
+                  <Image 
+                    src={project.image_url} 
+                    alt={project.title} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
+                  />
                   <div className="w-full h-full flex items-center justify-center text-white">
                     Image du projet: {project.title}
                   </div>
@@ -120,10 +134,22 @@ const Projects = ({ onOpenModal, activeModal }) => {
                   </div>
                   <div className="flex justify-between">
                     <a href={project.github_link} target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/github-logo.svg" alt="GitHub" width={40} height={40} />
+                      <Image 
+                        src="/images/github-logo.svg" 
+                        alt="GitHub" 
+                        width={40} 
+                        height={40}
+                        className="w-auto h-auto"
+                      />
                     </a>
                     <a href={project.demo_link} target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/arrow.svg" alt="Voir Démo" width={40} height={40} />
+                      <Image 
+                        src="/images/arrow.svg" 
+                        alt="Voir Démo" 
+                        width={60} 
+                        height={60}
+                        className="w-auto h-auto"
+                      />
                     </a>
                   </div>
                 </div>

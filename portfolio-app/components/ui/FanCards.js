@@ -95,7 +95,15 @@ export default function FanCards() {
             alt="Hand" 
             width={96}
             height={96}
-            className="absolute left-1/2 -translate-x-1/2 mt-[120px] z-99 w-full h-auto"
+            style={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              marginTop: '150px',
+              zIndex: 99,
+              width: '100%',
+              height: 'auto'
+            }}
           />
         </div>
       </div>

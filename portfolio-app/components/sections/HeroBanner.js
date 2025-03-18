@@ -50,8 +50,9 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
             <Image 
               src="/images/profil.webp" 
               alt="Jérémie Marie" 
-              layout="fill" 
-              objectFit="cover" 
+              fill
+              sizes="(max-width: 768px) 130px, 200px"
+              className="object-cover"
               priority 
             />
           </motion.div>
