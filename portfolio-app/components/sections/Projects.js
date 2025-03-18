@@ -3,21 +3,25 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { projects } from '@/mocks/projects';
+import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
 import EditBtn from '@/components/ui/EditBtn';
 import ProjectsEditModal from '@/components/ui/modals/ProjectsEditModal';
 
 const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
+  const { projects } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
+  
 
   // Vérifier si l'écran est en mode mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
+
+  
     
     // Vérifier au chargement
     checkIfMobile();

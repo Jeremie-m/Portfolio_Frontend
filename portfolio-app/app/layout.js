@@ -3,6 +3,7 @@ import "./globals.css";
 import VideoBackground from "@/components/ui/VideoBackground";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SkillsProvider } from "@/contexts/SkillsContext";
+import { ProjectsProvider } from "@/contexts/ProjectsContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,8 +40,10 @@ export default function RootLayout({ children }) {
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable} ${notoSans.variable} antialiased`} style={{ backgroundColor: "#121212", color: "#ffffff" }}>
         <AuthProvider>
           <SkillsProvider>
-            <VideoBackground />
-            {children}
+            <ProjectsProvider>
+              <VideoBackground />
+              {children}
+            </ProjectsProvider>
           </SkillsProvider>
         </AuthProvider>
       </body>
