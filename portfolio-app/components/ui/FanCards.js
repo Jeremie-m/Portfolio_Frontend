@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Card from "./Card"
 import Image from "next/image"
@@ -9,16 +9,94 @@ import { useSkills } from "@/hooks/useSkills"
 export default function FanCards() {
   const { skills, isLoading } = useSkills();
   const [activeIndex, setActiveIndex] = useState(0)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0)
   const totalAngleRange = 70
   const startAngle = -30
+  
+  // État pour suivre si le composant est monté côté client
+  const [isMounted, setIsMounted] = useState(false)
+  
+  // Référence à l'image de la main
+  const handRef = useRef(null)
+  
+  // S'assurer que le code s'exécute uniquement côté client
+  useEffect(() => {
+    setIsMounted(true)
+    setWindowWidth(window.innerWidth)
+    
+    // Fonction pour mettre à jour la largeur lors du redimensionnement
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+    
+    // Ajouter l'écouteur d'événement
+    window.addEventListener('resize', handleResize)
+    
+    // Nettoyage
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // Utiliser un effet pour appliquer manuellement les styles selon la taille d'écran
+  useEffect(() => {
+    if (!isMounted || !handRef.current) return;
+
+    // Mobile
+    let width = 90
+    let height = 108
+    let marginBottom = -250
+    let marginTop = 140
+    
+    // Tablette
+    if (windowWidth >= 768 && windowWidth < 1024) {
+      width = 210
+      height = 252
+      marginBottom = -540
+      marginTop = 320
+    } 
+    // Desktop
+    else if (windowWidth >= 1024) {
+      width = 406
+      height = 486
+      marginBottom = -940
+      marginTop = 520
+    }
+    
+    // Appliquer les styles de manière explicite et avec force
+    handRef.current.style.cssText = `
+      width: ${width}px !important;
+      height: ${height}px !important;
+      margin-top: ${marginTop}px;
+      margin-bottom: ${marginBottom}px;
+      object-fit: contain;
+      min-width: ${width}px;
+      min-height: ${height}px;
+    `;
+    
+  }, [windowWidth, handRef, isMounted])
 
   useEffect(() => {
+    if (!isMounted) return;
+    
     const handleWheel = (e) => {
-      e.preventDefault()
+      // Si on défile vers le bas
       if (e.deltaY > 0) {
-        setActiveIndex((prev) => Math.min(prev + 1, skills.length - 1))
-      } else {
-        setActiveIndex((prev) => Math.max(prev - 1, 0))
+        // Si on n'est pas à la dernière carte, on prévient le comportement par défaut
+        if (activeIndex < skills.length - 1) {
+          e.preventDefault();
+          setActiveIndex((prev) => Math.min(prev + 1, skills.length - 1));
+        }
+        // Sinon, on laisse le scroll de la page se faire normalement
+      } 
+      // Si on défile vers le haut
+      else {
+        // Si on n'est pas à la première carte, on prévient le comportement par défaut
+        if (activeIndex > 0) {
+          e.preventDefault();
+          setActiveIndex((prev) => Math.max(prev - 1, 0));
+        }
+        // Sinon, on laisse le scroll de la page se faire normalement
       }
     }
 
@@ -32,7 +110,7 @@ export default function FanCards() {
         container.removeEventListener("wheel", handleWheel)
       }
     }
-  }, [skills.length])
+  }, [skills.length, isMounted, activeIndex])
 
   const getBrightness = (index) => {
     const distance = Math.abs(index - activeIndex)
@@ -49,8 +127,20 @@ export default function FanCards() {
     const angleIncrement = totalAngleRange / (totalCards - 1)
     const baseAngle = startAngle + index * angleIncrement
     const zIndex = totalCards - Math.abs(index - activeIndex)
-    const translateX = Math.sin((baseAngle * Math.PI) / 180) * 30
-    const translateY = index === activeIndex ? -20 : 0
+    
+    // Valeurs de base pour mobile
+    let translateX = Math.sin((baseAngle * Math.PI) / 180) * 30
+    let translateY = index === activeIndex ? -20 : 0
+    
+    // Ajustements pour tablette et desktop
+    if (windowWidth >= 1024) { // Desktop
+      translateX = Math.sin((baseAngle * Math.PI) / 180) * 120
+      translateY = index === activeIndex ? -80 : 0
+    } else if (windowWidth >= 744) { // Tablette
+      translateX = Math.sin((baseAngle * Math.PI) / 180) * 60
+      translateY = index === activeIndex ? -40 : 0
+    }
+    
     const brightness = getBrightness(index)
 
     return {
@@ -66,12 +156,27 @@ export default function FanCards() {
   }
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-[280px]">Chargement...</div>
+    return <div className="flex justify-center items-center h-[280px] md:h-[500px] lg:h-[900px]">Chargement...</div>
   }
+  
+  // Détermination des dimensions à utiliser pour le rendu initial
+  const getHandDimensions = () => {
+    if (!isMounted) return { width: 190, height: 190, marginBottom: -220 };
+    
+    if (windowWidth >= 1024) {
+      return { width: 406, height: 486, marginBottom: -320 };
+    } else if (windowWidth >= 744) {
+      return { width: 210, height: 252, marginBottom: -240 };
+    } else {
+      return { width: 190, height: 190, marginBottom: -220 };
+    }
+  };
+  
+  const handDimensions = getHandDimensions();
 
   return (
-    <div id="fan-container" className="flex flex-col h-[280px] w-full max-w-full">
-      <div className="relative w-24 mx-auto">
+    <div id="fan-container" className="flex flex-col h-[280px] md:h-[600px] lg:h-[1000px] w-full max-w-full">
+      <div className="relative w-24 md:w-[397.5px] lg:w-[768px] mx-auto">
         <AnimatePresence>
           {skills.map((skill, index) => (
             <motion.div
@@ -89,21 +194,18 @@ export default function FanCards() {
             </motion.div>
           ))}
         </AnimatePresence>
-        <div className="relative w-24 sm:w-32">
+        
+        {/* Main */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-0 z-[199]">
           <Image 
+            ref={handRef}
             src="/images/hand.svg" 
             alt="Hand" 
-            width={96}
-            height={96}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              marginTop: '150px',
-              zIndex: 99,
-              width: '100%',
-              height: 'auto'
-            }}
+            width={handDimensions.width}
+            height={handDimensions.height}
+            priority={true}
+            unoptimized={true}
+            style={{}}
           />
         </div>
       </div>

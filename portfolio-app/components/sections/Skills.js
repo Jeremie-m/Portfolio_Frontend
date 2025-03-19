@@ -10,24 +10,26 @@ const Skills = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
 
   return (
-    <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
+    <section id="skills" className="w-full flex flex-col gap-[10px] px-[10px] md:px-[20px] lg:px-[40px] py-[16px]">
       {isAdmin && (
-        <div className="w-full flex justify-center mb-2">
+        <div className="w-full flex justify-center mb-2 md:mb-[40px]">
           <EditBtn onOpenModal={onOpenModal} section="skills" />
         </div>
       )}
-      <section id="skills" className="flex flex-col items-center gap-20 px-2">
-        <h2 className="font-medium text-[24px] leading-4 text-center text-white font-montserrat">
+      <div className="w-full flex flex-col items-center gap-8 md:gap-20 lg:gap-30">
+        <h2 className="font-medium text-[24px] md:text-[40px] lg:text-[64px] text-center text-white font-montserrat">
           Mes Compétences
         </h2>
-        <FanCards />
-      </section>
+        <div className="w-full">
+          <FanCards />
+        </div>
+      </div>
 
       <SkillsEditModal
         isOpen={activeModal === 'skills'}
         onClose={() => onOpenModal(null)}
       />
-    </div>
+    </section>
   );
 };
 

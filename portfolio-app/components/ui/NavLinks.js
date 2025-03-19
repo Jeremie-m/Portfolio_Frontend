@@ -9,19 +9,19 @@ const NavLinks = ({ onClick, isModal }) => {
   
   const menuItems = [
     { id: 'whoami', label: 'Qui suis-je ?', href: '#whoami' },
-    { id: 'skills', label: 'Mes compétences', href: '#skills' },
-    { id: 'projects', label: 'Mes projets', href: '#projects' },
-    { id: 'contact', label: 'Me contacter', href: '#contact' },
+    { id: 'skills', label: 'Compétences', href: '#skills' },
+    { id: 'projects', label: 'Projets', href: '#projects' },
+    { id: 'contact', label: 'Contact', href: '#contact' },
   ];
 
   // Styles différents selon le contexte (modal ou desktop)
   const navClassName = isModal 
     ? "flex flex-col space-y-3 mb-5" // Espacement entre les liens et marge en bas
-    : "hidden md:flex space-x-8"; // Style pour le desktop
+    : "hidden md:flex space-x-4 lg:space-x-8 items-center"; // Style pour le desktop avec des espacements différents selon la taille
 
   const linkClassName = isModal
     ? "text-white text-2xl font-montserrat hover:opacity-80 transition-opacity duration-200"
-    : "text-white hover:text-primary transition-colors duration-200";
+    : "text-white md:text-[16px] lg:text-[18px] font-montserrat hover:text-primary transition-colors duration-200";
 
   const handleClick = (e, href) => {
     e.preventDefault();
@@ -50,7 +50,7 @@ const NavLinks = ({ onClick, isModal }) => {
   };
 
   return (
-    <div className={isModal ? "flex flex-col" : ""}>
+    <div className={isModal ? "flex flex-col" : "flex items-center"}>
       <nav className={navClassName}>
         {menuItems.map((item) => (
           <Link
@@ -64,12 +64,20 @@ const NavLinks = ({ onClick, isModal }) => {
         ))}
       </nav>
       
-      {isModal && (
+      {isModal ? (
         <Link
           href="/cv.pdf"
           target="_blank"
           onClick={(e) => handleClick(e, '#cv')}
           className={`w-full bg-white rounded-lg py-2 text-center text-[28px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 transition-opacity duration-200`}
+        >
+          Voir mon CV
+        </Link>
+      ) : (
+        <Link
+          href="/cv.pdf"
+          target="_blank"
+          className={`hidden md:block bg-white rounded-[48px] px-4 py-1 ml-4 text-[16px] lg:text-[20px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 transition-opacity duration-200`}
         >
           Voir mon CV
         </Link>

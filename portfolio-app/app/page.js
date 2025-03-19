@@ -38,13 +38,9 @@ export default function Home() {
         <main className="flex flex-col items-center w-full gap-[30px]" id="main-content">
           <HeroBanner onOpenModal={handleOpenModal} activeModal={activeModal} />
           <Separation />
-          <section id="whoami">
-            <About onOpenModal={handleOpenModal} activeModal={activeModal} />
-          </section>
+          <About onOpenModal={handleOpenModal} activeModal={activeModal} />
           <Separation />
-          <section id="skills">
-            <Skills onOpenModal={handleOpenModal} activeModal={activeModal} />
-          </section>
+          <Skills onOpenModal={handleOpenModal} activeModal={activeModal} />
           <Separation />
           <section id="projects">
             <Projects onOpenModal={handleOpenModal} activeModal={activeModal} />

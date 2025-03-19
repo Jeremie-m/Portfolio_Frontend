@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjects } from '@/hooks/useProjects';
@@ -13,15 +13,22 @@ const Projects = ({ onOpenModal, activeModal }) => {
   const { projects } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+  const [isMounted, setIsMounted] = useState(false);
   
+  // Références aux icônes
+  const githubIconRefs = useRef({});
+  const demoIconRefs = useRef({});
 
-  // Vérifier si l'écran est en mode mobile
+  // Vérifier si l'écran est en mode mobile et définir la largeur de la fenêtre
   useEffect(() => {
+    setIsMounted(true);
+    
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setWindowWidth(width);
     };
-
-  
     
     // Vérifier au chargement
     checkIfMobile();
@@ -32,6 +39,75 @@ const Projects = ({ onOpenModal, activeModal }) => {
     // Nettoyer l'écouteur d'événement
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
+  
+  // Appliquer les tailles d'icônes en fonction de la taille de l'écran
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    // Parcourir toutes les références d'icônes
+    Object.entries(githubIconRefs.current).forEach(([key, ref]) => {
+      if (ref) {
+        let width, height;
+        
+        // Mobile
+        if (windowWidth < 768) {
+          width = 40;
+          height = 40;
+        } 
+        // Tablette
+        else if (windowWidth >= 768 && windowWidth < 1024) {
+          width = 60;
+          height = 60;
+        } 
+        // Desktop
+        else {
+          width = 80;
+          height = 80;
+        }
+        
+        // Appliquer les styles
+        ref.style.cssText = `
+          width: ${width}px !important;
+          height: ${height}px !important;
+          min-width: ${width}px;
+          min-height: ${height}px;
+          object-fit: contain;
+        `;
+      }
+    });
+    
+    // Même chose pour les icônes de démo
+    Object.entries(demoIconRefs.current).forEach(([key, ref]) => {
+      if (ref) {
+        let width, height;
+        
+        // Mobile
+        if (windowWidth < 768) {
+          width = 60;
+          height = 60;
+        } 
+        // Tablette
+        else if (windowWidth >= 768 && windowWidth < 1024) {
+          width = 80;
+          height = 80;
+        } 
+        // Desktop
+        else {
+          width = 120;
+          height = 120;
+        }
+        
+        // Appliquer les styles
+        ref.style.cssText = `
+          width: ${width}px !important;
+          height: ${height}px !important;
+          min-width: ${width}px;
+          min-height: ${height}px;
+          object-fit: contain;
+        `;
+      }
+    });
+  }, [windowWidth, isMounted]);
 
   // Fonction pour charger plus de projets
   const loadMoreProjects = () => {
@@ -42,6 +118,21 @@ const Projects = ({ onOpenModal, activeModal }) => {
   const projectsToDisplay = isMobile 
     ? projects.slice(0, visibleProjects) 
     : projects;
+
+  // Obtenir les dimensions initiales des icônes
+  const getIconDimensions = (type) => {
+    if (!isMounted) {
+      return type === 'github' ? { width: 40, height: 40 } : { width: 60, height: 60 };
+    }
+    
+    if (windowWidth >= 1024) { // Desktop
+      return type === 'github' ? { width: 80, height: 80 } : { width: 120, height: 120 };
+    } else if (windowWidth >= 768) { // Tablette
+      return type === 'github' ? { width: 60, height: 60 } : { width: 80, height: 80 };
+    } else { // Mobile
+      return type === 'github' ? { width: 40, height: 40 } : { width: 60, height: 60 };
+    }
+  };
 
   // Variants pour l'animation des projets
   const containerVariants = {
@@ -93,13 +184,13 @@ const Projects = ({ onOpenModal, activeModal }) => {
           <EditBtn onOpenModal={onOpenModal} section="projects" />
         </div>
       )}
-      <section id="projects" className="w-full flex flex-col items-center gap-8">
-        <h2 className="font-medium text-[24px] leading-[16px] text-center text-white font-montserrat">
+      <section id="projects" className="w-full flex flex-col items-center gap-8 md:gap-16 lg:gap-24 md:mb-8 lg:mb-12">
+        <h2 className="font-medium text-[24px] md:text-[40px] lg:text-[64px] leading-[16px] text-center text-white font-montserrat">
           Mes Projets
         </h2>
         
         <motion.div 
-          className="w-full flex flex-col gap-8 px-5"
+          className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-5 md:px-10 lg:px-20"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -112,7 +203,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="w-full header-bg rounded-lg overflow-hidden [filter:drop-shadow(0_4px_8px_#0B61EE)]"
+                className={`w-full h-full flex flex-col header-bg rounded-lg overflow-hidden ${isAdmin ? '[filter:drop-shadow(0_4px_10px_#EED40B)]' : '[filter:drop-shadow(0_4px_10px_#0B61EE)]'}`}
               >
                 <div className="w-full h-40 relative">
                   <Image 
@@ -126,35 +217,47 @@ const Projects = ({ onOpenModal, activeModal }) => {
                     Image du projet: {project.title}
                   </div>
                 </div>
-                <div className="p-3">
-                  <h3 className="text-[24px] font-bold text-white mb-2">{project.title}</h3>
-                  <p className="text-sm font-montserrat text-white mb-3">{project.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech, index) => (
-                      <span key={index} className="text-xs font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl">
-                        {tech}
-                      </span>
-                    ))}
+                <div className="p-3 flex flex-col justify-between flex-grow">
+                  <div>
+                    <h3 className="text-[24px] md:text-[32px] lg:text-[48px] font-bold text-white mb-4 md:mb-6 lg:mb-8">{project.title}</h3>
+                    <p className="text-sm md:text-[16px] lg:text-[24px] font-montserrat text-white mb-6 md:mb-8 lg:mb-10 leading-relaxed">{project.description}</p>
                   </div>
-                  <div className="flex justify-between">
-                    <a href={project.github_link} target="_blank" rel="noopener noreferrer">
-                      <Image 
-                        src="/images/github-logo.svg" 
-                        alt="GitHub" 
-                        width={40} 
-                        height={40}
-                        className="w-auto h-auto"
-                      />
-                    </a>
-                    <a href={project.demo_link} target="_blank" rel="noopener noreferrer">
-                      <Image 
-                        src="/images/arrow.svg" 
-                        alt="Voir Démo" 
-                        width={60} 
-                        height={60}
-                        className="w-auto h-auto"
-                      />
-                    </a>
+                  
+                  <div className="mt-auto pt-4 md:pt-6 lg:pt-8">
+                    <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8">
+                      {project.technologies.map((tech, index) => (
+                        <span key={index} className="text-xs md:text-[16px] lg:text-[24px] font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <a href={project.github_link} target="_blank" rel="noopener noreferrer" className="flex flex-col justify-center items-center">
+                        <Image 
+                          ref={el => { githubIconRefs.current[project.id] = el }}
+                          src="/images/github-logo.svg" 
+                          alt="GitHub" 
+                          width={getIconDimensions('github').width}
+                          height={getIconDimensions('github').height}
+                          className="w-auto h-auto"
+                          unoptimized={true}
+                          style={{}}
+                        />
+                      </a>
+                      <a href={project.demo_link} target="_blank" rel="noopener noreferrer">
+                        <Image 
+                          ref={el => { demoIconRefs.current[project.id] = el }}
+                          src="/images/arrow.svg" 
+                          alt="Voir Démo" 
+                          width={getIconDimensions('demo').width}
+                          height={getIconDimensions('demo').height}
+                          className="w-auto h-auto"
+                          unoptimized={true}
+                          style={{}}
+                        />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -166,7 +269,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
         {isMobile && visibleProjects < projects.length ? (
           <motion.button 
             onClick={loadMoreProjects}
-            className="h-12 w-[143px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg [filter:drop-shadow(0_2px_4px_#0B61EE)]"
+            className={`h-12 w-[143px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

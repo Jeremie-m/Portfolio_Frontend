@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Loader from '@/components/ui/Loader';
 import ConfirmModal from './ConfirmModal';
 import ProjectAddModal from './ProjectAddModal';
+import ProjectEditModal from './ProjectEditModal';
 import { useProjects } from '@/hooks/useProjects';
 import Image from 'next/image';
 import SuccessToast from '@/components/ui/SuccessToast';
@@ -17,6 +18,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [localProjects, setLocalProjects] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -59,9 +61,12 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
 
   const handleEdit = (project) => {
     setSelectedProject(project);
-    // Pour tester le clic sur le projet
-    console.log(project);
-    // TODO: Ouvrir le formulaire d'édition
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedProject(null);
   };
 
   const handleAdd = () => {
@@ -127,36 +132,49 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
                 {localProjects.map((project) => (
                   <div 
                     key={project.id} 
-                    className="bg-primary-dark p-4 rounded-lg border border-primary flex flex-wrap sm:flex-nowrap items-start justify-between gap-4 cursor-pointer hover:bg-primary-900 transition-colors duration-200"
+                    className="bg-primary-dark rounded-lg border border-primary overflow-hidden cursor-pointer hover:bg-primary-900 transition-colors duration-200"
                     onClick={() => handleEdit(project)}
                   >
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <h3 className="text-lg font-semibold font-montserrat text-white truncate">{project.title}</h3>
-                      <p className="text-sm text-white-300 break-words font-montserrat line-clamp-2">{project.description}</p>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {project.technologies.map((tech, index) => (
-                          <span 
-                            key={index}
-                            className="text-xs bg-primary px-2 py-1 border border-primary rounded-xl text-white font-montserrat"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
+                    {/* Image de couverture */}
+                    <div className="w-full h-32 relative">
+                      <Image 
+                        src={project.image_url} 
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                      />
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={(e) => handleDeleteClick(project.id, e)}
-                        className="p-2 text-white hover:text-red-500 transition-colors"
-                        disabled={isSaving}
-                      >
-                        <Image 
-                          src="/images/delete.svg" 
-                          alt="Supprimer" 
-                          width={20} 
-                          height={20} 
-                        />
-                      </button>
+                    
+                    <div className="p-4 flex flex-wrap sm:flex-nowrap items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <h3 className="text-lg font-semibold font-montserrat text-white truncate">{project.title}</h3>
+                        <p className="text-sm text-white-300 break-words font-montserrat line-clamp-2">{project.description}</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {project.technologies.map((tech, index) => (
+                            <span 
+                              key={index}
+                              className="text-xs bg-primary px-2 py-1 border border-primary rounded-xl text-white font-montserrat"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={(e) => handleDeleteClick(project.id, e)}
+                          className="p-2 text-white hover:text-red-500 transition-colors"
+                          disabled={isSaving}
+                        >
+                          <Image 
+                            src="/images/delete.svg" 
+                            alt="Supprimer" 
+                            width={20} 
+                            height={20} 
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -204,6 +222,14 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
         isOpen={showAddModal}
         onClose={handleCloseAddModal}
       />
+      
+      {selectedProject && (
+        <ProjectEditModal
+          isOpen={showEditModal}
+          onClose={handleCloseEditModal}
+          project={selectedProject}
+        />
+      )}
 
       <SuccessToast
         isVisible={showSuccessToast}

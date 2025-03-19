@@ -31,7 +31,7 @@ const BurgerMenu = ({ isOpen, onOpen, onClose }) => {
         title="Menu"
       >
         {/* Navigation */}
-        <div className="flex flex-col">
+        <div className="flex flex-col p-4">
           <NavLinks onClick={onClose} isModal={true} />
         </div>
       </Modal>

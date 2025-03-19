@@ -72,7 +72,7 @@ function Modal({ isOpen, onClose, title, children, level = 1 }) {
           {/* Modal */}
           <motion.div 
             key="modal"
-            className="fixed top-[10px] inset-x-0 mx-[10px] header-bg rounded-[10px] p-[10px]"
+            className="fixed top-[10px] inset-x-0 mx-[10px] md:top-[72px] md:max-w-2xl md:mx-auto lg:top-[88px] lg:max-w-4xl header-bg rounded-[10px] p-[10px] md:p-[16px] lg:p-[20px]"
             style={{ zIndex: modalZIndex }}
             variants={modalVariants}
             initial="hidden"
@@ -80,21 +80,21 @@ function Modal({ isOpen, onClose, title, children, level = 1 }) {
             exit="exit"
           >
             {/* Header avec titre et bouton fermer */}
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold text-white font-montserrat">{title}</h2>
+            <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white font-montserrat">{title}</h2>
               <button 
                 onClick={onClose}
                 className="text-white focus:outline-none transition-colors duration-200"
                 aria-label="Fermer la modale"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Ligne de séparation */}
-            <div className="w-full h-[1px] bg-white/20 mb-4" />
+            <div className="w-full h-[1px] bg-white/20 mb-4 md:mb-5 lg:mb-6" />
 
             {/* Corps de la modale */}
             <div className="text-white">

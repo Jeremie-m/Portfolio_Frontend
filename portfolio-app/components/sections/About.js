@@ -27,16 +27,16 @@ const About = ({ onOpenModal, activeModal }) => {
   }
 
   return (
-    <section id="about" className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
+    <section id="whoami" className="w-full flex flex-col gap-[10px] px-[10px] md:px-[20px] lg:px-[40px] py-[16px]">
       {isAdmin && (
-          <div className="w-full flex justify-center mb-2">
+          <div className="w-full flex justify-center mb-2 md:mb-[40px]">
             <EditBtn onOpenModal={onOpenModal} section="about" />
           </div>
       )}
-      <div className="container mx-auto px-2 py-4">
-        <div className="relative max-w-3xl mx-auto">
-          <h2 className="text-2xl font-medium font-montserrat text-white mb-8 text-center">Qui suis-je ?</h2>
-          <div className="text-lg font-montserrat leading-relaxed whitespace-pre-wrap">
+      <div className="w-full px-2 py-4">
+        <div className="relative w-full md:max-w-4xl lg:max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-[40px] lg:text-[64px] font-medium font-montserrat text-white mb-8 md:mb-[60px] lg:mb-[100px] text-center">Qui suis-je ?</h2>
+          <div className="text-lg md:text-[24px] lg:text-[40px] font-montserrat leading-relaxed whitespace-pre-wrap">
             {content}
           </div>
         </div>
