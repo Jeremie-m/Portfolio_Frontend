@@ -55,19 +55,22 @@ const AboutMeEditModal = ({ isOpen, onClose }) => {
       onClose={onClose}
       title="Gestion du texte"
     >
-      <div className="p-6 space-y-6">    
-        <textarea
-          value={editedContent}
-          onChange={(e) => setEditedContent(e.target.value)}
-          className="w-full h-48 p-4 border text-white rounded-lg focus:ring-2 focus:bg-white focus:text-black focus:outline-none"
-          placeholder="Décrivez-vous..."
-        />
+      <div className="flex flex-col h-[70vh]">
+        <div className="flex-1 p-4">    
+          <textarea
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+            className="w-full h-full p-4 bg-transparent border border-white rounded-lg text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200 resize-none overflow-y-auto skills-scrollbar"
+            placeholder="Décrivez-vous..."
+          />
+        </div>
 
-        <div className="flex justify-end space-x-4">
+        <div className="sticky bottom-0 flex justify-end gap-3 p-6 border-t border-white/10 bg-transparent">
           <Button 
             onClick={onClose}
             variant="secondary"
             disabled={isSaving}
+            className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
           >
             Annuler
           </Button>
@@ -75,6 +78,7 @@ const AboutMeEditModal = ({ isOpen, onClose }) => {
             onClick={handleSave}
             disabled={isSaving || editedContent === content}
             variant="primary"
+            className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
           >
             {isSaving ? <Loader size="20" /> : 'Enregistrer'}
           </Button>

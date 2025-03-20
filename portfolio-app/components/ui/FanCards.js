@@ -196,7 +196,7 @@ export default function FanCards() {
         </AnimatePresence>
         
         {/* Main */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-0 z-[199]">
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-0 z-[99]">
           <Image 
             ref={handRef}
             src="/images/hand.svg" 

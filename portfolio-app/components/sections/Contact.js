@@ -39,7 +39,7 @@ const Contact = () => {
         return { width: 40, height: 40 };
       } 
       // Tablette
-      else if (windowWidth >= 768 && windowWidth < 1024) {
+      else if (windowWidth >= 768) {
         switch(type) {
           case 'email': return { width: 109, height: 109 };
           case 'twitter': return { width: 127, height: 127 };
@@ -48,16 +48,16 @@ const Contact = () => {
           default: return { width: 109, height: 109 };
         }
       } 
-      // Desktop
-      else {
-        switch(type) {
-          case 'email': return { width: 208, height: 208 };
-          case 'twitter': return { width: 239, height: 239 };
-          case 'discord': return { width: 209, height: 209 };
-          case 'github': return { width: 250, height: 250 };
-          default: return { width: 208, height: 208 };
-        }
-      }
+      // // Desktop
+      // else {
+      //   switch(type) {
+      //     case 'email': return { width: 208, height: 208 };
+      //     case 'twitter': return { width: 239, height: 239 };
+      //     case 'discord': return { width: 209, height: 209 };
+      //     case 'github': return { width: 250, height: 250 };
+      //     default: return { width: 208, height: 208 };
+      //   }
+      // }
     };
     
     // Parcourir toutes les références d'icônes
@@ -121,16 +121,16 @@ const Contact = () => {
     {
       id: 2,
       type: 'discord',
-      value: 'wpzputre',
+      value: 'jeremie_m_dev',
       icon: '/images/contact/discord.svg',
-      link: 'https://discord.com/users/wpzputre',
+      link: 'https://discord.com/users/jeremie_m_dev',
     },
     {
       id: 3,
       type: 'twitter',
-      value: '@__Putre__',
+      value: '@jeremie_m_dev',
       icon: '/images/contact/x.svg',
-      link: 'https://twitter.com/__Putre__',
+      link: 'https://twitter.com/jeremie_m_dev',
     },
     {
       id: 4,
@@ -142,7 +142,7 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] px-5 md:px-10 lg:px-20">
+    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20">
       <h2 className="font-medium text-[24px] md:text-[40px] lg:text-[64px] font-montserrat text-center text-white mb-8 md:mb-12 lg:mb-16">
         Contact
       </h2>

@@ -33,9 +33,9 @@ export default function Home() {
   return (
     <>
       <AdminTheme key={isAdmin} />
-      <div className="flex flex-col items-center w-full min-h-screen gap-[30px]">
+      <div className="flex flex-col items-center w-full min-h-screen gap-[30px] md:gap-[60px] lg:gap-[100px]">
         <Header onOpenModal={handleOpenModal} activeModal={activeModal} />
-        <main className="flex flex-col items-center w-full gap-[30px]" id="main-content">
+        <main className="flex flex-col items-center w-full gap-[30px] md:gap-[60px] lg:gap-[100px]" id="main-content">
           <HeroBanner onOpenModal={handleOpenModal} activeModal={activeModal} />
           <Separation />
           <About onOpenModal={handleOpenModal} activeModal={activeModal} />

@@ -168,7 +168,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
               className="w-full h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
               disabled={isLoading || isSaving}
             >
-              <span className="text-[14px] font-montserrat text-[#C8B20C]">
+              <span className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-[#C8B20C]">
                 Ajouter une compétence
               </span>
             </button>
@@ -184,7 +184,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
                 {localSkills.map((skill, index) => (
                   <div key={skill.id} className="flex items-center gap-2 min-w-0">
                     <div 
-                      className="relative w-8 h-8 min-w-[32px] min-h-[32px] cursor-pointer"
+                      className="relative w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 min-w-[32px] min-h-[32px] md:min-w-[40px] md:min-h-[40px] lg:min-w-[48px] lg:min-h-[48px] cursor-pointer"
                       onClick={() => handleImageClick(skill.id)}
                     >
                       <Image 
@@ -200,7 +200,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
                       value={skill.name}
                       onChange={(e) => handleSkillChange(skill.id, 'name', e.target.value)}
                       onKeyDown={(e) => handleSkillChange(skill.id, 'name', e.target.value, e)}
-                      className="flex-1 min-w-0 bg-transparent border border-white rounded px-2 py-1.5 text-white text-[14px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
+                      className="flex-1 min-w-0 bg-transparent border border-white rounded px-2 py-1.5 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
                       disabled={isSaving}
                     />
                     <button 
@@ -213,7 +213,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
                         alt="Supprimer" 
                         width={16} 
                         height={16}
-                        className="w-4 h-4"
+                        className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8"
                       />
                     </button>
                   </div>
@@ -227,12 +227,14 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
               onClick={handleCancel}
               variant="secondary"
               disabled={isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               Annuler
             </Button>
             <Button
               onClick={handleSave}
               disabled={isLoading || isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               {isSaving ? <Loader size="20" /> : 'Enregistrer'}
             </Button>

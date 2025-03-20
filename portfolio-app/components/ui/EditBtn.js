@@ -17,7 +17,7 @@ const EditBtn = ({ onOpenModal, section }) => {
         alt="Edit" 
         width={16} 
         height={16}
-        className="w-[16px] h-[16px] md:w-[36px] md:h-[36px] lg:w-[64px] lg:h-[64px]"
+        className="w-4 h-4 md:w-8 md:h-8 lg:w-12 lg:h-12"
       />
       Edit
     </button>

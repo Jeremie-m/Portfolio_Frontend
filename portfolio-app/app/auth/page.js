@@ -77,7 +77,7 @@ export default function AuthPage() {
         transition={{ duration: 0.5 }}
         className="w-full m-2 max-w-md p-8 rounded-lg header-bg [filter:drop-shadow(0_4px_8px_#0B61EE)] relative z-10"
       >
-        <h1 className="text-2xl font-bold text-white mb-6 text-center font-montserrat">
+        <h1 className="text-2xl md:text-[32px] lg:text-[48px] font-bold text-white mb-6 text-center font-montserrat">
           Admin 
         </h1>
 
@@ -95,7 +95,7 @@ export default function AuthPage() {
           <div>
             <label 
               htmlFor="email" 
-              className="block text-sm font-medium text-white mb-2 font-montserrat"
+              className="block text-sm md:text-[16px] lg:text-[24px] font-medium text-white mb-2 font-montserrat"
             >
               Email
             </label>
@@ -107,7 +107,7 @@ export default function AuthPage() {
               onChange={handleChange}
               required
               disabled={isLoading}
-              className="w-full px-4 py-2 rounded-lg bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
+              className="w-full px-4 py-2 rounded-lg text-sm md:text-[16px] lg:text-[24px] bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
               placeholder="votre@email.com"
             />
           </div>
@@ -115,7 +115,7 @@ export default function AuthPage() {
           <div>
             <label 
               htmlFor="password" 
-              className="block text-sm font-medium text-white mb-2 font-montserrat"
+              className="block text-sm md:text-[16px] lg:text-[24px] font-medium text-white mb-2 font-montserrat"
             >
               Mot de passe
             </label>
@@ -127,7 +127,7 @@ export default function AuthPage() {
               onChange={handleChange}
               required
               disabled={isLoading}
-              className="w-full px-4 py-2 rounded-lg bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
+              className="w-full px-4 py-2 rounded-lg text-sm md:text-[16px] lg:text-[24px] text-sm md:text-[16px] lg:text-[24px] bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>
@@ -137,7 +137,7 @@ export default function AuthPage() {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 font-montserrat disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 text-sm md:text-[16px] lg:text-[24px] bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 font-montserrat disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Connexion en cours...' : 'Se connecter'}
           </motion.button>

@@ -12,7 +12,9 @@ const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
   const { projects } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
-  const [isMobile, setIsMobile] = useState(false);
+  const [projectsPerLoad, setProjectsPerLoad] = useState(2);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   const [isMounted, setIsMounted] = useState(false);
   
@@ -20,25 +22,54 @@ const Projects = ({ onOpenModal, activeModal }) => {
   const githubIconRefs = useRef({});
   const demoIconRefs = useRef({});
 
-  // Vérifier si l'écran est en mode mobile et définir la largeur de la fenêtre
+  // Vérifier la taille de l'écran et définir les valeurs appropriées
   useEffect(() => {
     setIsMounted(true);
     
-    const checkIfMobile = () => {
+    const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width < 768);
       setWindowWidth(width);
+      
+      // Déterminer le type d'appareil
+      if (width >= 1024) { // Desktop
+        setIsDesktop(true);
+        setIsTablet(false);
+        setProjectsPerLoad(3);
+        setVisibleProjects(prevVisible => {
+          // Si on vient de passer en desktop, régler à 6 projets
+          if (!isDesktop) return 6;
+          return prevVisible;
+        });
+      } else if (width >= 768) { // Tablette
+        setIsDesktop(false);
+        setIsTablet(true);
+        setProjectsPerLoad(2);
+        setVisibleProjects(prevVisible => {
+          // Si on vient de passer en tablette, régler à 4 projets
+          if (!isTablet) return 4;
+          return prevVisible;
+        });
+      } else { // Mobile
+        setIsDesktop(false);
+        setIsTablet(false);
+        setProjectsPerLoad(2);
+        setVisibleProjects(prevVisible => {
+          // Si on vient de passer en mobile, régler à 2 projets
+          if (isTablet || isDesktop) return 2;
+          return prevVisible;
+        });
+      }
     };
     
     // Vérifier au chargement
-    checkIfMobile();
+    handleResize();
     
     // Vérifier à chaque redimensionnement
-    window.addEventListener('resize', checkIfMobile);
+    window.addEventListener('resize', handleResize);
     
     // Nettoyer l'écouteur d'événement
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isTablet, isDesktop]);
   
   // Appliquer les tailles d'icônes en fonction de la taille de l'écran
   useEffect(() => {
@@ -111,13 +142,11 @@ const Projects = ({ onOpenModal, activeModal }) => {
 
   // Fonction pour charger plus de projets
   const loadMoreProjects = () => {
-    setVisibleProjects(prev => Math.min(prev + 2, projects.length));
+    setVisibleProjects(prev => Math.min(prev + projectsPerLoad, projects.length));
   };
 
   // Déterminer les projets à afficher
-  const projectsToDisplay = isMobile 
-    ? projects.slice(0, visibleProjects) 
-    : projects;
+  const projectsToDisplay = projects.slice(0, visibleProjects);
 
   // Obtenir les dimensions initiales des icônes
   const getIconDimensions = (type) => {
@@ -180,7 +209,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
   return (
     <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
       {isAdmin && (
-        <div className="w-full flex justify-center mb-2">
+        <div className="w-full flex justify-center mb-2 md:mb-8 lg:mb-14">
           <EditBtn onOpenModal={onOpenModal} section="projects" />
         </div>
       )}
@@ -219,7 +248,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                 </div>
                 <div className="p-3 flex flex-col justify-between flex-grow">
                   <div>
-                    <h3 className="text-[24px] md:text-[32px] lg:text-[48px] font-bold text-white mb-4 md:mb-6 lg:mb-8">{project.title}</h3>
+                    <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-bold text-white mb-4 md:mb-6 lg:mb-8">{project.title}</h3>
                     <p className="text-sm md:text-[16px] lg:text-[24px] font-montserrat text-white mb-6 md:mb-8 lg:mb-10 leading-relaxed">{project.description}</p>
                   </div>
                   
@@ -265,19 +294,24 @@ const Projects = ({ onOpenModal, activeModal }) => {
           </AnimatePresence>
         </motion.div>
         
-        {/* Afficher le bouton "Voir plus" uniquement en mode mobile et s'il reste des projets à afficher */}
-        {isMobile && visibleProjects < projects.length ? (
+        {/* Afficher le bouton "Voir plus" s'il reste des projets à afficher */}
+        {visibleProjects < projects.length && (
           <motion.button 
             onClick={loadMoreProjects}
-            className={`h-12 w-[143px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}
+            className={`h-12 md:h-18 lg:h-20 w-[143px] md:w-[280px] lg:w-[320px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div className="self-stretch grow px-2 py-2.5">
-              <span className="font-medium text-xs text-center text-white font-inter">Voir plus de projets</span>
+            <div className="self-stretch grow px-2 py-2.5 flex flex-col justify-center items-center">
+              <span className="font-medium text-xs md:text-[20px] lg:text-[24px] text-center text-white font-inter">
+                Voir plus de projets
+                {isDesktop && <span className="hidden lg:inline"> (+3)</span>}
+                {isTablet && <span className="hidden md:inline lg:hidden"> (+2)</span>}
+                {!isTablet && !isDesktop && <span className="inline md:hidden"> (+2)</span>}
+              </span>
             </div>
           </motion.button>
-        ) : null}
+        )}
       </section>
 
       <ProjectsEditModal

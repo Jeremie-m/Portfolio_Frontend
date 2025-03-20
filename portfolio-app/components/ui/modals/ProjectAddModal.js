@@ -341,12 +341,12 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
             
             {/* Image de couverture */}
             <div className="mb-6">
-              <label className="block text-white text-sm font-montserrat mb-2">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Image de couverture
               </label>
               <div className="flex items-center gap-4">
                 {tempImageUrl && tempImageUrl !== '/images/projects/default.jpg' ? (
-                  <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-lg overflow-hidden">
                     <Image 
                       src={tempImageUrl}
                       alt="Aperçu"
@@ -373,16 +373,16 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                   <button
                     onClick={handleImageClick}
                     type="button"
-                    className="w-20 h-20 bg-white rounded-lg flex flex-col items-center justify-center text-[#C8B20C] font-montserrat hover:bg-white/90 transition-colors duration-200"
+                    className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 bg-white rounded-lg flex flex-col items-center justify-center text-[#C8B20C] font-montserrat hover:bg-white/90 transition-colors duration-200"
                   >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10">
                       <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <span className="mt-1 text-xs">Ajouter</span>
+                    <span className="mt-1 text-xs md:text-sm lg:text-base">Ajouter</span>
                   </button>
                 )}
                 <div className="flex-1">
-                  <p className="text-white/100 text-sm">
+                  <p className="text-white/100 text-sm md:text-base lg:text-lg">
                     Format recommandé : JPEG, PNG, WebP, max 4MB
                   </p>
                 </div>
@@ -391,37 +391,37 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
             </div>
             
             {/* Champ titre */}
-            <div className="mb-4">
-              <label className="block text-white text-sm font-montserrat mb-2">
+            <div className="mb-4 md:mb-5 lg:mb-6">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Titre
               </label>
               <input
                 type="text"
                 value={projectData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className={`w-full bg-primary-dark border ${errors.title ? 'border-white' : 'border-white/30'} rounded px-3 py-2 text-white font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                className={`w-full bg-primary-dark border ${errors.title ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                 placeholder="Titre du projet"
               />
-              {errors.title && <p className={errorStyle}>{errors.title}</p>}
+              {errors.title && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.title}</p>}
             </div>
             
             {/* Champ description */}
-            <div className="mb-4">
-              <label className="block text-white text-sm font-montserrat mb-2">
+            <div className="mb-4 md:mb-5 lg:mb-6">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Description
               </label>
               <textarea
                 value={projectData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                className={`w-full bg-primary-dark border ${errors.description ? 'border-white' : 'border-white/30'} rounded px-3 py-2 text-white font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200 min-h-[100px]`}
+                className={`w-full bg-primary-dark border ${errors.description ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200 min-h-[100px] md:min-h-[120px] lg:min-h-[150px]`}
                 placeholder="Description du projet"
               />
-              {errors.description && <p className={errorStyle}>{errors.description}</p>}
+              {errors.description && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.description}</p>}
             </div>
             
             {/* Champ technologies avec autocomplétion */}
-            <div className="mb-4">
-              <label className="block text-white text-sm font-montserrat mb-2">
+            <div className="mb-4 md:mb-5 lg:mb-6">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Skills
               </label>
               <div className="relative">
@@ -430,18 +430,18 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                   type="text"
                   onChange={(e) => handleSkillInput(e.target.value)}
                   onFocus={handleSkillFocus}
-                  className={`w-full bg-primary-dark border ${errors.technologies ? 'border-white' : 'border-white/30'} rounded px-3 py-2 text-white font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                  className={`w-full bg-primary-dark border ${errors.technologies ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                   placeholder="Ajouter un skill..."
                 />
                 {showSkillsDropdown && (
-                  <div className="absolute z-999 w-full mt-1 header-bg border border-white/30 rounded max-h-40 overflow-y-auto skills-scrollbar">
+                  <div className="absolute z-999 w-full mt-1 header-bg border border-white/30 rounded max-h-40 md:max-h-48 lg:max-h-56 overflow-y-auto skills-scrollbar">
                     {filteredSkills.map(skill => (
                       <div 
                         key={skill.id}
-                        className="px-3 py-2 hover:bg-primary-900 cursor-pointer transition-colors duration-200 flex items-center gap-2"
+                        className="px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-3 hover:bg-primary-900 cursor-pointer transition-colors duration-200 flex items-center gap-2"
                         onClick={() => handleAddSkill(skill.name)}
                       >
-                        <div className="relative w-5 h-5">
+                        <div className="relative w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7">
                           <Image 
                             src={skill.image_url}
                             alt={skill.name}
@@ -449,7 +449,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                             className="object-contain"
                           />
                         </div>
-                        <span>{skill.name}</span>
+                        <span className="text-sm md:text-base lg:text-lg">{skill.name}</span>
                       </div>
                     ))}
                   </div>
@@ -461,55 +461,55 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                 {projectData.technologies.map((tech, index) => (
                   <div 
                     key={index}
-                    className="bg-primary border border-primary px-2 py-1 rounded-full flex items-center gap-1 text-xs text-white"
+                    className="bg-primary border border-primary px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-full flex items-center gap-1 text-xs md:text-sm lg:text-base text-white"
                   >
                     <span>{tech}</span>
                     <button 
                       onClick={() => handleRemoveSkill(tech)} 
                       className="hover:text-red-300 transition-colors duration-200"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5">
                         <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
                   </div>
                 ))}
               </div>
-              {errors.technologies && <p className={errorStyle}>{errors.technologies}</p>}
+              {errors.technologies && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.technologies}</p>}
             </div>
             
             {/* Champ lien GitHub */}
-            <div className="mb-4">
-              <label className="block text-white text-sm font-montserrat mb-2">
+            <div className="mb-4 md:mb-5 lg:mb-6">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Lien GitHub
               </label>
               <input
                 type="url"
                 value={projectData.github_link}
                 onChange={(e) => handleInputChange('github_link', e.target.value)}
-                className={`w-full bg-primary-dark border ${errors.github_link ? 'border-white' : 'border-white/30'} rounded px-3 py-2 text-white font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                className={`w-full bg-primary-dark border ${errors.github_link ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                 placeholder="https://github.com/username/repo"
               />
-              {errors.github_link && <p className={errorStyle}>{errors.github_link}</p>}
+              {errors.github_link && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.github_link}</p>}
             </div>
             
             {/* Champ lien démo */}
-            <div className="mb-4">
-              <label className="block text-white text-sm font-montserrat mb-2">
+            <div className="mb-4 md:mb-5 lg:mb-6">
+              <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Lien de démonstration
               </label>
               <input
                 type="url"
                 value={projectData.demo_link}
                 onChange={(e) => handleInputChange('demo_link', e.target.value)}
-                className={`w-full bg-primary-dark border ${errors.demo_link ? 'border-white' : 'border-white/30'} rounded px-3 py-2 text-white font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                className={`w-full bg-primary-dark border ${errors.demo_link ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                 placeholder="https://exemple.com"
               />
-              {errors.demo_link && <p className={errorStyle}>{errors.demo_link}</p>}
+              {errors.demo_link && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.demo_link}</p>}
             </div>
             
             {/* Message indiquant les champs obligatoires */}
-            <div className="text-white/70 text-xs mb-4 font-bold">
+            <div className="text-white/70 text-xs md:text-sm lg:text-base mb-4 font-bold">
               Les champs Titre, Description et Skills sont obligatoires
             </div>
           </div>
@@ -520,6 +520,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
               onClick={onClose}
               variant="secondary"
               disabled={isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               Annuler
             </Button>
@@ -527,6 +528,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
               onClick={handleSave}
               variant="primary"
               disabled={isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               {isSaving ? (
                 <div className="flex items-center gap-2">

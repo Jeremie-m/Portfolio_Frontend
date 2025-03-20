@@ -113,10 +113,10 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
           <div className="sticky top-0 z-10 p-6 pb-4 border-b border-white/10">
             <button
               onClick={handleAdd}
-              className="w-full h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
+              className="w-full h-[40px] md:h-[50px] lg:h-[60px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
               disabled={isLoading || isSaving}
             >
-              <span className="text-[14px] font-montserrat text-[#C8B20C]">
+              <span className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-[#C8B20C]">
                 Ajouter un projet
               </span>
             </button>
@@ -128,7 +128,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto p-6 pt-4 skills-scrollbar">
-              <div className="space-y-4">
+              <div className="space-y-4 md:space-y-6 lg:space-y-8">
                 {localProjects.map((project) => (
                   <div 
                     key={project.id} 
@@ -136,7 +136,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
                     onClick={() => handleEdit(project)}
                   >
                     {/* Image de couverture */}
-                    <div className="w-full h-32 relative">
+                    <div className="w-full h-32 md:h-40 lg:h-48 relative">
                       <Image 
                         src={project.image_url} 
                         alt={project.title}
@@ -146,15 +146,15 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
                       />
                     </div>
                     
-                    <div className="p-4 flex flex-wrap sm:flex-nowrap items-start justify-between gap-4">
+                    <div className="p-4 md:p-5 lg:p-6 flex flex-wrap sm:flex-nowrap items-start justify-between gap-4">
                       <div className="flex-1 min-w-0 overflow-hidden">
-                        <h3 className="text-lg font-semibold font-montserrat text-white truncate">{project.title}</h3>
-                        <p className="text-sm text-white-300 break-words font-montserrat line-clamp-2">{project.description}</p>
+                        <h3 className="text-lg md:text-xl lg:text-2xl font-semibold font-montserrat text-white truncate">{project.title}</h3>
+                        <p className="text-sm md:text-base lg:text-lg text-white-300 break-words font-montserrat line-clamp-2">{project.description}</p>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {project.technologies.map((tech, index) => (
                             <span 
                               key={index}
-                              className="text-xs bg-primary px-2 py-1 border border-primary rounded-xl text-white font-montserrat"
+                              className="text-xs md:text-sm lg:text-base bg-primary px-2 py-1 border border-primary rounded-xl text-white font-montserrat"
                             >
                               {tech}
                             </span>
@@ -171,7 +171,8 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
                             src="/images/delete.svg" 
                             alt="Supprimer" 
                             width={20} 
-                            height={20} 
+                            height={20}
+                            className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" 
                           />
                         </button>
                       </div>
@@ -187,6 +188,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
               onClick={onClose}
               variant="secondary"
               disabled={isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               Fermer
             </Button>
@@ -194,6 +196,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
               onClick={handleSave}
               variant="primary"
               disabled={isSaving}
+              className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
             >
               {isSaving ? (
                 <div className="flex items-center gap-2">

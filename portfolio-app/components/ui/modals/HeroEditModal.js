@@ -97,62 +97,65 @@ const HeroEditModal = ({ isOpen, onClose }) => {
         onClose={onClose}
         title="Gestion Hero Banner"
       >
-        <div className="space-y-4">
-          <button
-            onClick={handleAddText}
-            className="w-full h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
-            disabled={isLoading || isSaving}
-          >
-            <span className="text-[14px] font-montserrat text-[#C8B20C]">
-              Ajouter un texte
-            </span>
-          </button>
+        <div className="flex flex-col h-[70vh]">
+          <div className="flex-1 overflow-y-auto p-4 skills-scrollbar">
+            <button
+              onClick={handleAddText}
+              className="w-full h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200 mb-6"
+              disabled={isLoading || isSaving}
+            >
+              <span className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-[#C8B20C]">
+                Ajouter un texte
+              </span>
+            </button>
 
-          {isLoading ? (
-            <div className="text-center py-4">Chargement...</div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {texts.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-3">
-                  <input
-                    ref={index === 0 ? newInputRef : null}
-                    type="text"
-                    value={item.text}
-                    onChange={(e) => handleTextChange(item.id, e.target.value)}
-                    className="flex-1 bg-transparent border border-white rounded px-3 py-2 text-white text-[14px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
-                    disabled={isSaving}
-                  />
-                  <button 
-                    onClick={() => handleDeleteClick(item.id)}
-                    className="p-2 hover:opacity-80 transition-opacity"
-                    disabled={isSaving}
-                  >
-                    <Image 
-                      src="/images/delete.svg" 
-                      alt="Supprimer" 
-                      width={16} 
-                      height={16}
+            {isLoading ? (
+              <div className="text-center py-4">Chargement...</div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {texts.map((item, index) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    <input
+                      ref={index === 0 ? newInputRef : null}
+                      type="text"
+                      value={item.text}
+                      onChange={(e) => handleTextChange(item.id, e.target.value)}
+                      className="flex-1 bg-transparent border border-white rounded px-3 py-2 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
+                      disabled={isSaving}
                     />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+                    <button 
+                      onClick={() => handleDeleteClick(item.id)}
+                      className="p-2 hover:opacity-80 transition-opacity"
+                      disabled={isSaving}
+                    >
+                      <Image 
+                        src="/images/delete.svg" 
+                        alt="Supprimer" 
+                        width={16} 
+                        height={16}
+                        className="w-4 h-4 md:w-8 md:h-8 lg:w-12 lg:h-12"
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="sticky bottom-0 flex justify-end gap-3 p-6 border-t border-white/10 bg-transparent">
             <button
               onClick={onClose}
-              className="px-4 h-[40px] text-[14px] font-montserrat text-white bg-transparent border border-white rounded hover:bg-white/10 transition-colors duration-200"
+              className="px-4 h-[40px] text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-white bg-transparent border border-white rounded hover:bg-white/10 transition-colors duration-200"
               disabled={isSaving}
             >
               Annuler
             </button>
             <button
               onClick={handleSave}
-              className="px-4 h-[40px] bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
+              className="px-4 h-[40px] text-[14px] md:text-[16px] lg:text-[24px] font-montserrat bg-white rounded flex items-center justify-center border border-white hover:bg-white/90 transition-colors duration-200"
               disabled={isLoading || isSaving}
             >
-              <span className="text-[14px] font-montserrat text-[#C8B20C]">
+              <span className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-[#C8B20C]">
                 {isSaving ? 'Enregistrement...' : 'Enregistrer'}
               </span>
             </button>
