@@ -91,7 +91,8 @@ export const useSkills = () => {
     if (globalSkills.length === 0) {
       fetchSkills();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalSkills.length]);
 
   return {
     skills,

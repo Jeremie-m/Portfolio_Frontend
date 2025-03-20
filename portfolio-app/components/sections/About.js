@@ -12,7 +12,7 @@ const About = ({ onOpenModal, activeModal }) => {
 
   if (isLoading) {
     return (
-      <section id="about" className="min-h-screen flex items-center justify-center bg-gray-900">
+      <section id="about" className="w-full min-h-[300px] md:min-h-[400px] lg:min-h-[500px] flex items-center justify-center">
         <Loader />
       </section>
     );
@@ -20,14 +20,14 @@ const About = ({ onOpenModal, activeModal }) => {
 
   if (error) {
     return (
-      <section id="about" className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-red-500">Une erreur est survenue lors du chargement des données.</div>
+      <section id="about" className="w-full min-h-[300px] md:min-h-[400px] lg:min-h-[500px] flex items-center justify-center">
+        <div className="text-red-500 text-center">Une erreur est survenue lors du chargement des données.</div>
       </section>
     );
   }
 
   return (
-    <section id="whoami" className="w-full flex flex-col gap-[10px] px-[10px] md:px-[20px] lg:px-[40px] py-[16px]">
+    <section id="whoami" className="w-full flex flex-col gap-[10px] px-0 md:px-[20px] lg:px-[40px] py-[16px]">
       {isAdmin && (
           <div className="w-full flex justify-center mb-2 md:mb-[40px]">
             <EditBtn onOpenModal={onOpenModal} section="about" />

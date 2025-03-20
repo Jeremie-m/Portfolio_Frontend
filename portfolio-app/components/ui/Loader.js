@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 const ClientLoader = dynamic(() => import('./ClientLoader'), {
   ssr: false, // Désactiver le SSR pour ce composant
   loading: () => (
-    <div className="flex justify-center items-center w-full h-[40px]">
+    <div className="flex justify-center items-center w-[40px] h-[40px]">
       <div className="w-10 h-10 border-t-2 border-white rounded-full animate-spin"></div>
     </div>
   ),

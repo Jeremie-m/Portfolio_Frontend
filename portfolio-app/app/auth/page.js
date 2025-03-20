@@ -127,7 +127,7 @@ export default function AuthPage() {
               onChange={handleChange}
               required
               disabled={isLoading}
-              className="w-full px-4 py-2 rounded-lg text-sm md:text-[16px] lg:text-[24px] text-sm md:text-[16px] lg:text-[24px] bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
+              className="w-full px-4 py-2 rounded-lg text-[14px] md:text-[16px] lg:text-[24px] bg-white text-[#121212] focus:outline-none transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>

@@ -7,9 +7,10 @@ import Image from "next/image"
 import { useSkills } from "@/hooks/useSkills"
 
 export default function FanCards() {
-  const { skills, isLoading } = useSkills();
+  const { skills } = useSkills();
   const [activeIndex, setActiveIndex] = useState(0)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0)
+  const [isRendered, setIsRendered] = useState(false)
   const totalAngleRange = 70
   const startAngle = -30
   
@@ -73,6 +74,11 @@ export default function FanCards() {
       min-width: ${width}px;
       min-height: ${height}px;
     `;
+    
+    // Indiquer que le rendu est terminé après un court délai
+    setTimeout(() => {
+      setIsRendered(true);
+    }, 200);
     
   }, [windowWidth, handRef, isMounted])
 
@@ -154,9 +160,11 @@ export default function FanCards() {
   const handleCardClick = (index) => {
     setActiveIndex(index)
   }
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-[280px] md:h-[500px] lg:h-[900px]">Chargement...</div>
+  
+  // Si les skills ne sont pas encore chargés ou que le composant n'est pas monté,
+  // on ne rend rien pour éviter un affichage partiel
+  if (!skills || skills.length === 0 || !isMounted) {
+    return null;
   }
   
   // Détermination des dimensions à utiliser pour le rendu initial

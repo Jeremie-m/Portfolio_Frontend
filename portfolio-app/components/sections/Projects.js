@@ -7,10 +7,11 @@ import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
 import EditBtn from '@/components/ui/EditBtn';
 import ProjectsEditModal from '@/components/ui/modals/ProjectsEditModal';
+import Loader from '@/components/ui/Loader';
 
 const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
-  const { projects } = useProjects();
+  const { projects, isLoading } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [projectsPerLoad, setProjectsPerLoad] = useState(2);
   const [isTablet, setIsTablet] = useState(false);
@@ -146,7 +147,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
   };
 
   // Déterminer les projets à afficher
-  const projectsToDisplay = projects.slice(0, visibleProjects);
+  const projectsToDisplay = projects ? projects.slice(0, visibleProjects) : [];
 
   // Obtenir les dimensions initiales des icônes
   const getIconDimensions = (type) => {
@@ -205,6 +206,17 @@ const Projects = ({ onOpenModal, activeModal }) => {
       }
     }
   };
+  
+  // Afficher le loader si les données sont en cours de chargement ou le composant n'est pas monté
+  if (isLoading || !isMounted || !projects) {
+    return (
+      <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
+        <div className="flex justify-center items-center h-[300px] md:h-[400px] lg:h-[500px]">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
