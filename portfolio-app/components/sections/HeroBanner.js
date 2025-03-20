@@ -4,11 +4,14 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion'; 
 import { useAuth } from '@/contexts/AuthContext';
+import { useHeroBanner } from '@/hooks/useHeroBanner';
 import EditBtn from '@/components/ui/EditBtn';
 import HeroEditModal from '@/components/ui/modals/HeroEditModal';
+import DynamicTypewriter from '@/components/ui/DynamicTypewriter';
 
 const HeroBanner = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
+  const { texts, isLoading } = useHeroBanner();
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -19,22 +22,30 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
           </div>
         )}
         <div className="w-full flex items-center gap-4 justify-between">
-          <h1 className="flex flex-col flex-start md:text-left">
+          <h1 className="flex flex-col flex-start md:text-left w-[50%]">
             <motion.span 
               className="text-white font-noto-sans text-[28px] md:text-[64px] lg:text-[96px]"
               initial={{ x: "-100vw", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ 
                 type: "spring",
-                duration: 3,
+                duration: 1,
                 bounce: 0.1
               }}
             >
               Je suis
             </motion.span>
-            <span className={`font-jetbrains-mono text-[22px] md:text-[48px] lg:text-[84px] text-white`}>
-              {isAdmin ? 'En Mode Admin_' : 'Développeur Full-Stack_'}
-            </span>
+            {isAdmin ? (
+              <span className="font-jetbrains-mono text-[22px] md:text-[48px] lg:text-[84px] text-white">
+                En Mode Admin_
+              </span>
+            ) : (
+              <DynamicTypewriter 
+                texts={texts}
+                speed={100}
+                className="font-jetbrains-mono text-[20px] md:text-[48px] lg:text-[64px] text-white"
+              />
+            )}
           </h1>
           <motion.div 
             className={`relative w-[130px] h-[130px] min-w-[130px] min-h-[130px] md:w-[284px] md:h-[284px] md:min-w-[284px] md:min-h-[284px] lg:w-[400px] lg:h-[400px] lg:min-w-[400px] lg:min-h-[400px] rounded-full overflow-hidden ${isAdmin ? '[filter:drop-shadow(0_4px_10px_#EED40B)]' : '[filter:drop-shadow(0_4px_10px_#0B61EE)]'}`}

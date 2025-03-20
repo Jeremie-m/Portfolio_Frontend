@@ -11,12 +11,12 @@ export const heroBannerTexts = [
   },
   {
     id: 3,
-    text: "Hacker amateur sur root-me.org",
+    text: "Inscrit sur root-me.org 🏴‍☠️",
     isActive: true
   },
   {
     id: 4,
-    text: "Un super⭐ Papa ⭐",
+    text: "Papa Level 1",
     isActive: true
   },
   {
