@@ -8,9 +8,9 @@ import Skills from '@/components/sections/Skills';
 import Projects from '@/components/sections/Projects';
 import Contact from '@/components/sections/Contact';
 import Footer from '@/components/layout/Footer';
-import Separation from '@/components/ui/Separation';
+import Separation from '@/components/common/Separation';
 import AdminTheme from '@/components/layout/AdminTheme';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState(null);

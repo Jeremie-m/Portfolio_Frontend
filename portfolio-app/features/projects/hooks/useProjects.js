@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useProjectsContext } from '@/contexts/ProjectsContext';
+import { useProjectsContext } from '@/features/projects/contexts/ProjectsContext';
 
 export const useProjects = () => {
   const { globalProjects, setGlobalProjects } = useProjectsContext();

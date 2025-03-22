@@ -2,9 +2,10 @@
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import Modal from './Modal';
-import ConfirmModal from './ConfirmModal';
-import { useHeroBanner } from '@/hooks/useHeroBanner';
+import Modal from '@/components/modals/Modal';
+import ConfirmModal from '@/components/modals/ConfirmModal';
+import Loader from '@/components/common/Loader';
+import { useHeroBanner } from '@/features/herobanner/hooks/useHeroBanner';
 
 const HeroEditModal = ({ isOpen, onClose }) => {
   const { 

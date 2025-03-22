@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import FanCards from '@/components/ui/FanCards';
-import { useAuth } from '@/contexts/AuthContext';
-import EditBtn from '@/components/ui/EditBtn';
-import SkillsEditModal from '@/components/ui/modals/SkillsEditModal';
-import { useSkills } from '@/hooks/useSkills';
-import Loader from '@/components/ui/Loader';
+import FanCards from '@/components/common/FanCards';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
+import EditBtn from '@/components/common/EditBtn';
+import SkillsEditModal from '@/components/modals/form/SkillsEditModal';
+import { useSkills } from '@/features/skills/hooks/useSkills';
+import Loader from '@/components/common/Loader';
 
 const Skills = ({ onOpenModal, activeModal }) => {
     const { isLoading, error } = useSkills();

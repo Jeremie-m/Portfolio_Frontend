@@ -1,10 +1,10 @@
 'use client';
 
-import { useAboutMe } from '@/hooks/useAboutMe';
-import Loader from '@/components/ui/Loader';
-import AboutMeEditModal from '@/components/ui/modals/AboutMeEditModal';
-import EditBtn from '@/components/ui/EditBtn';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAboutMe } from '@/features/aboutme/hooks/useAboutMe';
+import Loader from '@/components/common/Loader';
+import AboutMeEditModal from '@/components/modals/form/AboutMeEditModal';
+import EditBtn from '@/components/common/EditBtn';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 const About = ({ onOpenModal, activeModal }) => {
     const { content, isLoading, error } = useAboutMe();

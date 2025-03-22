@@ -1,9 +1,9 @@
 import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
 import "./globals.css";
-import VideoBackground from "@/components/ui/VideoBackground";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { SkillsProvider } from "@/contexts/SkillsContext";
-import { ProjectsProvider } from "@/contexts/ProjectsContext";
+import VideoBackground from "@/components/layout/VideoBackground";
+import { AuthProvider } from "@/features/auth/contexts/AuthContext";
+import { SkillsProvider } from "@/features/skills/contexts/SkillsContext";
+import { ProjectsProvider } from "@/features/projects/contexts/ProjectsContext";
 
 const inter = Inter({
   subsets: ["latin"],

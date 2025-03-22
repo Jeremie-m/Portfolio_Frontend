@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import NavLinks from '@/components/ui/NavLinks';
-import Modal from './Modal';
+import NavLinks from '@/components/layout/NavLinks';
+import Modal from '@/components/modals/Modal';
 
 const BurgerMenu = ({ isOpen, onOpen, onClose }) => {
   const handleToggle = () => {

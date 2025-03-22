@@ -3,9 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import NavLinks from '@/components/ui/NavLinks';
-import BurgerMenu from '@/components/ui/modals/BurgerMenu';
-import { useAuth } from '@/contexts/AuthContext';
+import NavLinks from '@/components/layout/NavLinks';
+import BurgerMenu from '@/components/modals/BurgerMenu';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 const Header = ({ onOpenModal, activeModal }) => {
   const { isAdmin, setIsAdmin } = useAuth();

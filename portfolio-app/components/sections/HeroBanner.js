@@ -3,11 +3,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion'; 
-import { useAuth } from '@/contexts/AuthContext';
-import { useHeroBanner } from '@/hooks/useHeroBanner';
-import EditBtn from '@/components/ui/EditBtn';
-import HeroEditModal from '@/components/ui/modals/HeroEditModal';
-import DynamicTypewriter from '@/components/ui/DynamicTypewriter';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
+import { useHeroBanner } from '@/features/herobanner/hooks/useHeroBanner';
+import EditBtn from '@/components/common/EditBtn';
+import HeroEditModal from '@/components/modals/form/HeroEditModal';
+import DynamicTypewriter from '@/components/common/DynamicTypewriter';
 
 const HeroBanner = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();

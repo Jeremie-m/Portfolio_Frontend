@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { heroBannerTexts } from '@/mocks/herobanner';
+import { heroBannerTexts } from '@/features/herobanner/mocks/herobanner';
 
 export const useHeroBanner = () => {
   const [texts, setTexts] = useState([]);

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
-import { projects as mockProjects } from '@/mocks/projects';
+import { projects as mockProjects } from '@/features/projects/mocks/projects';
 
 const ProjectsContext = createContext();
 

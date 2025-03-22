@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Card from "./Card"
 import Image from "next/image"
-import { useSkills } from "@/hooks/useSkills"
+import { useSkills } from "@/features/skills/hooks/useSkills"
 
 export default function FanCards() {
   const { skills } = useSkills();

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { skills } from '../../../../mocks/skills';
+import { skills } from '../../../../features/skills/mocks/skills';
 
 // GET /api/skills/:id - Récupérer une skill spécifique
 export async function GET(request, { params }) {

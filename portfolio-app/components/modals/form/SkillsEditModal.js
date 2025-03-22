@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import Modal from './Modal';
-import Button from '@/components/ui/Button';
-import Loader from '@/components/ui/Loader';
-import ConfirmModal from './ConfirmModal';
-import { useSkills } from '@/hooks/useSkills';
+import Modal from '@/components/modals/Modal';
+import Button from '@/components/common/Button';
+import Loader from '@/components/common/Loader';
+import ConfirmModal from '@/components/modals/ConfirmModal';
+import { useSkills } from '@/features/skills/hooks/useSkills';
 
 const SkillsEditModal = ({ isOpen, onClose }) => {
   const { skills, isLoading, error, saveSkills, deleteSkill, addSkill } = useSkills();

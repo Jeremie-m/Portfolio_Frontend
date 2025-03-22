@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
-import { skills as mockSkills } from '@/mocks/skills';
+import { skills as mockSkills } from '@/features/skills/mocks/skills';
 
 const SkillsContext = createContext();
 

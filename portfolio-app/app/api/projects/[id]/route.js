@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { projects } from '../../../../mocks/projects';
+import { projects } from '../../../../features/projects/mocks/projects';
 
 // GET /api/projects/:id - Récupérer un projet spécifique
 export async function GET(request, { params }) {

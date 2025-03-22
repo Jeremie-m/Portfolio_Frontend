@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Modal from './Modal';
-import Button from '@/components/ui/Button';
-import Loader from '@/components/ui/Loader';
-import SuccessToast from '@/components/ui/SuccessToast';
-import { useProjects } from '@/hooks/useProjects';
-import { useSkills } from '@/hooks/useSkills';
+import Modal from '@/components/modals/Modal';
+import Button from '@/components/common/Button';
+import Loader from '@/components/common/Loader';
+import SuccessToast from '@/components/common/SuccessToast';
+import { useProjects } from '@/features/projects/hooks/useProjects';
+import { useSkills } from '@/features/skills/hooks/useSkills';
 
 const ProjectAddModal = ({ isOpen, onClose }) => {
   const { addProject } = useProjects();

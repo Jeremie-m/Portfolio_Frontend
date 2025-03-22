@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Modal from './Modal';
-import Button from '@/components/ui/Button';
-import Loader from '@/components/ui/Loader';
-import ConfirmModal from './ConfirmModal';
+import { useState, useRef, useEffect } from 'react';
+import Modal from '@/components/modals/Modal';
+import Button from '@/components/common/Button';
+import Loader from '@/components/common/Loader';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 import ProjectAddModal from './ProjectAddModal';
 import ProjectEditModal from './ProjectEditModal';
-import { useProjects } from '@/hooks/useProjects';
+import { useProjects } from '@/features/projects/hooks/useProjects';
 import Image from 'next/image';
-import SuccessToast from '@/components/ui/SuccessToast';
+import SuccessToast from '@/components/common/SuccessToast';
 
 const ProjectsEditModal = ({ isOpen, onClose }) => {
   const { projects, isLoading, deleteProject, saveProjects } = useProjects();

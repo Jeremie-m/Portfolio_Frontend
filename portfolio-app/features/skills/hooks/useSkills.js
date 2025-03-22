@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSkillsContext } from '@/contexts/SkillsContext';
+import { useSkillsContext } from '@/features/skills/contexts/SkillsContext';
 
 export const useSkills = () => {
   const { globalSkills, setGlobalSkills } = useSkillsContext();

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { aboutMeText } from '@/mocks/aboutme'; // On suppose que ce mock existe
+import { aboutMeText } from '@/features/aboutme/mocks/aboutme'; // On suppose que ce mock existe
 
 export const useAboutMe = () => {
   const [content, setContent] = useState("");

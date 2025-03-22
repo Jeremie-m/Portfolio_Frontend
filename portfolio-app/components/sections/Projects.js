@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useProjects } from '@/hooks/useProjects';
-import { useAuth } from '@/contexts/AuthContext';
-import EditBtn from '@/components/ui/EditBtn';
-import ProjectsEditModal from '@/components/ui/modals/ProjectsEditModal';
-import Loader from '@/components/ui/Loader';
+import { useProjects } from '@/features/projects/hooks/useProjects';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
+import EditBtn from '@/components/common/EditBtn';
+import ProjectsEditModal from '@/components/modals/form/ProjectsEditModal';
+import Loader from '@/components/common/Loader';
 
 const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();

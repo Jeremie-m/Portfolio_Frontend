@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSkills } from '@/hooks/useSkills';
-import { useProjects } from '@/hooks/useProjects';
-import { useAboutMe } from '@/hooks/useAboutMe';
+import { useSkills } from '@/features/skills/hooks/useSkills';
+import { useProjects } from '@/features/projects/hooks/useProjects';
+import { useAboutMe } from '@/features/aboutme/hooks/useAboutMe';
 
 const Separation = () => {
   const [isPageLoaded, setIsPageLoaded] = useState(false);

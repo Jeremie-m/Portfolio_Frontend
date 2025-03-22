@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { admin } from '@/mocks/admin';
+import { admin } from '@/features/auth/mocks/admin';
 
 // POST /api/auth/login - Authentifier un utilisateur
 export async function POST(request) {

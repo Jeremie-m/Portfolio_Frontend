@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Modal from './Modal';
-import Button from '@/components/ui/Button';
-import { useAboutMe } from '@/hooks/useAboutMe';
-import Loader from '@/components/ui/Loader';
+import Modal from '@/components/modals/Modal';
+import Button from '@/components/common/Button';
+import { useAboutMe } from '@/features/aboutme/hooks/useAboutMe';
+import Loader from '@/components/common/Loader';
 
 const AboutMeEditModal = ({ isOpen, onClose }) => {
   const { content, isLoading, error, saveContent } = useAboutMe();

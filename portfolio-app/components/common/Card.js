@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 const Card = ({ skill }) => {
   const { isAdmin } = useAuth();
