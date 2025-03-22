@@ -51,13 +51,14 @@ const NavLinks = ({ onClick, isModal }) => {
 
   return (
     <div className={isModal ? "flex flex-col" : "flex items-center"}>
-      <nav className={navClassName}>
+      <nav className={navClassName} aria-label="Menu principal">
         {menuItems.map((item) => (
           <Link
             key={item.id}
             href={item.href}
             className={linkClassName}
             onClick={(e) => handleClick(e, item.href)}
+            aria-current={typeof window !== 'undefined' && item.href === `#${window?.location?.hash?.substring(1) || ''}` ? 'page' : undefined}
           >
             {item.label}
           </Link>
@@ -70,16 +71,20 @@ const NavLinks = ({ onClick, isModal }) => {
           target="_blank"
           onClick={(e) => handleClick(e, '#cv')}
           className={`w-full bg-white rounded-lg py-2 text-center text-[28px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 transition-opacity duration-200`}
+          aria-label="Télécharger mon CV au format PDF"
+          rel="noopener noreferrer"
         >
-          Voir mon CV
+          Voir mon CV <span className="sr-only">(s'ouvre dans un nouvel onglet, format PDF)</span>
         </Link>
       ) : (
         <Link
           href="/cv.pdf"
           target="_blank"
           className={`hidden md:block bg-white rounded-[48px] px-4 py-1 ml-4 text-[16px] lg:text-[20px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 transition-opacity duration-200`}
+          aria-label="Télécharger mon CV au format PDF"
+          rel="noopener noreferrer"
         >
-          Voir mon CV
+          Voir mon CV <span className="sr-only">(s'ouvre dans un nouvel onglet, format PDF)</span>
         </Link>
       )}
     </div>

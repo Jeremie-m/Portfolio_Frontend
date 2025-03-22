@@ -260,42 +260,55 @@ const Projects = ({ onOpenModal, activeModal }) => {
                 </div>
                 <div className="p-3 flex flex-col justify-between flex-grow">
                   <div>
-                    <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-bold text-white mb-4 md:mb-6 lg:mb-8">{project.title}</h3>
-                    <p className="text-sm md:text-[16px] lg:text-[24px] font-montserrat text-white mb-6 md:mb-8 lg:mb-10 leading-relaxed">{project.description}</p>
+                    <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-bold text-white mb-4 md:mb-6 lg:mb-8" id={`project-title-${project.id}`}>{project.title}</h3>
+                    <h4 className="text-sm md:text-[16px] lg:text-[24px] font-montserrat text-white mb-6 md:mb-8 lg:mb-10 leading-relaxed" id={`project-description-${project.id}`} aria-describedby={`project-title-${project.id}`}>{project.description}</h4>
                   </div>
                   
                   <div className="mt-auto pt-4 md:pt-6 lg:pt-8">
-                    <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8">
+                    <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8" aria-label="Technologies utilisées">
                       {project.technologies.map((tech, index) => (
-                        <span key={index} className="text-xs md:text-[16px] lg:text-[24px] font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl">
+                        <span key={index} className="text-xs md:text-[16px] lg:text-[24px] font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl" role="listitem">
                           {tech}
                         </span>
                       ))}
                     </div>
                     
                     <div className="flex justify-between">
-                      <a href={project.github_link} target="_blank" rel="noopener noreferrer" className="flex flex-col justify-center items-center">
+                      <a 
+                        href={project.github_link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="flex flex-col justify-center items-center"
+                        aria-label={`Voir le code source de ${project.title} sur GitHub (s'ouvre dans un nouvel onglet)`}
+                      >
                         <Image 
                           ref={el => { githubIconRefs.current[project.id] = el }}
                           src="/images/github-logo.svg" 
-                          alt="GitHub" 
+                          alt="" 
                           width={getIconDimensions('github').width}
                           height={getIconDimensions('github').height}
                           className="w-auto h-auto"
                           unoptimized={true}
                           style={{}}
+                          aria-hidden="true"
                         />
                       </a>
-                      <a href={project.demo_link} target="_blank" rel="noopener noreferrer">
+                      <a 
+                        href={project.demo_link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        aria-label={`Voir la démo de ${project.title} (s'ouvre dans un nouvel onglet)`}
+                      >
                         <Image 
                           ref={el => { demoIconRefs.current[project.id] = el }}
                           src="/images/arrow.svg" 
-                          alt="Voir Démo" 
+                          alt="" 
                           width={getIconDimensions('demo').width}
                           height={getIconDimensions('demo').height}
                           className="w-auto h-auto"
                           unoptimized={true}
                           style={{}}
+                          aria-hidden="true"
                         />
                       </a>
                     </div>

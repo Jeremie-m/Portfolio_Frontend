@@ -32,39 +32,50 @@ const ConfirmModal = (param) => {
 
     const finalMessage = message || getDefaultMessage();
 
+    const getDisplayType = (type) => {
+        switch (type) {
+            case 'herobanner':
+                return 'Texte';
+            case 'skills':
+                return 'compétence';
+            case 'projects':
+                return 'projet';
+            default:
+                return 'action';
+        }
+    };
+
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={title}
+            title={`Supprimer ${getDisplayType(type)}`}
             level={level}
+            id="confirm-modal"
         >
-            <div className="space-y-4">
-                <p className="text-white text-[14px] font-montserrat">
-                    {finalMessage}
-                </p>
-                <div className="flex justify-end gap-3">
+            <div className="flex flex-col">
+                <div className="mb-6">
+                    <p className="text-white text-center text-[14px] md:text-[16px] lg:text-[24px] font-montserrat">
+                        Êtes-vous sûr de vouloir supprimer {getDisplayType(type).toLowerCase()} ?
+                        <br />
+                        Cette action est irréversible.
+                    </p>
+                </div>
+                
+                <div className="flex justify-center items-center gap-4">
                     <button
                         onClick={onClose}
-                        className="px-4 h-[40px] text-[14px] font-montserrat text-white bg-transparent border border-white rounded hover:bg-white/10 transition-colors duration-200"
+                        className="px-4 py-2 text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-white bg-transparent border border-white rounded hover:bg-white/10 transition-colors duration-200"
+                        aria-label="Annuler la suppression"
                     >
                         {cancelText}
                     </button>
                     <button
                         onClick={onConfirm}
-                        className={`px-4 h-[40px] rounded flex items-center justify-center border transition-colors duration-200 ${
-                            confirmColor === 'red' 
-                                ? 'bg-red-500 border-red-500 hover:bg-red-600' 
-                                : 'bg-white border-white hover:bg-white/90'
-                        }`}
+                        className={`px-4 py-2 text-[14px] md:text-[16px] lg:text-[24px] font-montserrat text-white bg-${confirmColor || 'red'}-500 rounded hover:bg-${confirmColor || 'red'}-600 transition-colors duration-200`}
+                        aria-label={`Confirmer la suppression de ${getDisplayType(type).toLowerCase()}`}
                     >
-                        <span className={`text-[14px] font-montserrat ${
-                            confirmColor === 'red' 
-                                ? 'text-white' 
-                                : 'text-[#C8B20C]'
-                        }`}>
-                            {confirmText}
-                        </span>
+                        {confirmText}
                     </button>
                 </div>
             </div>

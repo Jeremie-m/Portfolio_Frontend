@@ -142,12 +142,12 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20">
-      <h2 className="font-medium text-[24px] md:text-[40px] lg:text-[64px] font-montserrat text-center text-white mb-8 md:mb-12 lg:mb-16">
+    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" className="font-medium text-[24px] md:text-[40px] lg:text-[64px] font-montserrat text-center text-white mb-8 md:mb-12 lg:mb-16">
         Contact
       </h2>
       
-      <div className="w-full max-w-full flex flex-col gap-4 md:gap-8 lg:gap-12">
+      <div className="w-full max-w-full flex flex-col gap-4 md:gap-8 lg:gap-12" role="list">
         {contactInfo.map((item) => (
           <a 
             key={item.id} 
@@ -155,17 +155,20 @@ const Contact = () => {
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center w-full max-w-full gap-4 md:gap-8 lg:gap-12"
+            aria-label={`Me contacter par ${item.type}: ${item.value} (s'ouvre dans un nouvel onglet)`}
+            role="listitem"
           >
             <div className="flex-shrink-0">
               <Image 
                 ref={el => { iconRefs.current[`${item.type}-${item.id}`] = el }}
                 src={item.icon} 
-                alt={item.type} 
+                alt="" 
                 width={getIconDimensions(item.type).width}
                 height={getIconDimensions(item.type).height}
                 className="w-auto h-auto"
                 unoptimized={true}
                 style={{}}
+                aria-hidden="true"
               />
             </div>
             <div className="flex-grow overflow-hidden">

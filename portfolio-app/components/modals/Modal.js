@@ -3,11 +3,15 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function Modal({ isOpen, onClose, title, children, level = 1 }) {
+function Modal({ isOpen, onClose, title, children, level = 1, id }) {
   // Calcul des z-index en fonction du level
   const baseZIndex = 140;
   const overlayZIndex = baseZIndex + (level - 1) * 2;
   const modalZIndex = overlayZIndex + 1;
+  
+  // Générer un ID unique pour l'accessibilité si aucun n'est fourni
+  const modalId = id || `modal-${Math.random().toString(36).substring(2, 11)}`;
+  const titleId = `${modalId}-title`;
 
   const overlayVariants = {
     hidden: { 
@@ -78,10 +82,14 @@ function Modal({ isOpen, onClose, title, children, level = 1 }) {
             initial="hidden"
             animate="visible"
             exit="exit"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            id={modalId}
           >
             {/* Header avec titre et bouton fermer */}
             <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white font-montserrat">{title}</h2>
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white font-montserrat" id={titleId}>{title}</h2>
               <button 
                 onClick={onClose}
                 className="text-white focus:outline-none transition-colors duration-200"
@@ -92,7 +100,7 @@ function Modal({ isOpen, onClose, title, children, level = 1 }) {
                 </svg>
               </button>
             </div>
-
+            
             {/* Ligne de séparation */}
             <div className="w-full h-[1px] bg-white/20 mb-4 md:mb-5 lg:mb-6" />
 

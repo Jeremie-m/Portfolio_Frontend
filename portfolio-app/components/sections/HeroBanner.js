@@ -81,14 +81,14 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <section className="w-full flex flex-col gap-[10px] px-[20px] md:px-[40px] lg:px-[60px] py-[10px]">
+      <section className="w-full flex flex-col gap-[10px] px-[20px] md:px-[40px] lg:px-[60px] py-[10px]" aria-label="Présentation personnelle">
         {isAdmin && (
           <div className="w-full flex justify-center mb-[40px]">
             <EditBtn onOpenModal={onOpenModal} section="hero" />
           </div>
         )}
         <div className="w-full flex items-center gap-4 justify-between">
-          <h1 className="flex flex-col flex-start md:text-left w-[50%]">
+          <h1 className="flex flex-col flex-start md:text-left w-[50%]" id="main-heading">
             <motion.span 
               className="text-white font-noto-sans text-[28px] md:text-[64px] lg:text-[96px] ml-[4px] md:ml-[8px] lg:ml-[10px]"
               initial={{ x: "-100vw", opacity: 0 }}
@@ -110,6 +110,7 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
                 texts={texts}
                 speed={100}
                 className="font-jetbrains-mono text-[16px] md:text-[42px] lg:text-[58px] text-white"
+                aria-live="polite"
               />
             )}
           </h1>
@@ -125,6 +126,9 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
               borderRadius: "50%",
               filter: calculateDropShadow(),
             }}
+            aria-hidden="false"
+            role="img"
+            aria-label="Photo de profil de Jérémie Marie"
           >
             <Image 
               src="/images/profil.webp" 
