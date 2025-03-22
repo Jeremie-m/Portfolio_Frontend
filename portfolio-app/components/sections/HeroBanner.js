@@ -87,7 +87,7 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
             <EditBtn onOpenModal={onOpenModal} section="hero" />
           </div>
         )}
-        <div className="w-full flex items-center gap-4 justify-between">
+        <div className="w-full flex items-start gap-4 justify-between">
           <h1 className="flex flex-col flex-start md:text-left w-[50%]" id="main-heading">
             <motion.span 
               className="text-white font-noto-sans text-[28px] md:text-[64px] lg:text-[96px] ml-[4px] md:ml-[8px] lg:ml-[10px]"
@@ -114,6 +114,7 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
               />
             )}
           </h1>
+          
           <motion.div 
             ref={imageRef}
             onMouseEnter={() => setIsHovering(true)}

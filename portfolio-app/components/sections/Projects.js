@@ -246,7 +246,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                 exit="hidden"
                 className={`w-full h-full flex flex-col header-bg rounded-lg overflow-hidden ${isAdmin ? '[filter:drop-shadow(0_4px_10px_#EED40B)]' : '[filter:drop-shadow(0_4px_10px_#0B61EE)]'}`}
               >
-                <div className="w-full h-40 relative">
+                <div className="w-full h-40 md:h-60 lg:h-80 relative">
                   <Image 
                     src={project.image_url} 
                     alt={project.title} 

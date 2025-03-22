@@ -21,7 +21,7 @@ const NavLinks = ({ onClick, isModal }) => {
 
   const linkClassName = isModal
     ? "text-white text-2xl font-montserrat hover:opacity-80 transition-opacity duration-200"
-    : "text-white md:text-[16px] lg:text-[18px] font-montserrat hover:text-primary transition-colors duration-200";
+    : "text-white md:text-[16px] lg:text-[18px] font-montserrat hover:text-primary transition-all duration-200 hover:scale-110";
 
   const handleClick = (e, href) => {
     e.preventDefault();
@@ -80,7 +80,7 @@ const NavLinks = ({ onClick, isModal }) => {
         <Link
           href="/cv.pdf"
           target="_blank"
-          className={`hidden md:block bg-white rounded-[48px] px-4 py-1 ml-4 text-[16px] lg:text-[20px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 transition-opacity duration-200`}
+          className={`hidden md:block bg-white rounded-[48px] px-4 py-1 ml-4 text-[16px] lg:text-[20px] font-semibold font-montserrat ${isAdmin ? 'text-[#C8B20C]' : 'text-primary'} hover:opacity-90 hover:scale-105 transition-all duration-200`}
           aria-label="Télécharger mon CV au format PDF"
           rel="noopener noreferrer"
         >
