@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import Modal from '@/components/modals/Modal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-import Loader from '@/components/common/Loader';
+import SuccessToast from '@/components/common/SuccessToast';
 import { useHeroBanner } from '@/features/herobanner/hooks/useHeroBanner';
 
 const HeroEditModal = ({ isOpen, onClose }) => {
@@ -19,17 +19,53 @@ const HeroEditModal = ({ isOpen, onClose }) => {
   
   const [itemToDelete, setItemToDelete] = React.useState(null);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [localTexts, setLocalTexts] = useState([]);
   const newInputRef = useRef(null);
+  
+  // État pour les notifications toast
+  const [toast, setToast] = useState({
+    visible: false,
+    message: '',
+  });
 
-  const handleTextChange = async (id, newText) => {
+  // Fonction pour afficher un toast
+  const showToast = (message) => {
+    setToast({
+      visible: true,
+      message,
+    });
+  };
+
+  // Fonction pour fermer le toast
+  const closeToast = () => {
+    setToast({
+      ...toast,
+      visible: false,
+    });
+  };
+
+  React.useEffect(() => {
+    setLocalTexts(texts);
+  }, [texts]);
+
+  const handleTextChange = (id, newText) => {
+    const updatedTexts = localTexts.map(item => 
+      item.id === id ? { ...item, text: newText } : item
+    );
+    setLocalTexts(updatedTexts);
+  };
+
+  const handleTextBlur = async (id) => {
     try {
-      const updatedTexts = texts.map(item => 
-        item.id === id ? { ...item, text: newText } : item
-      );
-      await saveTexts(updatedTexts);
+      const originalItem = texts.find(item => item.id === id);
+      const updatedItem = localTexts.find(item => item.id === id);
+      
+      if (originalItem && updatedItem && originalItem.text !== updatedItem.text) {
+        await saveTexts([updatedItem]);
+        showToast('Texte modifié avec succès');
+      }
     } catch (err) {
       console.error('Erreur lors de la mise à jour:', err);
-      // TODO: Afficher un message d'erreur à l'utilisateur
     }
   };
 
@@ -42,9 +78,9 @@ const HeroEditModal = ({ isOpen, onClose }) => {
       try {
         await deleteText(itemToDelete);
         setItemToDelete(null);
+        showToast('Texte supprimé avec succès');
       } catch (err) {
         console.error('Erreur lors de la suppression:', err);
-        // TODO: Afficher un message d'erreur à l'utilisateur
       }
     }
   };
@@ -56,6 +92,7 @@ const HeroEditModal = ({ isOpen, onClose }) => {
   const handleAddText = async () => {
     try {
       const newItem = await addText();
+      showToast('Nouveau texte ajouté avec succès');
       
       // Focus sur le nouveau champ de texte
       setTimeout(() => {
@@ -66,14 +103,14 @@ const HeroEditModal = ({ isOpen, onClose }) => {
       }, 0);
     } catch (err) {
       console.error('Erreur lors de l\'ajout:', err);
-      // TODO: Afficher un message d'erreur à l'utilisateur
     }
   };
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await saveTexts(texts);
+      await saveTexts(localTexts);
+      showToast('Tous les textes ont été enregistrés');
       onClose();
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
@@ -114,13 +151,14 @@ const HeroEditModal = ({ isOpen, onClose }) => {
               <div className="text-center py-4">Chargement...</div>
             ) : (
               <div className="flex flex-col gap-4">
-                {texts.map((item, index) => (
+                {localTexts.map((item, index) => (
                   <div key={item.id} className="flex items-center gap-3">
                     <input
                       ref={index === 0 ? newInputRef : null}
                       type="text"
                       value={item.text}
                       onChange={(e) => handleTextChange(item.id, e.target.value)}
+                      onBlur={() => handleTextBlur(item.id)}
                       className="flex-1 bg-transparent border border-white rounded px-3 py-2 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
                       disabled={isSaving}
                     />
@@ -172,6 +210,14 @@ const HeroEditModal = ({ isOpen, onClose }) => {
         confirmText="Supprimer"
         confirmColor="red"
         level={2}
+      />
+
+      {/* Toast de succès */}
+      <SuccessToast
+        isVisible={toast.visible}
+        message={toast.message}
+        onClose={closeToast}
+        duration={3000}
       />
     </>
   );

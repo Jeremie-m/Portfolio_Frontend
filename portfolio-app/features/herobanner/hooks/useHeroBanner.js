@@ -54,29 +54,23 @@ export const useHeroBanner = () => {
         setTexts(data);
       } else if (data && typeof data === 'object' && Array.isArray(data.data)) {
         // C'est un objet avec une propriété data qui est un tableau
-        console.log('Utilisation de la propriété data qui contient le tableau');
         setTexts(data.data);
       } else if (data && typeof data === 'object' && Array.isArray(data.textes)) {
         // C'est un objet avec une propriété textes qui est un tableau
-        console.log('Utilisation de la propriété textes qui contient le tableau');
         setTexts(data.textes);
       } else if (data && typeof data === 'object' && Array.isArray(data.items)) {
         // C'est un objet avec une propriété items qui est un tableau
-        console.log('Utilisation de la propriété items qui contient le tableau');
         setTexts(data.items);
       } else {
-        console.warn('Format de réponse inattendu:', data);
         if (data && data.message) {
           throw new Error(data.message);
         }
         throw new Error('Format de réponse inattendu');
       }
       
-      console.log('Textes du héros chargés:', texts);
       setError(null);
     } catch (err) {
       setError(err.message || 'Erreur lors du chargement des textes');
-      console.error('Erreur lors du chargement des textes:', err);
       
       // Ne pas utiliser de données mockées en cas d'erreur
       // Garder le tableau vide
@@ -86,97 +80,131 @@ export const useHeroBanner = () => {
     }
   };
 
-  // Fonction PUT pour sauvegarder les modifications
+  /**
+   * Sauvegarde les textes modifiés
+   * @param {Array} updatedTexts - Liste des textes à sauvegarder
+   * @returns {Promise<boolean>} - Succès ou échec de l'opération
+   */
   const saveTexts = async (updatedTexts) => {
+    if (!updatedTexts || !Array.isArray(updatedTexts) || updatedTexts.length === 0) {
+      setError('Aucun texte à sauvegarder');
+      return false;
+    }
+
     setIsLoading(true);
-    try {
-      // Récupérer le token d'authentification
-      const token = getAuthToken();
-      if (!token) {
-        throw new Error('Vous devez être connecté pour modifier le contenu');
-      }
-      
-      // Configurer les en-têtes avec le token
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-      
-      const response = await fetch('/api/herobanner', {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(updatedTexts),
-      });
-      
-      // Gérer les erreurs d'authentification
-      if (response.status === 401) {
-        setError('Session expirée. Veuillez vous reconnecter.');
-        throw new Error('Session expirée. Veuillez vous reconnecter.');
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
-      }
-      
-      const data = await response.json();
-      
-      // Mettre à jour l'état avec les données mises à jour
-      setTexts(data);
-      console.log('Textes sauvegardés avec succès:', data);
-      return data;
-    } catch (err) {
-      console.error('Erreur lors de la sauvegarde:', err);
-      setError(err.message || 'Erreur lors de la sauvegarde des textes');
-      throw err;
-    } finally {
+    const authToken = getAuthToken();
+    
+    if (!authToken) {
+      setError('Vous devez être connecté pour effectuer cette action');
       setIsLoading(false);
+      return false;
+    }
+
+    try {
+      // Envoyer une requête PUT individuelle pour chaque texte
+      const updatePromises = updatedTexts.map(async (text) => {
+        if (!text.id) {
+          throw new Error('L\'ID est manquant pour un élément');
+        }
+        
+        const response = await fetch(`/api/herobanner/${text.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authToken,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          body: JSON.stringify(text),
+          cache: 'no-store'
+        });
+
+        if (!response.ok) {
+          // Si la réponse est 401, problème d'authentification
+          if (response.status === 401) {
+            throw new Error('Votre session a expiré. Veuillez vous reconnecter.');
+          }
+          
+          // Essayer de récupérer le message d'erreur
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erreur lors de la mise à jour du texte ${text.id}`);
+        }
+
+        return await response.json();
+      });
+
+      // Attendre que toutes les requêtes soient terminées
+      await Promise.all(updatePromises);
+      
+      // Rafraîchir les données après la sauvegarde
+      await fetchTexts();
+      
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      setError(error.message || 'Erreur lors de la sauvegarde des textes');
+      setIsLoading(false);
+      return false;
     }
   };
 
-  // Fonction DELETE pour supprimer un texte
+  /**
+   * Supprime un texte
+   * @param {string} id - ID du texte à supprimer
+   * @returns {Promise<boolean>} - Succès ou échec de l'opération
+   */
   const deleteText = async (id) => {
+    if (!id) {
+      setError('ID du texte manquant');
+      return false;
+    }
+
     setIsLoading(true);
+    const authToken = getAuthToken();
+    
+    if (!authToken) {
+      setError('Vous devez être connecté pour effectuer cette action');
+      setIsLoading(false);
+      return false;
+    }
+
     try {
-      // Récupérer le token d'authentification
-      const token = getAuthToken();
-      if (!token) {
-        throw new Error('Vous devez être connecté pour supprimer un texte');
-      }
-      
-      // Configurer les en-têtes avec le token
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-      
       const response = await fetch(`/api/herobanner/${id}`, {
         method: 'DELETE',
-        headers: headers
+        headers: {
+          'Authorization': authToken,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        cache: 'no-store'
       });
-      
-      // Gérer les erreurs d'authentification
-      if (response.status === 401) {
-        setError('Session expirée. Veuillez vous reconnecter.');
-        throw new Error('Session expirée. Veuillez vous reconnecter.');
-      }
-      
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de la suppression');
+        // Si la réponse est 401, problème d'authentification
+        if (response.status === 401) {
+          setError('Votre session a expiré. Veuillez vous reconnecter.');
+          setIsLoading(false);
+          return false;
+        }
+        
+        // Essayer de récupérer le message d'erreur
+        const errorData = await response.json().catch(() => ({}));
+        setError(errorData.message || `Erreur lors de la suppression du texte ${id}`);
+        setIsLoading(false);
+        return false;
       }
+
+      // Rafraîchir les données après la suppression
+      await fetchTexts();
       
-      // Mettre à jour l'état local sans faire de nouveau appel API
-      const updatedTexts = texts.filter(item => item.id !== id);
-      setTexts(updatedTexts);
-      
-      return true;
-    } catch (err) {
-      console.error('Erreur lors de la suppression:', err);
-      setError(err.message || 'Erreur lors de la suppression du texte');
-      throw err;
-    } finally {
       setIsLoading(false);
+      return true;
+    } catch (error) {
+      setError('Erreur lors de la suppression du texte');
+      setIsLoading(false);
+      return false;
     }
   };
 
