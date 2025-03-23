@@ -1,4 +1,4 @@
 export const metadata = {
-  title: "Admin - Jérémie Marie",
-  description: "Admin Dashboard pour le PortFolio de Jérémie Marie",
+  title: "Login - Jérémie Marie",
+  description: "Login Admin pour le PortFolio de Jérémie Marie",
 }; 
