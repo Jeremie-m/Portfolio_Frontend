@@ -4,52 +4,136 @@ import { useState, useEffect } from 'react';
 import { aboutMeText } from '@/features/aboutme/mocks/aboutme'; // On suppose que ce mock existe
 
 export const useAboutMe = () => {
-  const [content, setContent] = useState("");
+  // État initial avec les propriétés correctes
+  const [aboutMe, setAboutMe] = useState({
+    id: '',
+    text: '',
+    updated_at: null
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /**
+   * Récupère le token d'authentification depuis sessionStorage
+   * @returns {string|null} Le token ou null si non trouvé
+   */
+  const getAuthToken = () => {
+    // Vérifier que window existe (Next.js SSR sécurité)
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('authToken');
+    }
+    return null;
+  };
+
   // Fonction GET pour charger les données
-  const fetchContent = async () => {
+  const fetchContent = async (forceRefresh = false) => {
     setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/about-me');
-      // const data = await response.json();
-      // setContent(data.content);
+      // Ajouter un timestamp pour éviter le cache du navigateur
+      const timestamp = Date.now();
+      // Toujours ajouter refresh=true pour forcer le rafraîchissement côté API
+      const url = `/api/about-me?refresh=true&t=${timestamp}`;
       
-      // Pour le moment, on utilise les données mockées
-      setContent(aboutMeText);
+      // Options pour éviter le cache côté client
+      const options = {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        cache: 'no-store'
+      };
+      
+      const response = await fetch(url, options);
+      
+      // Vérifier si la réponse est correcte
+      if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Vérifier si on a bien les données attendues
+      if (!data.text) {
+        console.warn('Format de réponse inattendu:', data);
+        if (data.message) {
+          throw new Error(data.message);
+        }
+      }
+      
+      // Mettre à jour l'état avec les données correctes
+      setAboutMe(data);
+      console.log('Données About-me chargées:', data);
       setError(null);
+
     } catch (err) {
-      setError('Erreur lors du chargement du contenu');
-      console.error('Erreur lors du chargement du contenu:', err);
+      setError('Erreur lors du chargement des données About-me');
+      console.error('Erreur lors du chargement des données About-me:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Fonction PUT pour sauvegarder les modifications
-  const saveContent = async (newContent) => {
+  const saveContent = async (newText) => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/about-me', {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ content: newContent }),
-      // });
-      // const data = await response.json();
-      // setContent(data.content);
-      // return data;
+      // Vérifier que le texte est valide
+      if (!newText || typeof newText !== 'string') {
+        throw new Error('Le texte est requis et doit être une chaîne de caractères');
+      }
       
-      // Pour le moment, on simule une sauvegarde réussie
-      console.log('Contenu sauvegardé:', newContent);
-      setContent(newContent);
-      return true;
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour modifier le contenu');
+      }
+      
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      // Envoyer la requête avec le token
+      const response = await fetch('/api/about-me', {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({ text: newText }),
+      });
+      
+      // Gérer les erreurs d'authentification
+      if (response.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
+      }
+      
+      const data = await response.json();
+      
+      // Mettre à jour immédiatement l'état avec les nouvelles données
+      setAboutMe(data);
+      console.log('Données sauvegardées avec succès:', data);
+      
+      // Terminer le chargement
+      setIsLoading(false);
+      
+      return data;
+      
     } catch (err) {
-      console.error('Erreur lors de la sauvegarde:', err);
-      throw new Error('Erreur lors de la sauvegarde du contenu');
+      console.error('Erreur lors de la sauvegarde des données About-me:', err);
+      setError(err.message || 'Erreur lors de la sauvegarde des données');
+      throw err;
+    } finally {
+      // S'assurer que le chargement est terminé même en cas d'erreur
+      setIsLoading(false);
     }
   };
 
@@ -59,10 +143,17 @@ export const useAboutMe = () => {
   }, []);
 
   return {
-    content,
+    // Exposer les propriétés spécifiques pour faciliter l'utilisation
+    id: aboutMe.id,
+    text: aboutMe.text,
+    updated_at: aboutMe.updated_at,
+    aboutMe, // Exposer aussi l'objet complet si nécessaire
     isLoading,
     error,
     fetchContent,
-    saveContent
+    saveContent,
+    // Fonction d'aide pour forcer le rafraîchissement - comme toutes les requêtes ignorent le cache,
+    // cette fonction fait simplement un appel à fetchContent
+    refreshContent: () => fetchContent()
   };
 }; 

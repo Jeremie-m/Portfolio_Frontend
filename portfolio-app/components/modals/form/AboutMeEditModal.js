@@ -7,20 +7,24 @@ import { useAboutMe } from '@/features/aboutme/hooks/useAboutMe';
 import Loader from '@/components/common/Loader';
 
 const AboutMeEditModal = ({ isOpen, onClose }) => {
-  const { content, isLoading, error, saveContent } = useAboutMe();
+  const {text, isLoading, error, saveContent, refreshContent } = useAboutMe();
   const [editedContent, setEditedContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (content) {
-      setEditedContent(content);
+    if (text) {
+      setEditedContent(text);
     }
-  }, [content]);
+  }, [text]);
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await saveContent(editedContent);
+      
+      // Sauvegarder et attendre la réponse
+      const updatedData = await saveContent(editedContent);
+      
+      // Mise à jour réussie, fermer le modal
       onClose();
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
@@ -76,7 +80,7 @@ const AboutMeEditModal = ({ isOpen, onClose }) => {
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={isSaving || editedContent === content}
+            disabled={isSaving || editedContent === text}
             variant="primary"
             className="text-[14px] md:text-[16px] lg:text-[24px] font-montserrat"
           >

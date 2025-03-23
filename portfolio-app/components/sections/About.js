@@ -5,10 +5,23 @@ import Loader from '@/components/common/Loader';
 import AboutMeEditModal from '@/components/modals/form/AboutMeEditModal';
 import EditBtn from '@/components/common/EditBtn';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
+import { useEffect, useRef } from 'react';
 
 const About = ({ onOpenModal, activeModal }) => {
-    const { content, isLoading, error } = useAboutMe();
+    const { text, isLoading, error, refreshContent } = useAboutMe();
     const { isAdmin } = useAuth();
+    const prevModalRef = useRef(null);
+  
+  // Rafraîchir les données uniquement quand le modal passe de 'about' à un autre état
+  useEffect(() => {
+    if (prevModalRef.current === 'about' && activeModal !== 'about') {
+      // Rafraîchir les données quand le modal est fermé
+      refreshContent();
+    }
+    
+    // Sauvegarder l'état actuel pour la prochaine comparaison
+    prevModalRef.current = activeModal;
+  }, [activeModal, refreshContent]);
 
   if (isLoading) {
     return (
@@ -37,7 +50,7 @@ const About = ({ onOpenModal, activeModal }) => {
         <div className="relative w-full md:max-w-4xl lg:max-w-6xl mx-auto">
           <h2 id="about-heading" className="text-2xl md:text-[40px] lg:text-[64px] font-medium font-montserrat text-white mb-8 md:mb-[60px] lg:mb-[100px] text-center">Qui suis-je ?</h2>
           <div className="text-lg md:text-[24px] lg:text-[32px] font-montserrat leading-relaxed whitespace-pre-wrap" aria-label="Présentation personnelle">
-            {content}
+            {text}
           </div>
         </div>
       </div>

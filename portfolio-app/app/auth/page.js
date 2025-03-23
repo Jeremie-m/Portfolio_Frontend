@@ -129,9 +129,9 @@ export default function AuthPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Stockage du token dans le localStorage
+        // Stockage du token dans sessionStorage au lieu de localStorage
         if (data.token) {
-          localStorage.setItem('authToken', data.token);
+          sessionStorage.setItem('authToken', data.token);
           setIsAdmin(true); // Mettre à jour le contexte
         }
         // Redirection vers la page principale

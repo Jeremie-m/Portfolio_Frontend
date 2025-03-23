@@ -11,19 +11,21 @@ export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Vérifier le token au chargement
-    const token = localStorage.getItem('authToken');
-    setIsAdmin(!!token);
-
-    // Observer les changements de localStorage
-    const handleStorageChange = (e) => {
-      if (e.key === 'authToken') {
-        setIsAdmin(!!e.newValue);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    // Vérifier le token au chargement depuis sessionStorage
+    if (typeof window !== 'undefined') {
+      const token = sessionStorage.getItem('authToken');
+      setIsAdmin(!!token);
+  
+      // Observer les changements de sessionStorage
+      const handleStorageChange = (e) => {
+        if (e.key === 'authToken') {
+          setIsAdmin(!!e.newValue);
+        }
+      };
+  
+      window.addEventListener('storage', handleStorageChange);
+      return () => window.removeEventListener('storage', handleStorageChange);
+    }
   }, []);
 
   return (
