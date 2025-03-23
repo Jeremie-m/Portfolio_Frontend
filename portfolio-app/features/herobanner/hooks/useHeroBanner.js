@@ -1,28 +1,86 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { heroBannerTexts } from '@/features/herobanner/mocks/herobanner';
+// Suppression de l'import des mocks car non nécessaire
+// import { heroBannerTexts } from '@/features/herobanner/mocks/herobanner';
 
 export const useHeroBanner = () => {
   const [texts, setTexts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /**
+   * Récupère le token d'authentification depuis sessionStorage
+   * @returns {string|null} Le token ou null si non trouvé
+   */
+  const getAuthToken = () => {
+    // Vérifier que window existe (Next.js SSR sécurité)
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('authToken');
+    }
+    return null;
+  };
+
   // Fonction GET pour charger les données
   const fetchTexts = async () => {
     setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/hero-banner');
-      // const data = await response.json();
-      // setTexts(data);
+      const url = `/api/herobanner?isActive=true`;
       
-      // Pour le moment, on utilise les données mockées
-      setTexts(heroBannerTexts);
+      // Options pour éviter le cache côté client
+      const options = {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        cache: 'no-store'
+      };
+      
+      const response = await fetch(url, options);
+      
+      // Vérifier si la réponse est correcte
+      if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      
+      // Vérifier si on a bien les données attendues
+      if (Array.isArray(data)) {
+        // C'est un tableau, on peut l'utiliser directement
+        setTexts(data);
+      } else if (data && typeof data === 'object' && Array.isArray(data.data)) {
+        // C'est un objet avec une propriété data qui est un tableau
+        console.log('Utilisation de la propriété data qui contient le tableau');
+        setTexts(data.data);
+      } else if (data && typeof data === 'object' && Array.isArray(data.textes)) {
+        // C'est un objet avec une propriété textes qui est un tableau
+        console.log('Utilisation de la propriété textes qui contient le tableau');
+        setTexts(data.textes);
+      } else if (data && typeof data === 'object' && Array.isArray(data.items)) {
+        // C'est un objet avec une propriété items qui est un tableau
+        console.log('Utilisation de la propriété items qui contient le tableau');
+        setTexts(data.items);
+      } else {
+        console.warn('Format de réponse inattendu:', data);
+        if (data && data.message) {
+          throw new Error(data.message);
+        }
+        throw new Error('Format de réponse inattendu');
+      }
+      
+      console.log('Textes du héros chargés:', texts);
       setError(null);
     } catch (err) {
-      setError('Erreur lors du chargement des textes');
+      setError(err.message || 'Erreur lors du chargement des textes');
       console.error('Erreur lors du chargement des textes:', err);
+      
+      // Ne pas utiliser de données mockées en cas d'erreur
+      // Garder le tableau vide
+      setTexts([]);
     } finally {
       setIsLoading(false);
     }
@@ -30,58 +88,148 @@ export const useHeroBanner = () => {
 
   // Fonction PUT pour sauvegarder les modifications
   const saveTexts = async (updatedTexts) => {
+    setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/hero-banner', {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(updatedTexts),
-      // });
-      // const data = await response.json();
-      // return data;
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour modifier le contenu');
+      }
       
-      // Pour le moment, on simule une sauvegarde réussie
-      console.log('Textes sauvegardés:', updatedTexts);
-      setTexts(updatedTexts);
-      return true;
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      const response = await fetch('/api/herobanner', {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(updatedTexts),
+      });
+      
+      // Gérer les erreurs d'authentification
+      if (response.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
+      }
+      
+      const data = await response.json();
+      
+      // Mettre à jour l'état avec les données mises à jour
+      setTexts(data);
+      console.log('Textes sauvegardés avec succès:', data);
+      return data;
     } catch (err) {
       console.error('Erreur lors de la sauvegarde:', err);
-      throw new Error('Erreur lors de la sauvegarde des textes');
+      setError(err.message || 'Erreur lors de la sauvegarde des textes');
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Fonction DELETE pour supprimer un texte
   const deleteText = async (id) => {
+    setIsLoading(true);
     try {
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour supprimer un texte');
+      }
+      
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      const response = await fetch(`/api/herobanner/${id}`, {
+        method: 'DELETE',
+        headers: headers
+      });
+      
+      // Gérer les erreurs d'authentification
+      if (response.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la suppression');
+      }
+      
+      // Mettre à jour l'état local sans faire de nouveau appel API
       const updatedTexts = texts.filter(item => item.id !== id);
-      await saveTexts(updatedTexts);
+      setTexts(updatedTexts);
+      
       return true;
     } catch (err) {
       console.error('Erreur lors de la suppression:', err);
-      throw new Error('Erreur lors de la suppression du texte');
+      setError(err.message || 'Erreur lors de la suppression du texte');
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Fonction POST pour ajouter un nouveau texte
   const addText = async (text = "Nouveau texte") => {
+    setIsLoading(true);
     try {
-      const newId = Math.max(...texts.map(item => item.id), 0) + 1;
-      const newItem = {
-        id: newId,
-        text,
-        isActive: true
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour ajouter un texte');
+      }
+      
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       };
       
-      const updatedTexts = [newItem, ...texts];
-      await saveTexts(updatedTexts);
+      const response = await fetch('/api/herobanner', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ text, isActive: true }),
+      });
+      
+      // Gérer les erreurs d'authentification
+      if (response.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'ajout');
+      }
+      
+      const newItem = await response.json();
+      
+      // Mettre à jour l'état local avec le nouveau texte
+      setTexts(prevTexts => [newItem, ...prevTexts]);
+      
       return newItem;
     } catch (err) {
       console.error('Erreur lors de l\'ajout:', err);
-      throw new Error('Erreur lors de l\'ajout du texte');
+      setError(err.message || 'Erreur lors de l\'ajout du texte');
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Fonction pour rafraîchir les données
+  const refreshTexts = () => fetchTexts();
 
   // Charger les données au montage du composant
   useEffect(() => {
@@ -95,6 +243,7 @@ export const useHeroBanner = () => {
     fetchTexts,
     saveTexts,
     deleteText,
-    addText
+    addText,
+    refreshTexts
   };
 }; 
