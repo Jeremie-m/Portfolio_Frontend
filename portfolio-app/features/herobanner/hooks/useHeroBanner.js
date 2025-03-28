@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 // import { heroBannerTexts } from '@/features/herobanner/mocks/herobanner';
 
 export const useHeroBanner = () => {
-  const [texts, setTexts] = useState([]);
+  const [activeTexts, setActiveTexts] = useState([]);
+  const [allTexts, setAllTexts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,8 +22,8 @@ export const useHeroBanner = () => {
     return null;
   };
 
-  // Fonction GET pour charger les données
-  const fetchTexts = async () => {
+  // Fonction GET pour charger les données actives
+  const fetchActiveTexts = async () => {
     setIsLoading(true);
     try {
       const url = `/api/herobanner?isActive=true`;
@@ -47,20 +48,15 @@ export const useHeroBanner = () => {
       
       const data = await response.json();
       
-      
       // Vérifier si on a bien les données attendues
       if (Array.isArray(data)) {
-        // C'est un tableau, on peut l'utiliser directement
-        setTexts(data);
+        setActiveTexts(data);
       } else if (data && typeof data === 'object' && Array.isArray(data.data)) {
-        // C'est un objet avec une propriété data qui est un tableau
-        setTexts(data.data);
+        setActiveTexts(data.data);
       } else if (data && typeof data === 'object' && Array.isArray(data.textes)) {
-        // C'est un objet avec une propriété textes qui est un tableau
-        setTexts(data.textes);
+        setActiveTexts(data.textes);
       } else if (data && typeof data === 'object' && Array.isArray(data.items)) {
-        // C'est un objet avec une propriété items qui est un tableau
-        setTexts(data.items);
+        setActiveTexts(data.items);
       } else {
         if (data && data.message) {
           throw new Error(data.message);
@@ -71,10 +67,51 @@ export const useHeroBanner = () => {
       setError(null);
     } catch (err) {
       setError(err.message || 'Erreur lors du chargement des textes');
+      setActiveTexts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fonction GET pour charger les données totales
+  const fetchAllTexts = async () => {
+    setIsLoading(true);
+    try {
+      const url = `/api/herobanner`;
       
-      // Ne pas utiliser de données mockées en cas d'erreur
-      // Garder le tableau vide
-      setTexts([]);
+      // Options pour éviter le cache côté client
+      const options = {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        cache: 'no-store'
+      };
+      
+      const response = await fetch(url, options);
+      
+      // Vérifier si la réponse est correcte
+      if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Vérifier si on a bien les données attendues
+      if (Array.isArray(data)) {
+        setAllTexts(data);
+      } else if (data && typeof data === 'object' && Array.isArray(data.data)) {
+        setAllTexts(data.data);
+      } else {
+        throw new Error('Format de réponse inattendu');
+      }
+      
+      setError(null);
+    } catch (err) {
+      setError(err.message || 'Erreur lors du chargement des textes');
+      setAllTexts([]);
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +175,9 @@ export const useHeroBanner = () => {
       await Promise.all(updatePromises);
       
       // Rafraîchir les données après la sauvegarde
-      await fetchTexts();
-      
+      await fetchActiveTexts();
+      await fetchAllTexts();
+
       setIsLoading(false);
       return true;
     } catch (error) {
@@ -197,7 +235,8 @@ export const useHeroBanner = () => {
       }
 
       // Rafraîchir les données après la suppression
-      await fetchTexts();
+      await fetchActiveTexts();
+      await fetchAllTexts();
       
       setIsLoading(false);
       return true;
@@ -213,21 +252,24 @@ export const useHeroBanner = () => {
     setIsLoading(true);
     try {
       // Récupérer le token d'authentification
-      const token = getAuthToken();
-      if (!token) {
+      const authToken = getAuthToken();
+      if (!authToken) {
         throw new Error('Vous devez être connecté pour ajouter un texte');
       }
       
       // Configurer les en-têtes avec le token
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
+        'Authorization': authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`
+      };  
       
       const response = await fetch('/api/herobanner', {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify({ text, isActive: true }),
+        body: JSON.stringify({ 
+          text, 
+          isActive: true,
+        }),
       });
       
       // Gérer les erreurs d'authentification
@@ -242,9 +284,11 @@ export const useHeroBanner = () => {
       }
       
       const newItem = await response.json();
+      console.log('Nouveau texte ajouté:', newItem); // Pour déboguer
       
       // Mettre à jour l'état local avec le nouveau texte
-      setTexts(prevTexts => [newItem, ...prevTexts]);
+      setActiveTexts(prevTexts => [...prevTexts, newItem].sort((a, b) => a.order - b.order));
+      setAllTexts(prevTexts => [...prevTexts, newItem].sort((a, b) => a.order - b.order));
       
       return newItem;
     } catch (err) {
@@ -257,18 +301,21 @@ export const useHeroBanner = () => {
   };
 
   // Fonction pour rafraîchir les données
-  const refreshTexts = () => fetchTexts();
+  const refreshTexts = () => fetchActiveTexts();
 
   // Charger les données au montage du composant
   useEffect(() => {
-    fetchTexts();
+    fetchActiveTexts();
+    fetchAllTexts();
   }, []);
 
   return {
-    texts,
+    activeTexts,
+    allTexts,
     isLoading,
     error,
-    fetchTexts,
+    fetchActiveTexts,
+    fetchAllTexts,
     saveTexts,
     deleteText,
     addText,

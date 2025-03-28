@@ -64,7 +64,6 @@ export const useAboutMe = () => {
       
       // Mettre à jour l'état avec les données correctes
       setAboutMe(data);
-      console.log('Données About-me chargées:', data);
       setError(null);
 
     } catch (err) {

@@ -11,7 +11,7 @@ import DynamicTypewriter from '@/components/common/DynamicTypewriter';
 
 const HeroBanner = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
-  const { texts, isLoading } = useHeroBanner();
+  const { activeTexts, isLoading } = useHeroBanner();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const imageRef = useRef(null);
@@ -107,7 +107,7 @@ const HeroBanner = ({ onOpenModal, activeModal }) => {
               </span>
             ) : (
               <DynamicTypewriter 
-                texts={texts}
+                texts={activeTexts}
                 speed={100}
                 className="font-jetbrains-mono text-[16px] md:text-[42px] lg:text-[58px] text-white"
                 aria-live="polite"

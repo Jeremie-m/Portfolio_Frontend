@@ -107,168 +107,216 @@ export async function GET(request, { params }) {
 }
 
 // PUT /api/skills/:id - Mettre à jour une skill existante (protégé par authentification)
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
   try {
-    const { id } = params;
+    // Attendre les paramètres avant d'y accéder
+    const params = await context.params;
+    if (!params) {
+      return NextResponse.json(
+        { message: 'Paramètres invalides' },
+        { status: 400 }
+      );
+    }
     
-    // Vérifier si on doit utiliser les mocks ou le backend réel
+    const id = params.id;
+    
+    if (!id) {
+      return NextResponse.json(
+        { message: 'ID de la compétence requis' },
+        { status: 400 }
+      );
+    }
+    
+    // Récupérer le token depuis l'en-tête Authorization de la requête entrante
+    const authHeader = request.headers.get('Authorization');
+    let token;
+    
+    if (authHeader) {
+      // Si l'en-tête est au format "Bearer <token>"
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      } else {
+        // Sinon utiliser directement la valeur
+        token = authHeader;
+      }
+    } else {
+      // Aucun token trouvé
+      return NextResponse.json(
+        { message: 'Authentification requise. Veuillez vous connecter.' },
+        { status: 401 }
+      );
+    }
+    
+    // Récupération du corps de la requête
+    const body = await request.json();
+    
+    // Utilisation de l'URL spécifique du backend
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const endpoint = `${apiUrl}/skills/${id}`;
+    
+    // Mode development/fallback
     const useMockApi = process.env.USE_MOCK_API === 'true';
     
-    const data = await request.json();
-    
     if (useMockApi) {
-      // ---------- MODE MOCK (pour développement sans backend) ----------
-      console.log(`Mode mock activé pour la mise à jour de la compétence ${id}`);
-      
-      const skillIndex = mockSkills.findIndex(s => s.id === parseInt(id));
-      
-      if (skillIndex === -1) {
-        return NextResponse.json(
-          { error: 'Compétence non trouvée' },
-          { status: 404 }
-        );
-      }
-      
-      // Simuler la mise à jour d'une compétence
-      const updatedSkill = {
-        ...mockSkills[skillIndex],
-        ...data,
-        updated_at: new Date().toISOString(),
+      // Dans ce cas, simuler une mise à jour réussie
+      const updatedItem = {
+        ...body,
+        id,
+        updated_at: new Date().toISOString()
       };
       
-      // Dans une vraie application, nous mettrions à jour la compétence dans la base de données
-      // skills[skillIndex] = updatedSkill;
-      
-      return NextResponse.json(updatedSkill);
-    } else {
-      // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
-      }
-      
-      console.log(`Mise à jour de la compétence ${id} via le backend: ${apiUrl}/skills/${id}`);
-      
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
-      
-      // Effectuer la requête au backend
-      const backendResponse = await fetch(`${apiUrl}/skills/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-      
-      // Récupérer les données de la réponse
-      const responseData = await backendResponse.json();
-      
-      // Vérifier si la requête a réussi
-      if (backendResponse.ok) {
-        return NextResponse.json(responseData);
-      } else {
+      return NextResponse.json(updatedItem, { status: 200 });
+    }
+    
+    // En mode normal, appel au backend avec le token d'authentification
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
+    
+    const response = await fetch(endpoint, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify(body),
+      cache: 'no-store'
+    });
+    
+    // Essayer de récupérer les données de la réponse
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (e) {
+      responseData = { message: 'Impossible de lire la réponse du serveur' };
+    }
+    
+    // Si le backend n'est pas disponible ou renvoie une erreur
+    if (!response.ok) {
+      if (response.status === 401) {
         return NextResponse.json(
-          { error: responseData.error || `Erreur lors de la mise à jour de la compétence ${id}` },
-          { status: backendResponse.status }
+          { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
+          { status: 401 }
         );
       }
+      
+      return NextResponse.json(
+        { message: responseData.message || `Erreur lors de la mise à jour de la compétence ${id}` },
+        { status: response.status }
+      );
     }
-  } catch (error) {
-    console.error(`Erreur lors de la mise à jour de la compétence ${params.id}:`, error);
     
+    // Retourner l'élément mis à jour au client
+    return NextResponse.json(responseData, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
-      { error: `Erreur lors de la mise à jour de la compétence ${params.id}`, details: error.message },
+      { message: 'Erreur lors de la mise à jour de la compétence', details: error.message },
       { status: 500 }
     );
   }
 }
 
 // DELETE /api/skills/:id - Supprimer une skill (protégé par authentification)
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
   try {
-    const { id } = params;
+    // Attendre les paramètres avant d'y accéder
+    const params = await context.params;
+    if (!params) {
+      return NextResponse.json(
+        { message: 'Paramètres invalides' },
+        { status: 400 }
+      );
+    }
     
-    // Vérifier si on doit utiliser les mocks ou le backend réel
+    const id = params.id;
+    
+    if (!id) {
+      return NextResponse.json(
+        { message: 'ID du texte requis' },
+        { status: 400 }
+      );
+    }
+    
+    // Récupérer le token depuis l'en-tête Authorization de la requête entrante
+    const authHeader = request.headers.get('Authorization');
+    let token;
+    
+    if (authHeader) {
+      // Si l'en-tête est au format "Bearer <token>"
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      } else {
+        // Sinon utiliser directement la valeur
+        token = authHeader;
+      }
+    } else {
+      // Aucun token trouvé
+      return NextResponse.json(
+        { message: 'Authentification requise. Veuillez vous connecter.' },
+        { status: 401 }
+      );
+    }
+    
+    // Utilisation de l'URL spécifique du backend
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const endpoint = `${apiUrl}/skills/${id}`;
+    
+    // Mode development/fallback
     const useMockApi = process.env.USE_MOCK_API === 'true';
     
     if (useMockApi) {
-      // ---------- MODE MOCK (pour développement sans backend) ----------
-      console.log(`Mode mock activé pour la suppression de la compétence ${id}`);
-      
-      const skillIndex = mockSkills.findIndex(s => s.id === parseInt(id));
-      
-      if (skillIndex === -1) {
-        return NextResponse.json(
-          { error: 'Compétence non trouvée' },
-          { status: 404 }
-        );
-      }
-      
-      // Dans une vraie application, nous supprimerions la compétence de la base de données
-      // skills.splice(skillIndex, 1);
-      
+      // Dans ce cas, simuler une suppression réussie
       return NextResponse.json(
-        { message: 'Compétence supprimée avec succès' },
+        { message: 'Compétence supprimée avec succès', id },
         { status: 200 }
       );
-    } else {
-      // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
-      }
-      
-      console.log(`Suppression de la compétence ${id} via le backend: ${apiUrl}/skills/${id}`);
-      
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
-      
-      // Effectuer la requête au backend
-      const backendResponse = await fetch(`${apiUrl}/skills/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
-        },
-        credentials: 'include',
-      });
-      
-      // Vérifier si la requête a réussi
-      if (backendResponse.ok) {
-        // Si la réponse ne contient pas de corps JSON, retourner un message standard
-        if (backendResponse.headers.get('content-length') === '0') {
-          return NextResponse.json(
-            { message: 'Compétence supprimée avec succès' },
-            { status: 200 }
-          );
-        }
-        
-        // Sinon, utiliser la réponse du backend
-        const responseData = await backendResponse.json();
-        return NextResponse.json(responseData);
-      } else {
-        // Récupérer les données d'erreur si possible
-        const errorData = await backendResponse.json().catch(() => ({}));
-        
+    }
+    
+    // En mode normal, appel au backend avec le token d'authentification
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
+    
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      headers: headers,
+      cache: 'no-store'
+    });
+    
+    // Essayer de récupérer les données de la réponse
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (e) {
+      responseData = { message: 'Impossible de lire la réponse du serveur' };
+    }
+    
+    // Si le backend n'est pas disponible ou renvoie une erreur
+    if (!response.ok) {
+      if (response.status === 401) {
         return NextResponse.json(
-          { error: errorData.error || `Erreur lors de la suppression de la compétence ${id}` },
-          { status: backendResponse.status }
+          { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
+          { status: 401 }
         );
       }
+      
+      return NextResponse.json(
+        { message: responseData.message || `Erreur lors de la suppression de la compétence ${id}` },
+        { status: response.status }
+      );
     }
-  } catch (error) {
-    console.error(`Erreur lors de la suppression de la compétence ${params.id}:`, error);
     
+    // Retourner le résultat de la suppression au client
+    return NextResponse.json(responseData, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
-      { error: `Erreur lors de la suppression de la compétence ${params.id}`, details: error.message },
+      { message: 'Erreur lors de la suppression de la compétence', details: error.message },
       { status: 500 }
     );
   }
-} 
+}  

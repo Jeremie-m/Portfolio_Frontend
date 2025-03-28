@@ -9,31 +9,64 @@ import ConfirmModal from '@/components/modals/ConfirmModal';
 import { useSkills } from '@/features/skills/hooks/useSkills';
 
 const SkillsEditModal = ({ isOpen, onClose }) => {
-  const { skills, isLoading, error, saveSkills, deleteSkill, addSkill } = useSkills();
+  const { skills, isLoading, error, updateSkill, deleteSkill, addSkill } = useSkills();
   const [isSaving, setIsSaving] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [tempImageUrls, setTempImageUrls] = useState({});
   const [lastAddedId, setLastAddedId] = useState(null);
   const [localSkills, setLocalSkills] = useState([]);
+  const [modifiedSkills, setModifiedSkills] = useState(new Set());
   const fileInputRef = useRef(null);
 
   // Initialiser localSkills avec les skills actuels quand le modal s'ouvre
   useEffect(() => {
     if (isOpen) {
       setLocalSkills([...skills]);
+      setModifiedSkills(new Set()); // Réinitialiser les modifications
+      setTempImageUrls({}); // Réinitialiser les images temporaires
     }
   }, [isOpen, skills]);
 
-  const handleSkillChange = async (id, field, value, event) => {
-    if (event?.key === 'Enter') {
-      handleSave();
-    }
-    
+  const handleSkillChange = (id, field, value) => {
     const updatedSkills = localSkills.map(skill => 
       skill.id === id ? { ...skill, [field]: value } : skill
     );
     setLocalSkills(updatedSkills);
+    setModifiedSkills(prev => new Set(prev).add(id));  // Marquer comme modifié uniquement lors d'un changement
+  };
+
+  const handleSkillUpdate = async (id) => {
+    try {
+      const skill = localSkills.find(s => s.id === id);
+      if (!skill) return;
+      
+      // Ne garder que les propriétés nécessaires
+      const skillToUpdate = {
+        name: skill.name,
+        image_url: skill.image_url
+      };
+      
+      await updateSkill(id, skillToUpdate);
+      setModifiedSkills(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour:', err);
+    }
+  };
+
+  const handleSkillBlur = async (id) => {
+    // Ne rien faire, les modifications seront sauvegardées lors du clic sur Sauvegarder
+  };
+
+  const handleKeyDown = async (e, id) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      await handleSkillUpdate(id);
+    }
   };
 
   const handleImageClick = (skillId) => {
@@ -55,17 +88,21 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
     }
 
     const imageUrl = URL.createObjectURL(file);
+    
+    // Mettre à jour tempImageUrls pour l'affichage
     setTempImageUrls(prev => ({
       ...prev,
       [skillId]: imageUrl
     }));
-
-    console.log('Image sélectionnée (mock) :', {
-      skillId,
-      fileName: file.name,
-      fileSize: file.size,
-      mimeType: file.type
-    });
+    
+    // Mettre à jour localSkills avec la nouvelle image_url
+    setLocalSkills(prev => prev.map(skill => 
+      skill.id === skillId 
+        ? { ...skill, image_url: imageUrl }
+        : skill
+    ));
+    
+    setModifiedSkills(prev => new Set(prev).add(skillId));
   };
 
   const handleDeleteClick = (id) => {
@@ -77,6 +114,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
       try {
         const updatedSkills = localSkills.filter(skill => skill.id !== skillToDelete);
         setLocalSkills(updatedSkills);
+        await deleteSkill(skillToDelete);
         setSkillToDelete(null);
       } catch (err) {
         console.error('Erreur lors de la suppression:', err);
@@ -91,17 +129,21 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
   const handleAddSkill = async (event) => {
     try {
       const newSkill = {
-        id: Date.now(), // ID temporaire
         name: "Nouvelle compétence",
         image_url: "/images/skills/defaut.svg",
-        level: 1
       };
 
-      setLocalSkills(prev => [...prev, newSkill]);
-      setLastAddedId(newSkill.id);
+      console.log("Envoi de la nouvelle skill:", newSkill);
 
+      const createdSkill = await addSkill(newSkill);
+      console.log('Skill créée par l\'API:', createdSkill);
+      
+      setLastAddedId(createdSkill.id);
+      setLocalSkills(prev => [...prev, createdSkill]);
+
+      // Attendre le prochain cycle de rendu pour que l'input soit créé
       setTimeout(() => {
-        const input = document.querySelector(`input[data-skill-id="${newSkill.id}"]`);
+        const input = document.querySelector(`input[data-skill-id="${createdSkill.id}"]`);
         if (input) {
           input.focus();
           input.select();
@@ -115,8 +157,15 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Sauvegarder les modifications
-      await saveSkills(localSkills);
+      // Ne mettre à jour que les skills modifiées qui n'ont pas encore été sauvegardées
+      const updatePromises = Array.from(modifiedSkills).map(id => {
+        const skill = localSkills.find(s => s.id === id);
+        return updateSkill(id, skill);
+      });
+      
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+      }
       onClose();
     } catch (err) {
       console.error('Erreur lors de la sauvegarde:', err);
@@ -181,7 +230,7 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {localSkills.map((skill, index) => (
+                {localSkills.map((skill) => (
                   <div key={skill.id} className="flex items-center gap-2 min-w-0">
                     <div 
                       className="relative w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 min-w-[32px] min-h-[32px] md:min-w-[40px] md:min-h-[40px] lg:min-w-[48px] lg:min-h-[48px] cursor-pointer"
@@ -199,7 +248,8 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
                       type="text"
                       value={skill.name}
                       onChange={(e) => handleSkillChange(skill.id, 'name', e.target.value)}
-                      onKeyDown={(e) => handleSkillChange(skill.id, 'name', e.target.value, e)}
+                      onKeyDown={(e) => handleKeyDown(e, skill.id)}
+                      onBlur={() => handleSkillBlur(skill.id)}
                       className="flex-1 min-w-0 bg-transparent border border-white rounded px-2 py-1.5 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
                       disabled={isSaving}
                     />

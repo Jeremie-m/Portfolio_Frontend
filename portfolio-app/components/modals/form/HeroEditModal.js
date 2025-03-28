@@ -8,8 +8,8 @@ import SuccessToast from '@/components/common/SuccessToast';
 import { useHeroBanner } from '@/features/herobanner/hooks/useHeroBanner';
 
 const HeroEditModal = ({ isOpen, onClose }) => {
-  const { 
-    texts, 
+  const {  
+    allTexts, 
     isLoading, 
     error, 
     saveTexts,
@@ -21,6 +21,7 @@ const HeroEditModal = ({ isOpen, onClose }) => {
   const [isSaving, setIsSaving] = React.useState(false);
   const [localTexts, setLocalTexts] = useState([]);
   const newInputRef = useRef(null);
+  const [lastAddedId, setLastAddedId] = useState(null);
   
   // État pour les notifications toast
   const [toast, setToast] = useState({
@@ -45,19 +46,23 @@ const HeroEditModal = ({ isOpen, onClose }) => {
   };
 
   React.useEffect(() => {
-    setLocalTexts(texts);
-  }, [texts]);
+    // Trier les textes par ordre avant de les mettre dans localTexts
+    const sortedTexts = [...allTexts].sort((a, b) => a.order - b.order);
+    setLocalTexts(sortedTexts);
+  }, [allTexts]);
 
   const handleTextChange = (id, newText) => {
     const updatedTexts = localTexts.map(item => 
       item.id === id ? { ...item, text: newText } : item
     );
-    setLocalTexts(updatedTexts);
+    // Maintenir l'ordre après la modification
+    const sortedTexts = [...updatedTexts].sort((a, b) => a.order - b.order);
+    setLocalTexts(sortedTexts);
   };
 
   const handleTextBlur = async (id) => {
     try {
-      const originalItem = texts.find(item => item.id === id);
+      const originalItem = allTexts.find(item => item.id === id);
       const updatedItem = localTexts.find(item => item.id === id);
       
       if (originalItem && updatedItem && originalItem.text !== updatedItem.text) {
@@ -92,7 +97,11 @@ const HeroEditModal = ({ isOpen, onClose }) => {
   const handleAddText = async () => {
     try {
       const newItem = await addText();
+      setLastAddedId(newItem.id);
       showToast('Nouveau texte ajouté avec succès');
+      
+      // Mettre à jour localTexts avec le nouvel élément et trier
+      setLocalTexts(prev => [...prev, newItem].sort((a, b) => a.order - b.order));
       
       // Focus sur le nouveau champ de texte
       setTimeout(() => {
@@ -117,6 +126,27 @@ const HeroEditModal = ({ isOpen, onClose }) => {
       // TODO: Afficher un message d'erreur à l'utilisateur
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleToggleActive = async (id) => {
+    try {
+      const itemToUpdate = localTexts.find(item => item.id === id);
+      if (itemToUpdate) {
+        const updatedItem = { 
+          ...itemToUpdate, 
+          is_active: !itemToUpdate.is_active 
+        };
+        await saveTexts([updatedItem]);
+        
+        // Mettre à jour localTexts
+        const updatedTexts = localTexts.map(item =>
+          item.id === id ? updatedItem : item
+        );
+        setLocalTexts(updatedTexts);
+      }
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour du statut:', err);
     }
   };
 
@@ -151,17 +181,46 @@ const HeroEditModal = ({ isOpen, onClose }) => {
               <div className="text-center py-4">Chargement...</div>
             ) : (
               <div className="flex flex-col gap-4">
-                {localTexts.map((item, index) => (
+                {localTexts.map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
                     <input
-                      ref={index === 0 ? newInputRef : null}
+                      ref={item.id === lastAddedId ? newInputRef : null}
                       type="text"
                       value={item.text}
                       onChange={(e) => handleTextChange(item.id, e.target.value)}
                       onBlur={() => handleTextBlur(item.id)}
-                      className="flex-1 bg-transparent border border-white rounded px-3 py-2 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200"
+                      className={`flex-1 bg-transparent border rounded px-3 py-2 text-white text-[14px] md:text-[16px] lg:text-[24px] font-montserrat focus:outline-none focus:border-primary focus:bg-white focus:text-black transition-colors duration-200 ${
+                        !item.is_active ? 'border-white/50 text-white/50' : 'border-white'
+                      }`}
                       disabled={isSaving}
                     />
+                    <button
+                      onClick={() => handleToggleActive(item.id)}
+                      className={`min-w-[40px] h-[40px] flex items-center justify-center transition-all duration-200 hover:opacity-80 ${
+                        item.is_active 
+                          ? 'text-white' 
+                          : 'text-white/50'
+                      }`}
+                      title={item.is_active ? 'Cliquer pour désactiver' : 'Cliquer pour activer'}
+                      disabled={isSaving}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`transition-all duration-200 ${
+                          item.is_active ? 'opacity-100' : 'opacity-50'
+                        }`}
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </button>
                     <button 
                       onClick={() => handleDeleteClick(item.id)}
                       className="p-2 hover:opacity-80 transition-opacity"

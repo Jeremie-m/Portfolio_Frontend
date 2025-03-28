@@ -89,31 +89,21 @@ export async function POST(request) {
   try {
     // Récupérer le token depuis l'en-tête Authorization de la requête entrante
     const authHeader = request.headers.get('Authorization');
-    let token;
     
-    if (authHeader) {
-      // Si l'en-tête est au format "Bearer <token>"
-      if (authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-      } else {
-        // Sinon utiliser directement la valeur
-        token = authHeader;
-      }
-    } else {
-      // Aucun token trouvé
+    if (!authHeader) {
       return NextResponse.json(
         { message: 'Authentification requise. Veuillez vous connecter.' },
         { status: 401 }
       );
     }
-    
-    // Récupération du corps de la requête
+
+    // Récupérer le corps de la requête
     const body = await request.json();
     
-    // Validation des données
-    if (!body.text || typeof body.text !== 'string') {
+    // Validation du corps de la requête
+    if (!body || !body.text) {
       return NextResponse.json(
-        { message: 'Le texte est requis et doit être une chaîne de caractères.' },
+        { message: 'Le texte est requis' },
         { status: 400 }
       );
     }
@@ -142,30 +132,31 @@ export async function POST(request) {
     // En mode normal, appel au backend avec le token d'authentification
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      'Authorization': authHeader // Transmettre le header d'autorisation tel quel
     };
+    
+    console.log('Headers envoyés au backend:', headers); // Pour déboguer
     
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(body),
-      cache: 'no-store'
     });
     
     // Essayer de récupérer les données de la réponse
     let responseData;
     try {
       responseData = await response.json();
+      console.log('Réponse du backend:', responseData); // Pour déboguer
     } catch (e) {
+      console.error('Erreur lors de la lecture de la réponse:', e); // Pour déboguer
       responseData = { message: 'Impossible de lire la réponse du serveur' };
     }
     
     // Si le backend n'est pas disponible ou renvoie une erreur
     if (!response.ok) {
       if (response.status === 401) {
+        console.error('Erreur 401 du backend:', responseData); // Pour déboguer
         return NextResponse.json(
           { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
           { status: 401 }

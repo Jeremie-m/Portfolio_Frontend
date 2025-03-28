@@ -15,12 +15,19 @@ const DynamicTypewriter = ({ texts = [], speed = 100, className = '' }) => {
   const [blinkCount, setBlinkCount] = useState(0);
   const totalBlinkTarget = useRef(0);
   
-  // Filtrer uniquement les textes actifs
-  const activeTexts = texts.filter(text => text.isActive);
+  // Filtrer uniquement les textes actifs et les trier par ordre
+  const activeTexts = texts
+    .filter(text => text.is_active)
+    .sort((a, b) => a.order - b.order);
   
   // Si aucun texte actif, afficher un texte par défaut
   if (activeTexts.length === 0) {
-    activeTexts.push({ id: 0, text: 'Développeur Full-Stack', isActive: true });
+    activeTexts.push({ 
+      id: 0, 
+      text: 'Développeur Full-Stack', 
+      is_active: true,
+      order: 1 
+    });
   }
   
   // Texte actuel

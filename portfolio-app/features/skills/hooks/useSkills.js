@@ -1,106 +1,184 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSkillsContext } from '@/features/skills/contexts/SkillsContext';
+import { useState } from 'react';
+import { useSkillsContext } from '../contexts/SkillsContext';
 
 export const useSkills = () => {
-  const { globalSkills, setGlobalSkills } = useSkillsContext();
-  const [skills, setSkills] = useState(globalSkills);
+  const { globalSkills, setGlobalSkills, fetchSkills } = useSkillsContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Synchroniser l'état local avec l'état global
-  useEffect(() => {
-    setSkills(globalSkills);
-  }, [globalSkills]);
+  /**
+   * Récupère le token d'authentification depuis sessionStorage
+   * @returns {string|null} Le token ou null si non trouvé
+   */
+  const getAuthToken = () => {
+    // Vérifier que window existe (Next.js SSR sécurité)
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('authToken');
+    }
+    return null;
+  }; 
 
-  // Fonction pour charger les compétences
-  const fetchSkills = async () => {
+  // Fonction pour ajouter une skill
+  const addSkill = async (e) => {
     setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/skills');
-      // const data = await response.json();
-      // setSkills(data);
-      // setGlobalSkills(data);
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour ajouter un texte');
+      }
       
-      // Pour le moment, on utilise les données globales
-      setSkills(globalSkills);
-      setError(null);
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+
+      const response = await fetch('/api/skills', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(e),
+      });
+
+      // Gérer les erreurs d'authentification spécifiquement
+      if (response.status === 401) {
+        throw new Error('Session expirée. Veuillez vous reconnecter.');
+      }
+
+      const responseData = await response.json();
+      console.log('Données de la réponse:', responseData);
+      
+      if (!response.ok) {
+        throw new Error(responseData.message || responseData.error || 'Erreur lors de l\'ajout de la compétence');
+      }
+
+      // Mettre à jour l'état avec la nouvelle compétence
+      setGlobalSkills(prevSkills => [...prevSkills, responseData]);
+      return responseData;
     } catch (err) {
-      setError('Erreur lors du chargement des compétences');
+      console.error('Erreur lors de l\'ajout de la compétence:', err);
+      setError(err.message);
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fonction pour sauvegarder les modifications
-  const saveSkills = async (updatedSkills) => {
+  // Fonction pour mettre à jour une skill
+  const updateSkill = async (id, skillData) => {
+    setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/skills', {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(updatedSkills),
-      // });
-      // const data = await response.json();
-      // setSkills(data);
-      // setGlobalSkills(data);
-      
-      // Pour le moment, on simule une sauvegarde réussie
-      setGlobalSkills([...updatedSkills]);
-      setSkills([...updatedSkills]);
-      return true;
-    } catch (err) {
-      throw new Error('Erreur lors de la sauvegarde des compétences');
-    }
-  };
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour modifier une compétence');
+      }
 
-  // Fonction pour supprimer une compétence
-  const deleteSkill = async (id) => {
-    try {
-      const updatedSkills = skills.filter(skill => skill.id !== id);
-      await saveSkills(updatedSkills);
-      return true;
-    } catch (err) {
-      throw new Error('Erreur lors de la suppression de la compétence');
-    }
-  };
-
-  // Fonction pour ajouter une nouvelle compétence
-  const addSkill = async (skillData) => {
-    try {
-      const newId = Math.max(...skills.map(skill => skill.id), 0) + 1;
-      const newSkill = {
-        id: newId,
-        ...skillData
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
       };
-      
-      const updatedSkills = [...skills, newSkill];
-      await saveSkills(updatedSkills);
-      return newSkill;
+
+      const response = await fetch(`/api/skills/${id}`, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(skillData)
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.');
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la mise à jour de la compétence');
+      }
+
+      const updatedSkill = await response.json();
+      setGlobalSkills(prevSkills =>
+        prevSkills.map(skill => skill.id === id ? updatedSkill : skill)
+      );
+      return updatedSkill;
     } catch (err) {
-      throw new Error('Erreur lors de l\'ajout de la compétence');
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Charger les données au montage du composant seulement si l'état global est vide
-  useEffect(() => {
-    if (globalSkills.length === 0) {
-      fetchSkills();
+  // Fonction pour supprimer une skill
+  const deleteSkill = async (id) => {
+    setIsLoading(true);
+    try {
+      const token = getAuthToken();
+      console.log('Token d\'authentification:', token);
+      if (!token) {
+        throw new Error('Vous devez être connecté pour supprimer une compétence');
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+      };
+
+      const response = await fetch(`/api/skills/${id}`, {
+        method: 'DELETE',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.');
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la suppression de la compétence');
+      }
+
+      setGlobalSkills(prevSkills => prevSkills.filter(skill => skill.id !== id));
+      return true;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalSkills.length]);
+  };
+
+  const handleSkillChange = (id, field, value) => {
+    // Ne mettre à jour que name et image_url dans localSkills
+    const updatedSkills = globalSkills.map(skill => 
+      skill.id === id 
+        ? { 
+            ...skill,
+            name: field === 'name' ? value : skill.name,
+            image_url: field === 'image_url' ? value : skill.image_url
+          } 
+        : skill
+    );
+    setGlobalSkills(updatedSkills);
+  };
+
+  const handleSkillUpdate = async (id) => {
+    try {
+      const skill = globalSkills.find(s => s.id === id);
+      if (!skill) return;
+      
+      // Extraire uniquement les propriétés nécessaires
+      const { name, image_url } = skill;
+      await updateSkill(id, { name, image_url });
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour:', err);
+    }
+  };
 
   return {
-    skills,
+    skills: globalSkills,
     isLoading,
     error,
-    fetchSkills,
-    saveSkills,
+    addSkill,
+    updateSkill,
     deleteSkill,
-    addSkill
+    refreshSkills: fetchSkills
   };
 }; 

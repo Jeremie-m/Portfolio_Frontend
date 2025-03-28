@@ -11,7 +11,7 @@ const Header = ({ onOpenModal, activeModal }) => {
   const { isAdmin, setIsAdmin } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
     setIsAdmin(false);
   };
 

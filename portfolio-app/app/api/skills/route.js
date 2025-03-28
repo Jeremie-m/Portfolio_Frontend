@@ -70,13 +70,33 @@ export async function GET(request) {
   }
 }
 
-// POST /api/skills - Ajouter une nouvelle skill (protégé par authentification)
+// POST /api/skills - Ajouter une nouvelle skill
 export async function POST(request) {
   try {
-    // Vérifier si on doit utiliser les mocks ou le backend réel
     const useMockApi = process.env.USE_MOCK_API === 'true';
-    
     const data = await request.json();
+
+    // Récupérer le token depuis l'en-tête Authorization de la requête entrante
+    const authHeader = request.headers.get('Authorization');
+    let token;
+    
+    if (authHeader) {
+      // Si l'en-tête est au format "Bearer <token>"
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      } else {
+        // Sinon utiliser directement la valeur
+        token = authHeader;
+      }
+      console.log('Token récupéré de l\'en-tête Authorization');
+    } else {
+      // Aucun token trouvé
+      console.log('Aucun token trouvé dans l\'en-tête Authorization');
+      return NextResponse.json(
+        { message: 'Authentification requise. Veuillez vous connecter.' },
+        { status: 401 }
+      );
+    }
     
     // Validation des données de base
     if (!data.name) {
@@ -87,62 +107,61 @@ export async function POST(request) {
     }
     
     if (useMockApi) {
-      // ---------- MODE MOCK (pour développement sans backend) ----------
       console.log('Mode mock activé pour la création de compétence');
-      
-      // Simuler l'ajout d'une nouvelle skill
       const newSkill = {
         id: mockSkills.length + 1,
         ...data,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      
-      // Dans une vraie application, nous ajouterions la skill à la base de données
-      // skills.push(newSkill);
-      
       return NextResponse.json(newSkill, { status: 201 });
-    } else {
-      // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
-      }
-      
-      console.log(`Création d'une compétence via le backend: ${apiUrl}/skills`);
-      
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
-      
-      // Effectuer la requête au backend
-      const backendResponse = await fetch(`${apiUrl}/skills`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-      
-      // Récupérer les données de la réponse
-      const responseData = await backendResponse.json();
-      
-      // Vérifier si la requête a réussi
-      if (backendResponse.ok) {
-        return NextResponse.json(responseData, { status: backendResponse.status });
-      } else {
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
+    }
+
+    console.log(`Création d'une compétence via le backend: ${apiUrl}/skills`);
+
+    const backendResponse = await fetch(`${apiUrl}/skills`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+      credentials: 'include'
+    });
+
+    // Essayer de récupérer les données de la réponse
+    let responseData;
+    try {
+      responseData = await backendResponse.json();
+    } catch (e) {
+      responseData = { message: 'Impossible de lire la réponse du serveur' };
+    }
+
+    console.log('Réponse du backend:', {
+      status: backendResponse.status,
+      statusText: backendResponse.statusText
+    });
+    console.log('Données de la réponse:', responseData);
+    
+    if (!backendResponse.ok) {
+      if (backendResponse.status === 401) {
         return NextResponse.json(
-          { error: responseData.error || 'Erreur lors de la création de la compétence' },
-          { status: backendResponse.status }
+          { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
+          { status: 401 }
         );
       }
+      
+      return NextResponse.json(responseData, { status: backendResponse.status });
     }
+
+    return NextResponse.json(responseData, { status: 201 });
   } catch (error) {
     console.error('Erreur lors de la création de la compétence:', error);
-    
     return NextResponse.json(
       { error: 'Erreur lors de la création de la compétence', details: error.message },
       { status: 500 }
