@@ -2,16 +2,6 @@ import { NextResponse } from 'next/server';
 // Import des mocks pour le mode fallback si la connexion au backend échoue
 import { admin } from '@/features/auth/mocks/admin';
 
-// Fonction pour générer un token de secours
-const generateFallbackToken = (user) => {
-  try {
-    const timestamp = new Date().getTime();
-    return `fallback_${timestamp}_${Math.random().toString(36).substring(2, 15)}`;
-  } catch (error) {
-    // En cas d'erreur, générer un token très simple
-    return `fallback_${Date.now()}`;
-  }
-};
 
 // POST /api/auth/login - Authentifier un utilisateur
 export async function POST(request) {

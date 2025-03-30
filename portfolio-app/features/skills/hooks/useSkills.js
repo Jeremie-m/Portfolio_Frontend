@@ -20,7 +20,7 @@ export const useSkills = () => {
     return null;
   }; 
 
-  // Fonction pour ajouter une skill
+  // Fonction pour ajouter un skill
   const addSkill = async (e) => {
     setIsLoading(true);
     try {
@@ -48,17 +48,15 @@ export const useSkills = () => {
       }
 
       const responseData = await response.json();
-      console.log('Données de la réponse:', responseData);
       
       if (!response.ok) {
-        throw new Error(responseData.message || responseData.error || 'Erreur lors de l\'ajout de la compétence');
+        throw new Error(responseData.message || responseData.error || 'Erreur lors de l\'ajout du skill');
       }
 
-      // Mettre à jour l'état avec la nouvelle compétence
+      // Mettre à jour l'état avec le nouveau skill
       setGlobalSkills(prevSkills => [...prevSkills, responseData]);
       return responseData;
     } catch (err) {
-      console.error('Erreur lors de l\'ajout de la compétence:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -66,13 +64,13 @@ export const useSkills = () => {
     }
   };
 
-  // Fonction pour mettre à jour une skill
+  // Fonction pour mettre à jour un skill
   const updateSkill = async (id, skillData) => {
     setIsLoading(true);
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('Vous devez être connecté pour modifier une compétence');
+        throw new Error('Vous devez être connecté pour modifier un skill');
       }
 
       const headers = {
@@ -91,7 +89,7 @@ export const useSkills = () => {
           throw new Error('Session expirée. Veuillez vous reconnecter.');
         }
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de la mise à jour de la compétence');
+        throw new Error(errorData.message || 'Erreur lors de la mise à jour du skill');
       }
 
       const updatedSkill = await response.json();
@@ -107,14 +105,13 @@ export const useSkills = () => {
     }
   };
 
-  // Fonction pour supprimer une skill
+  // Fonction pour supprimer un skill
   const deleteSkill = async (id) => {
     setIsLoading(true);
     try {
       const token = getAuthToken();
-      console.log('Token d\'authentification:', token);
       if (!token) {
-        throw new Error('Vous devez être connecté pour supprimer une compétence');
+        throw new Error('Vous devez être connecté pour supprimer un skill');
       }
 
       const headers = {
@@ -132,7 +129,7 @@ export const useSkills = () => {
           throw new Error('Session expirée. Veuillez vous reconnecter.');
         }
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de la suppression de la compétence');
+        throw new Error(errorData.message || 'Erreur lors de la suppression du skill');
       }
 
       setGlobalSkills(prevSkills => prevSkills.filter(skill => skill.id !== id));
@@ -168,7 +165,7 @@ export const useSkills = () => {
       const { name, image_url } = skill;
       await updateSkill(id, { name, image_url });
     } catch (err) {
-      console.error('Erreur lors de la mise à jour:', err);
+      setError(err.message);
     }
   };
 
