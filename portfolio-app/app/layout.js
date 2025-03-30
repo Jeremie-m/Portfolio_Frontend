@@ -1,32 +1,60 @@
-import { Inter, JetBrains_Mono, Montserrat, Noto_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import VideoBackground from "@/components/layout/VideoBackground";
 import { AuthProvider } from "@/features/auth/contexts/AuthContext";
 import { SkillsProvider } from "@/features/skills/contexts/SkillsContext";
 import { ProjectsProvider } from "@/features/projects/contexts/ProjectsContext";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-inter",
+const inter = localFont({
+  src: [
+    {
+      path: './fonts/Inter-VariableFont_opsz,wght.ttf',
+      weight: '100 900',
+      style: 'normal',
+    }
+  ],
+  display: 'swap',
+  preload: true,
+  variable: '--font-inter',
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-jetbrains-mono",
+const jetbrainsMono = localFont({
+  src: [
+    {
+      path: './fonts/JetBrainsMono-VariableFont_wght.ttf',
+      weight: '100 900',
+      style: 'normal',
+    }
+  ],
+  display: 'swap',
+  preload: true,
+  variable: '--font-jetbrains-mono',
 });
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-montserrat",
+const montserrat = localFont({
+  src: [
+    {
+      path: './fonts/Montserrat-VariableFont_wght.ttf',
+      weight: '100 900',
+      style: 'normal',
+    }
+  ],
+  display: 'swap',
+  preload: true,
+  variable: '--font-montserrat',
 });
 
-const notoSans = Noto_Sans({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-noto-sans",
+const notoSans = localFont({
+  src: [
+    {
+      path: './fonts/NotoSans-VariableFont_wdth,wght.ttf',
+      weight: '100 900',
+      style: 'normal',
+    }
+  ],
+  display: 'swap',
+  preload: true,
+  variable: '--font-noto-sans',
 });
 
 export const metadata = {

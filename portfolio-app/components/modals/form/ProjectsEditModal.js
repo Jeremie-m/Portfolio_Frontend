@@ -12,7 +12,7 @@ import Image from 'next/image';
 import SuccessToast from '@/components/common/SuccessToast';
 
 const ProjectsEditModal = ({ isOpen, onClose }) => {
-  const { projects, isLoading, deleteProject, saveProjects, editProject } = useProjects();
+  const { projects, isLoading, deleteProject, updateProject} = useProjects();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
@@ -77,16 +77,12 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
     setShowAddModal(false);
   };
 
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      await saveProjects(localProjects);
+  const handleSave = () => {
+    setSuccessMessage('Modifications enregistrées avec succès !');
+    setShowSuccessToast(true);
+    setTimeout(() => {
       onClose();
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-    } finally {
-      setIsSaving(false);
-    }
+    }, 1000);
   };
 
   // Gestion du scroll de l'arrière-plan

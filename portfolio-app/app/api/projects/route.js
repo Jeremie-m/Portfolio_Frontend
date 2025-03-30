@@ -75,14 +75,6 @@ export async function POST(request) {
     
     const data = await request.json();
     
-    // Validation des données de base
-    if (!data.title || !data.description || !data.skills) {
-      return NextResponse.json(
-        { error: 'Les champs title, description et skills sont requis' },
-        { status: 400 }
-      );
-    }
-    
     if (useMockApi) {
       // ---------- MODE MOCK (pour développement sans backend) ----------
       console.log('Mode mock activé pour la création de projet');
