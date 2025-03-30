@@ -11,7 +11,7 @@ import Loader from '@/components/common/Loader';
 
 const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
-  const { projects, isLoading } = useProjects();
+  const { globalProjects, isLoading, error } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [projectsPerLoad, setProjectsPerLoad] = useState(2);
   const [isTablet, setIsTablet] = useState(false);
@@ -141,13 +141,15 @@ const Projects = ({ onOpenModal, activeModal }) => {
     });
   }, [windowWidth, isMounted]);
 
-  // Fonction pour charger plus de projets
+  // Fonction corrigée pour charger plus de projets
   const loadMoreProjects = () => {
-    setVisibleProjects(prev => Math.min(prev + projectsPerLoad, projects.length));
+    if (globalProjects) {  // Ajout d'une vérification de sécurité
+      setVisibleProjects(prev => Math.min(prev + projectsPerLoad, globalProjects.length));
+    }
   };
 
   // Déterminer les projets à afficher
-  const projectsToDisplay = projects ? projects.slice(0, visibleProjects) : [];
+  const projectsToDisplay = globalProjects ? globalProjects.slice(0, visibleProjects) : [];
 
   // Obtenir les dimensions initiales des icônes
   const getIconDimensions = (type) => {
@@ -208,7 +210,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
   };
   
   // Afficher le loader si les données sont en cours de chargement ou le composant n'est pas monté
-  if (isLoading || !isMounted || !projects) {
+  if (isLoading || !isMounted || !globalProjects) {
     return (
       <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
         <div className="flex justify-center items-center h-[300px] md:h-[400px] lg:h-[500px]">
@@ -216,6 +218,20 @@ const Projects = ({ onOpenModal, activeModal }) => {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
+        <div className="flex justify-center items-center h-[300px] md:h-[400px] lg:h-[500px]">
+          <p>Erreur lors du chargement des projets: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!globalProjects || !Array.isArray(globalProjects)) {
+    return <div>Aucun projet disponible</div>;
   }
 
   return (
@@ -266,7 +282,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                   
                   <div className="mt-auto pt-4 md:pt-6 lg:pt-8">
                     <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8" aria-label="Technologies utilisées">
-                      {project.technologies.map((tech, index) => (
+                      {project.skills.map((tech, index) => (
                         <span key={index} className="text-xs md:text-[16px] lg:text-[24px] font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl" role="listitem">
                           {tech}
                         </span>
@@ -320,7 +336,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
         </motion.div>
         
         {/* Afficher le bouton "Voir plus" s'il reste des projets à afficher */}
-        {visibleProjects < projects.length && (
+        {visibleProjects < globalProjects.length && (
           <motion.button 
             onClick={loadMoreProjects}
             className={`h-12 md:h-18 lg:h-20 w-[143px] md:w-[280px] lg:w-[320px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}
