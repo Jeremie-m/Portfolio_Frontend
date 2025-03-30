@@ -10,19 +10,11 @@ export default function FanCards() {
   const { skills } = useSkills();
   const [activeIndex, setActiveIndex] = useState(0)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0)
-  const [isRendered, setIsRendered] = useState(false)
   const totalAngleRange = 70
   const startAngle = -30
   
-  // État pour suivre si le composant est monté côté client
-  const [isMounted, setIsMounted] = useState(false)
-  
-  // Référence à l'image de la main
-  const handRef = useRef(null)
-  
   // S'assurer que le code s'exécute uniquement côté client
   useEffect(() => {
-    setIsMounted(true)
     setWindowWidth(window.innerWidth)
     
     // Fonction pour mettre à jour la largeur lors du redimensionnement
@@ -41,7 +33,6 @@ export default function FanCards() {
 
   // Utiliser un effet pour appliquer manuellement les styles selon la taille d'écran
   useEffect(() => {
-    if (!isMounted || !handRef.current) return;
 
     // Mobile
     let width = 90
@@ -64,26 +55,10 @@ export default function FanCards() {
       marginTop = 520
     }
     
-    // Appliquer les styles de manière explicite et avec force
-    handRef.current.style.cssText = `
-      width: ${width}px !important;
-      height: ${height}px !important;
-      margin-top: ${marginTop}px;
-      margin-bottom: ${marginBottom}px;
-      object-fit: contain;
-      min-width: ${width}px;
-      min-height: ${height}px;
-    `;
     
-    // Indiquer que le rendu est terminé après un court délai
-    setTimeout(() => {
-      setIsRendered(true);
-    }, 200);
-    
-  }, [windowWidth, handRef, isMounted])
+  }, [windowWidth])
 
   useEffect(() => {
-    if (!isMounted) return;
     
     const handleWheel = (e) => {
       // Si on défile vers le bas
@@ -116,7 +91,7 @@ export default function FanCards() {
         container.removeEventListener("wheel", handleWheel)
       }
     }
-  }, [skills.length, isMounted, activeIndex])
+  }, [skills.length, activeIndex])
 
   const getBrightness = (index) => {
     const distance = Math.abs(index - activeIndex)
@@ -160,27 +135,6 @@ export default function FanCards() {
   const handleCardClick = (index) => {
     setActiveIndex(index)
   }
-  
-  // Si les skills ne sont pas encore chargés ou que le composant n'est pas monté,
-  // on ne rend rien pour éviter un affichage partiel
-  if (!skills || skills.length === 0 || !isMounted) {
-    return null;
-  }
-  
-  // Détermination des dimensions à utiliser pour le rendu initial
-  const getHandDimensions = () => {
-    if (!isMounted) return { width: 190, height: 190, marginBottom: -220 };
-    
-    if (windowWidth >= 1024) {
-      return { width: 406, height: 486, marginBottom: -320 };
-    } else if (windowWidth >= 744) {
-      return { width: 210, height: 252, marginBottom: -240 };
-    } else {
-      return { width: 190, height: 190, marginBottom: -220 };
-    }
-  };
-  
-  const handDimensions = getHandDimensions();
 
   return (
     <div id="fan-container" className="flex flex-col h-[280px] md:h-[600px] lg:h-[1000px] w-full max-w-full">
@@ -202,20 +156,6 @@ export default function FanCards() {
             </motion.div>
           ))}
         </AnimatePresence>
-        
-        {/* Main */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-0 z-[99]">
-          <Image 
-            ref={handRef}
-            src="/images/hand.svg" 
-            alt="Hand" 
-            width={handDimensions.width}
-            height={handDimensions.height}
-            priority={true}
-            unoptimized={true}
-            style={{}}
-          />
-        </div>
       </div>
     </div>
   )
