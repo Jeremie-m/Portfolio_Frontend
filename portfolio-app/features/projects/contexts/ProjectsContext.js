@@ -28,8 +28,6 @@ export function ProjectsProvider({ children }) {
 
       const data = await response.json();
       
-      console.log('1. Avant setGlobalProjects:', globalProjects);
-      
       if (data && Array.isArray(data.items)) {
         setGlobalProjects(data.items);
 

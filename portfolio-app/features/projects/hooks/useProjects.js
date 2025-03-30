@@ -27,15 +27,18 @@ export const useProjects = () => {
     try {
       // Récupérer le token d'authentification
       const token = getAuthToken();
+      console.log('Token récupéré:', token); // Debug
+
       if (!token) {
         throw new Error('Vous devez être connecté pour ajouter un projet');
-      } 
+      }
 
       // Configurer les en-têtes avec le token
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}` 
       };
+      console.log('Headers envoyés:', headers); // Debug
 
       const response = await fetch('/api/projects', {
         method: 'POST',
@@ -43,12 +46,13 @@ export const useProjects = () => {
         body: JSON.stringify(projectData),
       });
 
+      console.log('Status:', response.status); // Debug
+      const responseData = await response.json();
+      console.log('Réponse:', responseData); // Debug
+
       if (response.status === 401) {
         throw new Error('Session expirée. Veuillez vous reconnecter.');
       }
-
-      const responseData = await response.json();
-      console.log('Données de la réponse:', responseData);
       
       if (!response.ok) {
         throw new Error(responseData.message || responseData.error || 'Erreur lors de l\'ajout du projet');

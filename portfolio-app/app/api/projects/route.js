@@ -79,9 +79,9 @@ export async function POST(request) {
     const data = await request.json();
     
     // Validation des données de base
-    if (!data.title || !data.description || !data.technologies) {
+    if (!data.title || !data.description || !data.skills) {
       return NextResponse.json(
-        { error: 'Les champs title, description et technologies sont requis' },
+        { error: 'Les champs title, description et skills sont requis' },
         { status: 400 }
       );
     }
@@ -104,38 +104,46 @@ export async function POST(request) {
       return NextResponse.json(newProject, { status: 201 });
     } else {
       // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
       
-      console.log(`Création d'un projet via le backend: ${apiUrl}/projects`);
+      console.log('URL du backend:', `${apiUrl}/projects`); // Debug
       
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
+      // Récupérer le header d'autorisation
+      const authHeader = request.headers.get('Authorization');
+      console.log('Token reçu du frontend:', authHeader); // Debug
       
+      if (!authHeader) {
+        return NextResponse.json(
+          { error: 'Token d\'authentification manquant' },
+          { status: 401 }
+        );
+      }
+
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
+          'Authorization': authHeader // Transmettre le header tel quel
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
       
+      console.log('Status backend:', backendResponse.status); // Debug
+      
       // Récupérer les données de la réponse
       const responseData = await backendResponse.json();
+      console.log('Réponse backend:', responseData); // Debug
       
       // Vérifier si la requête a réussi
       if (backendResponse.ok) {
         return NextResponse.json(responseData, { status: backendResponse.status });
       } else {
         return NextResponse.json(
-          { error: responseData.error || 'Erreur lors de la création du projet' },
+          { error: responseData.error || responseData.message || 'Erreur lors de la création du projet' },
           { status: backendResponse.status }
         );
       }

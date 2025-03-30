@@ -8,7 +8,7 @@ import Loader from '@/components/common/Loader';
 import SuccessToast from '@/components/common/SuccessToast';
 import { useProjects } from '@/features/projects/hooks/useProjects';
 import { useSkills } from '@/features/skills/hooks/useSkills';
-import ConfirmModal from '@/components/modals/ConfirmModal';
+
 
 const ProjectEditModal = ({ isOpen, onClose, project }) => {
   const { updateProject } = useProjects();

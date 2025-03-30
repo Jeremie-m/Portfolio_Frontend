@@ -19,13 +19,12 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
   const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const fileInputRef = useRef(null);
   
   // État pour les erreurs de validation
   const [errors, setErrors] = useState({
     title: '',
     description: '',
-    technologies: '',
+    skills: '',
     github_link: '',
     demo_link: '',
     image_url: ''
@@ -35,10 +34,10 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
   const [projectData, setProjectData] = useState({
     title: '',
     description: '',
-    technologies: [],
+    skills: [],
     github_link: '',
     demo_link: '',
-    image_url: '/images/projects/default.jpg'
+    image_url: '/images/projects/default.svg'
   });
 
   // Réinitialiser le formulaire quand la modal s'ouvre
@@ -47,17 +46,17 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
       setProjectData({
         title: '',
         description: '',
-        technologies: [],
+        skills: [],
         github_link: '',
         demo_link: '',
-        image_url: '/images/projects/default.jpg'
+        image_url: '/images/projects/default.svg'
       });
-      setTempImageUrl('/images/projects/default.jpg');
+      setTempImageUrl('/images/projects/default.svg');
       setUploadError(null);
       setErrors({
         title: '',
         description: '',
-        technologies: '',
+        skills: '',
         github_link: '',
         demo_link: '',
         image_url: ''
@@ -88,26 +87,32 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
       case 'title':
         if (!value.trim()) {
           errorMessage = 'Le titre est obligatoire';
+        } else if (value.trim().length < 3) {
+          errorMessage = 'Le titre doit contenir au moins 3 caractères';
         }
         break;
       case 'description':
         if (!value.trim()) {
           errorMessage = 'La description est obligatoire';
+        } else if (value.trim().length < 10) {
+          errorMessage = 'La description doit contenir au moins 10 caractères';
         }
         break;
-      case 'technologies':
-        if (value.length === 0) {
-          errorMessage = 'Au moins une technologie est requise';
+      case 'skills':
+        if (!Array.isArray(value)) {
+          errorMessage = 'Les compétences doivent être un tableau';
+        } else if (value.length === 0) {
+          errorMessage = 'Au moins une compétence est requise';
         }
         break;
       case 'github_link':
         if (value.trim() && !isValidUrl(value)) {
-          errorMessage = 'Veuillez entrer une URL valide';
+          errorMessage = 'Veuillez entrer une URL GitHub valide';
         }
         break;
       case 'demo_link':
         if (value.trim() && !isValidUrl(value)) {
-          errorMessage = 'Veuillez entrer une URL valide';
+          errorMessage = 'Veuillez entrer une URL de démo valide';
         }
         break;
       default:
@@ -230,18 +235,18 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
   };
 
   const handleAddSkill = (skillName) => {
-    if (!projectData.technologies.includes(skillName)) {
-      const newTechnologies = [...projectData.technologies, skillName];
+    if (!projectData.skills.includes(skillName)) {
+      const newSkills = [...projectData.skills, skillName];
       setProjectData({
         ...projectData,
-        technologies: newTechnologies
+        skills: newSkills
       });
       
-      // Valider le champ technologies
-      const errorMessage = validateField('technologies', newTechnologies);
+      // Valider le champ Skills
+      const errorMessage = validateField('skills', newSkills);
       setErrors({
         ...errors,
-        technologies: errorMessage
+        skills: errorMessage
       });
     }
     setShowSkillsDropdown(false);
@@ -249,17 +254,17 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
   };
 
   const handleRemoveSkill = (skillName) => {
-    const newTechnologies = projectData.technologies.filter(tech => tech !== skillName);
+    const newSkills = projectData.skills.filter(tech => tech !== skillName);
     setProjectData({
       ...projectData,
-      technologies: newTechnologies
+      skills: newSkills
     });
     
-    // Valider le champ technologies
-    const errorMessage = validateField('technologies', newTechnologies);
+    // Valider le champ Skills
+    const errorMessage = validateField('skills', newSkills);
     setErrors({
       ...errors,
-      technologies: errorMessage
+      skills: errorMessage
     });
   };
 
@@ -268,7 +273,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
     const newErrors = {
       title: validateField('title', projectData.title),
       description: validateField('description', projectData.description),
-      technologies: validateField('technologies', projectData.technologies),
+      skills: validateField('skills', projectData.skills),
       github_link: validateField('github_link', projectData.github_link),
       demo_link: validateField('demo_link', projectData.demo_link),
       image_url: ''
@@ -419,7 +424,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
               {errors.description && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.description}</p>}
             </div>
             
-            {/* Champ technologies avec autocomplétion */}
+            {/* Champ Skills avec autocomplétion */}
             <div className="mb-4 md:mb-5 lg:mb-6">
               <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Skills
@@ -430,7 +435,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                   type="text"
                   onChange={(e) => handleSkillInput(e.target.value)}
                   onFocus={handleSkillFocus}
-                  className={`w-full bg-primary-dark border ${errors.technologies ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                  className={`w-full bg-primary-dark border ${errors.skills ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                   placeholder="Ajouter un skill..."
                 />
                 {showSkillsDropdown && (
@@ -456,9 +461,9 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                 )}
               </div>
               
-              {/* Afficher les technologies sélectionnées */}
+              {/* Afficher les skills sélectionnées */}
               <div className="flex flex-wrap gap-2 mt-2">
-                {projectData.technologies.map((tech, index) => (
+                {projectData.skills.map((tech, index) => (
                   <div 
                     key={index}
                     className="bg-primary border border-primary px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-full flex items-center gap-1 text-xs md:text-sm lg:text-base text-white"
@@ -475,7 +480,7 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
                   </div>
                 ))}
               </div>
-              {errors.technologies && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.technologies}</p>}
+              {errors.skills && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.skills}</p>}
             </div>
             
             {/* Champ lien GitHub */}
