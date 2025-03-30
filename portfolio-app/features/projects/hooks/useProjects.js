@@ -8,15 +8,6 @@ export const useProjects = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    console.log('4. useEffect dans useProjects - globalProjects:', globalProjects);
-  }, [globalProjects]);
-
-  // Charger les données au montage du composant
-  useEffect(() => {
-    console.log('5. Appel de fetchProjects dans useEffect');
-    fetchProjects();
-  }, []);
 
   /**
    * Récupère le token d'authentification depuis sessionStorage

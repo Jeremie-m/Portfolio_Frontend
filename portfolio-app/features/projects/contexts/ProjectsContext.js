@@ -9,10 +9,6 @@ export function ProjectsProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    console.log('Données dans le contexte:', globalProjects);
-  }, [globalProjects]);
-
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
@@ -36,11 +32,7 @@ export function ProjectsProvider({ children }) {
       
       if (data && Array.isArray(data.items)) {
         setGlobalProjects(data.items);
-        console.log('2. Data reçue:', data.items);
-        
-        setTimeout(() => {
-          console.log('3. État après mise à jour (timeout):', globalProjects);
-        }, 100);
+
       } else {
         throw new Error('Format de réponse inattendu');
       }
