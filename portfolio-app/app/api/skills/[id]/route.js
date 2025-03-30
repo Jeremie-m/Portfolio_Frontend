@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 // Import des mocks pour le mode fallback
 import { skills as mockSkills } from '../../../../features/skills/mocks/skills';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // GET /api/skills/:id - Récupérer une skill spécifique
 export async function GET(request, { params }) {
@@ -220,7 +222,6 @@ export async function PUT(request, context) {
 // DELETE /api/skills/:id - Supprimer une skill (protégé par authentification)
 export async function DELETE(request, context) {
   try {
-    // Attendre les paramètres avant d'y accéder
     const params = await context.params;
     if (!params) {
       return NextResponse.json(
@@ -258,64 +259,68 @@ export async function DELETE(request, context) {
       );
     }
     
-    // Utilisation de l'URL spécifique du backend
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-    const endpoint = `${apiUrl}/skills/${id}`;
-    
     // Mode development/fallback
     const useMockApi = process.env.USE_MOCK_API === 'true';
     
-    if (useMockApi) {
-      // Dans ce cas, simuler une suppression réussie
-      return NextResponse.json(
-        { message: 'Compétence supprimée avec succès', id },
-        { status: 200 }
-      );
-    }
-    
-    // En mode normal, appel au backend avec le token d'authentification
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    };
-    
-    const response = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: headers,
-      cache: 'no-store'
-    });
-    
-    // Essayer de récupérer les données de la réponse
-    let responseData;
-    try {
-      responseData = await response.json();
-    } catch (e) {
-      responseData = { message: 'Impossible de lire la réponse du serveur' };
-    }
-    
-    // Si le backend n'est pas disponible ou renvoie une erreur
-    if (!response.ok) {
-      if (response.status === 401) {
+    if (!useMockApi) {
+      // Appel API réel
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+      const endpoint = `${apiUrl}/skills/${id}`;
+      
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Cache-Control': 'no-cache'
+      };
+      
+      const response = await fetch(endpoint, {
+        method: 'DELETE',
+        headers: headers,
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        // ... gestion des erreurs ...
         return NextResponse.json(
-          { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
-          { status: 401 }
+          { message: 'Erreur lors de la suppression' },
+          { status: response.status }
         );
       }
-      
-      return NextResponse.json(
-        { message: responseData.message || `Erreur lors de la suppression de la compétence ${id}` },
-        { status: response.status }
-      );
     }
-    
-    // Retourner le résultat de la suppression au client
-    return NextResponse.json(responseData, { status: 200 });
-  } catch (error) {
+
+    try {
+      // Rechercher et supprimer le fichier d'image correspondant
+      const skillsDirectory = path.join(process.cwd(), 'public', 'images', 'skills');
+      const files = await fs.readdir(skillsDirectory);
+      
+      // Chercher tous les fichiers commençant par l'ID de la skill
+      const skillFiles = files.filter(file => file.startsWith(`${id}_`));
+      
+      // Supprimer chaque fichier trouvé
+      for (const file of skillFiles) {
+        const filePath = path.join(skillsDirectory, file);
+        try {
+          await fs.unlink(filePath);
+          console.log(`Fichier supprimé: ${filePath}`);
+        } catch (err) {
+          console.error(`Erreur lors de la suppression du fichier ${filePath}:`, err);
+          // On continue même si la suppression du fichier échoue
+        }
+      }
+    } catch (err) {
+      console.error('Erreur lors de la suppression des fichiers:', err);
+      // On continue même si la suppression des fichiers échoue
+    }
+
     return NextResponse.json(
-      { message: 'Erreur lors de la suppression de la compétence', details: error.message },
+      { message: 'Compétence et fichiers associés supprimés avec succès', id },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error);
+    return NextResponse.json(
+      { message: 'Erreur lors de la suppression', details: error.message },
       { status: 500 }
     );
   }

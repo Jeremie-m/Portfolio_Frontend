@@ -1,41 +1,7 @@
 import { NextResponse } from 'next/server';
-import multer from 'multer';
 import sharp from 'sharp';
-import potrace from 'potrace';
 import { promises as fs } from 'fs';
 import path from 'path';
-
-// Configuration de multer
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 4 * 1024 * 1024, // 4MB
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Format de fichier non supporté. Formats acceptés : PNG, JPG, SVG, WEBP'));
-    }
-  }
-});
-
-// Fonction pour convertir une image en SVG
-const convertToSVG = async (buffer) => {
-  return new Promise((resolve, reject) => {
-    potrace.trace(buffer, {
-      turdSize: 2,
-      turnPolicy: potrace.Potrace.TURNPOLICY_MINORITY,
-      alphaMax: 1,
-      optCurve: true
-    }, (err, svg) => {
-      if (err) reject(err);
-      else resolve(svg);
-    });
-  });
-};
 
 export async function POST(request) {
   try {
@@ -58,42 +24,46 @@ export async function POST(request) {
       );
     }
 
-    // Convertir le fichier en buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    try {
+      // Convertir le fichier en buffer
+      const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Redimensionner l'image à 64x64
-    const resizedBuffer = await sharp(buffer)
-      .resize(64, 64, {
-        fit: 'contain',
-        background: { r: 255, g: 255, b: 255, alpha: 0 }
-      })
-      .toBuffer();
+      // Traiter l'image avec sharp
+      const processedBuffer = await sharp(buffer)
+        .resize(64, 64, {
+          fit: 'contain',
+          background: { r: 255, g: 255, b: 255, alpha: 0 }
+        })
+        // Optimiser l'image
+        .png({
+          quality: 90,
+          compressionLevel: 9,
+        })
+        .toBuffer();
 
-    // Convertir en SVG
-    const svg = await convertToSVG(resizedBuffer);
+      // Générer un nom de fichier unique
+      const fileName = `${skillId}_${Date.now()}.png`;
+      const filePath = path.join(process.cwd(), 'public', 'images', 'skills', fileName);
 
-    // Générer un nom de fichier unique
-    const fileName = `${skillId}_${Date.now()}.svg`;
-    const filePath = path.join(process.cwd(), 'public', 'images', 'skills', fileName);
+      // S'assurer que le dossier existe
+      const dir = path.dirname(filePath);
+      await fs.mkdir(dir, { recursive: true });
 
-    // Sauvegarder le SVG
-    await fs.writeFile(filePath, svg);
+      // Sauvegarder l'image
+      await fs.writeFile(filePath, processedBuffer);
 
-    // Log des informations pour le mode mock
-    console.log('Nouvelle image traitée :', {
-      skillId,
-      fileName,
-      filePath,
-      originalSize: file.size,
-      mimeType: file.type,
-      dimensions: '64x64',
-      format: 'SVG'
-    });
+      return NextResponse.json({
+        success: true,
+        imageUrl: `/images/skills/${fileName}`
+      });
 
-    return NextResponse.json({
-      success: true,
-      imageUrl: `/images/skills/${fileName}`
-    });
+    } catch (processingError) {
+      console.error('Erreur lors du traitement de l\'image:', processingError);
+      return NextResponse.json(
+        { error: 'Erreur lors du traitement de l\'image' },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error('Erreur lors de l\'upload:', error);

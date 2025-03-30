@@ -82,27 +82,43 @@ const SkillsEditModal = ({ isOpen, onClose }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      setUploadError('Le fichier est trop volumineux. Taille maximale : 4MB');
-      return;
+    try {
+      // 1. Upload de l'image
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('skillId', skillId);
+  
+      const uploadResponse = await fetch('/api/skills/upload', {
+        method: 'POST',
+        body: formData
+      });
+  
+      if (!uploadResponse.ok) {
+        throw new Error('Erreur lors de l\'upload de l\'image');
+      }
+  
+      const { imageUrl } = await uploadResponse.json();
+  
+      // 2. Mise à jour de l'affichage temporaire
+      setTempImageUrls(prev => ({
+        ...prev,
+        [skillId]: imageUrl
+      }));
+  
+      // 3. Mise à jour de la skill avec la nouvelle URL
+      setLocalSkills(prev => prev.map(skill => 
+        skill.id === skillId 
+          ? { ...skill, image_url: imageUrl }
+          : skill
+      ));
+  
+      // La nouvelle URL sera sauvegardée lors du clic sur le bouton "Sauvegarder"
+      setModifiedSkills(prev => new Set(prev).add(skillId));
+  
+    } catch (error) {
+      console.error('Erreur lors de l\'upload:', error);
+      setUploadError(error.message);
     }
-
-    const imageUrl = URL.createObjectURL(file);
-    
-    // Mettre à jour tempImageUrls pour l'affichage
-    setTempImageUrls(prev => ({
-      ...prev,
-      [skillId]: imageUrl
-    }));
-    
-    // Mettre à jour localSkills avec la nouvelle image_url
-    setLocalSkills(prev => prev.map(skill => 
-      skill.id === skillId 
-        ? { ...skill, image_url: imageUrl }
-        : skill
-    ));
-    
-    setModifiedSkills(prev => new Set(prev).add(skillId));
   };
 
   const handleDeleteClick = (id) => {
