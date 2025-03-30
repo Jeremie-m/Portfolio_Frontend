@@ -26,18 +26,13 @@ export async function GET(request) {
       endpoint += `?isActive=${isActiveFilter}`;
     }
     
-    console.log(`Tentative de récupération des données depuis: ${endpoint}`);
     
     // Appel au backend sans cache
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      },
-      cache: 'no-store'
+        'Content-Type': 'application/json'
+      }
     });
 
     // Si le backend n'est pas disponible, on retourne une erreur
@@ -58,17 +53,11 @@ export async function GET(request) {
     let filteredData = backendData;
     if (isActiveFilter === 'true' && Array.isArray(backendData)) {
       filteredData = backendData.filter(item => item.isActive === true);
-      console.log(`Filtrage des données par isActive=true : ${filteredData.length} éléments sur ${backendData.length}`);
     }
     
     // Retourner les données au client sans cache
     return NextResponse.json(filteredData, { 
       status: 200,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des données herobanner:', error);
@@ -135,8 +124,6 @@ export async function POST(request) {
       'Authorization': authHeader // Transmettre le header d'autorisation tel quel
     };
     
-    console.log('Headers envoyés au backend:', headers); // Pour déboguer
-    
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: headers,
@@ -147,16 +134,13 @@ export async function POST(request) {
     let responseData;
     try {
       responseData = await response.json();
-      console.log('Réponse du backend:', responseData); // Pour déboguer
     } catch (e) {
-      console.error('Erreur lors de la lecture de la réponse:', e); // Pour déboguer
       responseData = { message: 'Impossible de lire la réponse du serveur' };
     }
     
     // Si le backend n'est pas disponible ou renvoie une erreur
     if (!response.ok) {
       if (response.status === 401) {
-        console.error('Erreur 401 du backend:', responseData); // Pour déboguer
         return NextResponse.json(
           { message: 'Votre session a expiré. Veuillez vous reconnecter.' },
           { status: 401 }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 const LoginForm = ({ onClose }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ const LoginForm = ({ onClose }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -48,14 +48,14 @@ const LoginForm = ({ onClose }) => {
       )}
       
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-white mb-2">
-          Nom d'utilisateur
+        <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+          Email
         </label>
         <input
-          type="text"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary"
           required
         />

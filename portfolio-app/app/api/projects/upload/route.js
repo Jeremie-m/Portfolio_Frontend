@@ -54,24 +54,12 @@ export async function POST(request) {
       // Sauvegarder l'image
       await fs.writeFile(filePath, processedBuffer);
 
-      // Log des informations pour le développement
-      console.log('Nouvelle image de projet traitée :', {
-        originalName,
-        fileName,
-        filePath,
-        originalSize: file.size,
-        mimeType: file.type,
-        dimensions: '1024x720',
-        format: 'WebP'
-      });
-
       return NextResponse.json({
         success: true,
         imageUrl: `/images/projects/${fileName}`
       });
 
     } catch (processingError) {
-      console.error('Erreur lors du traitement de l\'image:', processingError);
       return NextResponse.json(
         { error: 'Erreur lors du traitement de l\'image' },
         { status: 500 }
@@ -79,7 +67,6 @@ export async function POST(request) {
     }
 
   } catch (error) {
-    console.error('Erreur lors de l\'upload:', error);
     return NextResponse.json(
       { error: error.message || 'Une erreur est survenue lors de l\'upload' },
       { status: 500 }

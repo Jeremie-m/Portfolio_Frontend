@@ -81,17 +81,13 @@ export async function PUT(request, context) {
     // En mode normal, appel au backend avec le token d'authentification
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      'Authorization': `Bearer ${token}`
     };
     
     const response = await fetch(endpoint, {
       method: 'PUT',
       headers: headers,
-      body: JSON.stringify(body),
-      cache: 'no-store'
+      body: JSON.stringify(body)
     });
     
     // Essayer de récupérer les données de la réponse
@@ -189,16 +185,12 @@ export async function DELETE(request, context) {
     // En mode normal, appel au backend avec le token d'authentification
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      'Authorization': `Bearer ${token}`
     };
     
     const response = await fetch(endpoint, {
       method: 'DELETE',
-      headers: headers,
-      cache: 'no-store'
+      headers: headers
     });
     
     // Essayer de récupérer les données de la réponse

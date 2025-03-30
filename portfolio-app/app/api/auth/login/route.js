@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-// Import des mocks pour le mode fallback si la connexion au backend échoue
 import { admin } from '@/features/auth/mocks/admin';
-
+import { sign } from 'jsonwebtoken';
 
 // POST /api/auth/login - Authentifier un utilisateur
 export async function POST(request) {
@@ -20,44 +19,40 @@ export async function POST(request) {
     const useMockApi = process.env.USE_MOCK_API === 'true';
     
     if (useMockApi) {
-      // ---------- MODE MOCK (pour développement sans backend) ----------
-      console.log('Mode mock activé pour l\'authentification');
-      
-      // Vérification avec les données du mock
+      // Mode mock (pour développement sans backend)
       if (email === admin.email && password === admin.password) {
-        // Simuler la création d'un token JWT
-        const token = 'mock_jwt_token';
+        // Créer un vrai token JWT pour le mock
+        const token = sign(
+          { 
+            sub: admin.email,
+            role: 'admin',
+            exp: Math.floor(Date.now() / 1000) + (60 * 60) // Expire dans 1 heure
+          },
+          process.env.JWT_SECRET || 'mock-secret'
+        );
         
-        // Débogage - afficher le token qui sera renvoyé
-        console.log('Debug - Mode mock - Token généré:', token);
-        
-        // Pour sessionStorage, on envoie uniquement dans le corps (pas de cookie HttpOnly)
         return NextResponse.json(
           { 
             success: true, 
-            message: 'Authentification réussie (mock)',
+            message: 'Authentification réussie',
             user: { email: admin.email, role: 'admin' },
-            token // Le token sera stocké dans sessionStorage côté client
+            token
           },
           { status: 200 }
         );
       } else {
         return NextResponse.json(
-          { error: 'Email ou mot de passe incorrect (mock)' },
+          { error: 'Email ou mot de passe incorrect' },
           { status: 401 }
         );
       }
     } else {
-      // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
+      // Mode réel (connexion au backend)
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
-      
-      console.log(`Tentative de connexion au backend: ${apiUrl}/auth/login`);
-      
-      // Transférer la requête au backend
+
       const backendResponse = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
@@ -66,45 +61,18 @@ export async function POST(request) {
         body: JSON.stringify({ email, password }),
       });
       
-      // Récupérer les données de la réponse
       const backendData = await backendResponse.json();
       
-      // Débogage - afficher les données reçues du backend
-      console.log('Debug - Réponse du backend:', {
-        status: backendResponse.status,
-        hasToken: !!backendData.access_token,
-        token: backendData.access_token ? 'Présent (non affiché pour sécurité)' : 'Absent',
-        data: backendData
-      });
-      
-      // Vérifier si la requête a réussi
       if (backendResponse.ok) {
-        // Utiliser le access_token du backend s'il existe, sinon générer un token de secours
-        const token = backendData.access_token || generateFallbackToken(backendData.user || { email });
-        
-        // Débogage - afficher le token utilisé
-        console.log('Debug - Token utilisé:', token.substring(0, 10) + '...');
-        
-        // Créer une réponse avec le même format que ce que le frontend attend
-        const responseData = { 
+        return NextResponse.json({ 
           success: true, 
           message: backendData.message || 'Authentification réussie',
-          user: backendData.user || { email, role: 'admin' }, // Utiliser les données du backend ou créer un utilisateur minimal
-          token // Utiliser le token backend ou notre token de secours
-        };
-        
-        // Vérification du token dans la réponse finale
-        console.log('Debug - Réponse finale envoyée au frontend:', {
-          hasToken: !!responseData.token,
-          tokenType: responseData.token ? typeof responseData.token : 'undefined',
-          isBackendToken: !!backendData.access_token
+          user: backendData.user,
+          token: backendData.access_token
+        }, { 
+          status: 200 
         });
-        
-        // Retourner la réponse avec uniquement le corps (pas de cookie)
-        // Le frontend sera responsable de stocker le token dans sessionStorage
-        return NextResponse.json(responseData, { status: backendResponse.status });
       } else {
-        // En cas d'erreur, transmettre le message d'erreur du backend
         return NextResponse.json(
           { error: backendData.error || 'Erreur d\'authentification' },
           { status: backendResponse.status }
@@ -113,9 +81,8 @@ export async function POST(request) {
     }
   } catch (error) {
     console.error('Erreur lors de l\'authentification:', error);
-    
     return NextResponse.json(
-      { error: 'Erreur lors de l\'authentification', details: error.message },
+      { error: 'Erreur lors de l\'authentification' },
       { status: 500 }
     );
   }

@@ -106,11 +106,8 @@ export async function POST(request) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
       
-      console.log('URL du backend:', `${apiUrl}/projects`); // Debug
-      
       // Récupérer le header d'autorisation
       const authHeader = request.headers.get('Authorization');
-      console.log('Token reçu du frontend:', authHeader); // Debug
       
       if (!authHeader) {
         return NextResponse.json(
@@ -129,11 +126,8 @@ export async function POST(request) {
         body: JSON.stringify(data),
       });
       
-      console.log('Status backend:', backendResponse.status); // Debug
-      
       // Récupérer les données de la réponse
       const responseData = await backendResponse.json();
-      console.log('Réponse backend:', responseData); // Debug
       
       // Vérifier si la requête a réussi
       if (backendResponse.ok) {

@@ -37,8 +37,6 @@ export async function GET(request, { params }) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
       
-      console.log(`Récupération du projet ${id} depuis le backend: ${apiUrl}/projects/${id}`);
-      
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'GET',
@@ -56,17 +54,13 @@ export async function GET(request, { params }) {
         // Récupérer les données d'erreur
         const errorData = await backendResponse.json().catch(() => ({}));
         
-        console.error(`Erreur lors de la récupération du projet ${id}:`, errorData);
-        
         // Si le projet n'est pas trouvé
         if (backendResponse.status === 404) {
           // En mode de développement, on peut essayer de récupérer le projet depuis les mocks
           if (process.env.NODE_ENV === 'development') {
-            console.log(`Projet ${id} non trouvé dans le backend, recherche dans les mocks`);
             const mockProject = mockProjects.find(p => p.id === parseInt(id));
             
             if (mockProject) {
-              console.log(`Projet ${id} trouvé dans les mocks`);
               return NextResponse.json(mockProject);
             }
           }
@@ -90,11 +84,9 @@ export async function GET(request, { params }) {
     
     // En cas d'erreur de connexion, essayer les mocks
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Erreur lors de la connexion au backend, recherche dans les mocks pour le projet ${params.id}`);
       const mockProject = mockProjects.find(p => p.id === parseInt(params.id));
       
       if (mockProject) {
-        console.log(`Projet ${params.id} trouvé dans les mocks`);
         return NextResponse.json(mockProject);
       }
     }
@@ -135,7 +127,6 @@ export async function PUT(request, { params }) {
         try {
           const oldImagePath = path.join(process.cwd(), 'public', oldImageUrl);
           await fs.unlink(oldImagePath);
-          console.log(`Ancienne image supprimée: ${oldImagePath}`);
         } catch (err) {
           console.error('Erreur lors de la suppression de l\'ancienne image:', err);
           // Continuer même si la suppression échoue
@@ -159,7 +150,6 @@ export async function PUT(request, { params }) {
       
       // Récupérer le header d'autorisation
       const authHeader = request.headers.get('Authorization');
-      console.log('Token reçu du frontend:', authHeader); // Debug
       
       if (!authHeader) {
         return NextResponse.json(
@@ -191,8 +181,6 @@ export async function PUT(request, { params }) {
         }
       }
       
-      console.log(`Mise à jour du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
-      
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'PUT',
@@ -203,11 +191,8 @@ export async function PUT(request, { params }) {
         body: JSON.stringify(data),
       });
       
-      console.log('Status backend:', backendResponse.status); // Debug
-      
       // Récupérer les données de la réponse
       const responseData = await backendResponse.json();
-      console.log('Réponse backend:', responseData); // Debug
       
       // Vérifier si la requête a réussi
       if (backendResponse.ok) {
@@ -289,8 +274,6 @@ export async function DELETE(request, { params }) {
         }
       }
       
-      console.log(`Suppression du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
-      
       // Ensuite, supprimer le projet
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'DELETE',
@@ -304,7 +287,6 @@ export async function DELETE(request, { params }) {
       if (backendResponse.ok && imageToDelete) {
         try {
           await fs.unlink(imageToDelete);
-          console.log(`Image supprimée: ${imageToDelete}`);
         } catch (err) {
           console.error('Erreur lors de la suppression de l\'image:', err);
           // On continue même si la suppression échoue
