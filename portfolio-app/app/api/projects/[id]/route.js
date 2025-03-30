@@ -232,7 +232,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/projects/:id - Supprimer un projet (protégé par authentification)
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Vérifier si on doit utiliser les mocks ou le backend réel
     const useMockApi = process.env.USE_MOCK_API === 'true';
@@ -250,24 +250,48 @@ export async function DELETE(request, { params }) {
         );
       }
       
-      // Dans une vraie application, nous supprimerions le projet de la base de données
-      // projects.splice(projectIndex, 1);
+      // Supprimer l'image associée au projet si elle existe
+      try {
+        const project = mockProjects[projectIndex];
+        if (project.image_url && !project.image_url.includes('default')) {
+          const imagePath = path.join(process.cwd(), 'public', project.image_url);
+          await fs.unlink(imagePath);
+          console.log(`Image supprimée: ${imagePath}`);
+        }
+      } catch (err) {
+        console.error('Erreur lors de la suppression de l\'image:', err);
+        // On continue même si la suppression échoue
+      }
       
       return NextResponse.json(
-        { message: 'Projet supprimé avec succès' },
+        { message: 'Projet et fichiers associés supprimés avec succès' },
         { status: 200 }
       );
     } else {
       // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
+
+      // D'abord récupérer le projet pour avoir l'URL de l'image
+      const currentProjectResponse = await fetch(`${apiUrl}/projects/${id}`, {
+        headers: {
+          'Authorization': request.headers.get('Authorization')
+        }
+      });
+
+      let imageToDelete;
+      if (currentProjectResponse.ok) {
+        const currentProject = await currentProjectResponse.json();
+        if (currentProject.image_url && !currentProject.image_url.includes('default')) {
+          imageToDelete = path.join(process.cwd(), 'public', currentProject.image_url);
+        }
+      }
       
       console.log(`Suppression du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
       
-      // Effectuer la requête au backend
+      // Ensuite, supprimer le projet
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'DELETE',
         headers: {
@@ -276,28 +300,28 @@ export async function DELETE(request, { params }) {
         }
       });
       
-      // Vérifier si la requête a réussi
-      if (backendResponse.ok) {
-        // Si la réponse ne contient pas de corps JSON, retourner un message standard
-        if (backendResponse.headers.get('content-length') === '0') {
-          return NextResponse.json(
-            { message: 'Projet supprimé avec succès' },
-            { status: 200 }
-          );
+      // Si la suppression a réussi, supprimer l'image
+      if (backendResponse.ok && imageToDelete) {
+        try {
+          await fs.unlink(imageToDelete);
+          console.log(`Image supprimée: ${imageToDelete}`);
+        } catch (err) {
+          console.error('Erreur lors de la suppression de l\'image:', err);
+          // On continue même si la suppression échoue
         }
-        
-        // Sinon, utiliser la réponse du backend
-        const responseData = await backendResponse.json();
-        return NextResponse.json(responseData);
-      } else {
-        // Récupérer les données d'erreur si possible
-        const errorData = await backendResponse.json().catch(() => ({}));
-        
+      }
+
+      // Si la réponse ne contient pas de corps JSON, retourner un message standard
+      if (backendResponse.headers.get('content-length') === '0') {
         return NextResponse.json(
-          { error: errorData.error || `Erreur lors de la suppression du projet ${id}` },
-          { status: backendResponse.status }
+          { message: 'Projet et fichiers associés supprimés avec succès' },
+          { status: 200 }
         );
       }
+      
+      // Sinon, utiliser la réponse du backend
+      const responseData = await backendResponse.json();
+      return NextResponse.json(responseData);
     }
   } catch (error) {
     console.error(`Erreur lors de la suppression du projet ${params.id}:`, error);

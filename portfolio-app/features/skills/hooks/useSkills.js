@@ -119,7 +119,7 @@ export const useSkills = () => {
 
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        'Authorization': `Bearer ${token}` 
       };
 
       const response = await fetch(`/api/skills/${id}`, {

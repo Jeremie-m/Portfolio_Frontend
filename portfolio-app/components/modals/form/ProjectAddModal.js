@@ -134,32 +134,68 @@ const ProjectAddModal = ({ isOpen, onClose }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      setUploadError('Le fichier est trop volumineux. Taille maximale : 4MB');
+    if (file.size > 10 * 1024 * 1024) { // 10MB max pour les projets
+      setUploadError('Le fichier est trop volumineux. Taille maximale : 10MB');
       setErrors({
         ...errors,
-        image_url: 'Le fichier est trop volumineux. Taille maximale : 4MB'
+        image_url: 'Le fichier est trop volumineux. Taille maximale : 10MB'
       });
       return;
     }
 
-    const imageUrl = URL.createObjectURL(file);
-    setTempImageUrl(imageUrl);
-    setProjectData({
-      ...projectData,
-      image_url: imageUrl
-    });
-    setUploadError(null);
-    setErrors({
-      ...errors,
-      image_url: ''
-    });
+    try {
+      // Créer un FormData pour envoyer le fichier
+      const formData = new FormData();
+      formData.append('image', file);
+      // Pour un nouveau projet, on n'a pas encore de projectId
+      formData.append('projectId', 'new');
 
-    console.log('Image sélectionnée (mock) :', {
-      fileName: file.name,
-      fileSize: file.size,
-      mimeType: file.type
-    });
+      // Récupérer le token d'authentification
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant');
+      }
+
+      // Envoyer le fichier à la route d'upload
+      const response = await fetch('/api/projects/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'upload de l\'image');
+      }
+
+      const data = await response.json();
+      
+      if (!data.imageUrl) {
+        throw new Error('URL de l\'image manquante dans la réponse');
+      }
+      
+      // Mettre à jour l'URL de l'image dans le state
+      setTempImageUrl(data.imageUrl);
+      setProjectData({
+        ...projectData,
+        image_url: data.imageUrl
+      });
+      setUploadError(null);
+      setErrors({
+        ...errors,
+        image_url: ''
+      });
+
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'image:', error);
+      setUploadError(error.message || 'Erreur lors de l\'upload de l\'image');
+      setErrors({
+        ...errors,
+        image_url: error.message || 'Erreur lors de l\'upload de l\'image'
+      });
+    }
   };
 
   const handleInputChange = (field, value) => {

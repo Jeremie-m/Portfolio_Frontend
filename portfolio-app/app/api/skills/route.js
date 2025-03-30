@@ -26,16 +26,17 @@ export async function GET(request) {
       
       console.log(`Récupération des compétences depuis le backend: ${apiUrl}/skills`);
       
+      // Récupérer le header d'autorisation
+      const authHeader = request.headers.get('Authorization');
+      console.log('Token reçu du frontend:', authHeader); // Debug
+      
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/skills`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les éventuels headers d'authentification si nécessaire
-          ...(request.headers.get('Cookie') ? { Cookie: request.headers.get('Cookie') } : {})
-        },
-        // Transmettre les credentials si nécessaire pour les cookies
-        credentials: 'include',
+          'Authorization': authHeader
+        }
       });
       
       // Vérifier si la requête a réussi
@@ -78,19 +79,8 @@ export async function POST(request) {
 
     // Récupérer le token depuis l'en-tête Authorization de la requête entrante
     const authHeader = request.headers.get('Authorization');
-    let token;
     
-    if (authHeader) {
-      // Si l'en-tête est au format "Bearer <token>"
-      if (authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-      } else {
-        // Sinon utiliser directement la valeur
-        token = authHeader;
-      }
-      console.log('Token récupéré de l\'en-tête Authorization');
-    } else {
-      // Aucun token trouvé
+    if (!authHeader) {
       console.log('Aucun token trouvé dans l\'en-tête Authorization');
       return NextResponse.json(
         { message: 'Authentification requise. Veuillez vous connecter.' },
@@ -128,10 +118,9 @@ export async function POST(request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': authHeader
       },
-      body: JSON.stringify(data),
-      credentials: 'include'
+      body: JSON.stringify(data)
     });
 
     // Essayer de récupérer les données de la réponse

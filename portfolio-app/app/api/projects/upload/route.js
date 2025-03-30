@@ -42,8 +42,9 @@ export async function POST(request) {
         })
         .toBuffer();
 
-      // Générer un nom de fichier unique
-      const fileName = `${projectId}_${Date.now()}.webp`;
+      // Générer un nom de fichier unique basé sur le nom original
+      const originalName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `${originalName}_${Date.now()}.webp`;
       const filePath = path.join(process.cwd(), 'public', 'images', 'projects', fileName);
 
       // S'assurer que le dossier existe
@@ -55,7 +56,7 @@ export async function POST(request) {
 
       // Log des informations pour le développement
       console.log('Nouvelle image de projet traitée :', {
-        projectId,
+        originalName,
         fileName,
         filePath,
         originalSize: file.size,

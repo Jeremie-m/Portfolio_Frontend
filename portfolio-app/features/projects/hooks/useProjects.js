@@ -71,21 +71,46 @@ export const useProjects = () => {
 
   // Fonction pour supprimer un projet
   const deleteProject = async (id) => {
+    setIsLoading(true);
     try {
-      // Remplacer la logique de suppression
-      const updatedProjects = globalProjects.filter(project => project.id !== id);
-      setGlobalProjects(updatedProjects);
-      setProjects(updatedProjects);
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      console.log('Token récupéré:', token); // Debug
+
+      if (!token) {
+        throw new Error('Vous devez être connecté pour ajouter un projet');
+      }
+
+      // Configurer les en-têtes avec le token
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      console.log('Headers envoyés:', headers); // Debug
+
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.');
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error || 'Erreur lors de la suppression du projet');
+      }
       
-      // TODO: Décommenter quand l'API sera prête
-      // await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-      
+      setGlobalProjects(prevProjects => prevProjects.filter(project => project.id !== id));
       return true;
     } catch (err) {
-      throw new Error('Erreur lors de la suppression du projet');
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);  
     }
   };
-  
+
   // Fonction pour mettre à jour un projet
   const updateProject = async (id, projectData) => {
     setIsLoading(true);
