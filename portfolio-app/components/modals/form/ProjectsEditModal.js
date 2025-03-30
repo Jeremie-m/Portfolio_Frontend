@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '@/components/modals/Modal';
 import Button from '@/components/common/Button';
 import Loader from '@/components/common/Loader';
@@ -12,7 +12,7 @@ import Image from 'next/image';
 import SuccessToast from '@/components/common/SuccessToast';
 
 const ProjectsEditModal = ({ isOpen, onClose }) => {
-  const { projects, isLoading, deleteProject, saveProjects } = useProjects();
+  const { globalProjects, isLoading, deleteProject, saveProjects, editProject } = useProjects();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
@@ -25,9 +25,9 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
   // Initialiser localProjects avec les projets actuels quand le modal s'ouvre
   useEffect(() => {
     if (isOpen) {
-      setLocalProjects([...projects]);
+      setLocalProjects([...globalProjects]);
     }
-  }, [isOpen, projects]);
+  }, [isOpen, globalProjects]);
 
   const handleDeleteClick = (id, e) => {
     e.stopPropagation(); // Empêcher le déclenchement du handleEdit sur le parent
@@ -151,7 +151,7 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
                         <h3 className="text-lg md:text-xl lg:text-2xl font-semibold font-montserrat text-white truncate">{project.title}</h3>
                         <p className="text-sm md:text-base lg:text-lg text-white-300 break-words font-montserrat line-clamp-2">{project.description}</p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {project.technologies.map((tech, index) => (
+                          {project.skills.map((tech, index) => (
                             <span 
                               key={index}
                               className="text-xs md:text-sm lg:text-base bg-primary px-2 py-1 border border-primary rounded-xl text-white font-montserrat"

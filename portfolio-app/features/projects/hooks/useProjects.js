@@ -65,26 +65,6 @@ export const useProjects = () => {
     }
   };
 
-  // Fonction pour sauvegarder les modifications
-  const saveProjects = async (updatedProjects) => {
-    try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/projects', {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(updatedProjects),
-      // });
-      // const data = await response.json();
-      setGlobalProjects([...updatedProjects]);
-      setProjects([...updatedProjects]);
-      return true;
-    } catch (err) {
-      throw new Error('Erreur lors de la sauvegarde des projets');
-    }
-  };
-
   // Fonction pour supprimer un projet
   const deleteProject = async (id) => {
     try {
@@ -106,8 +86,6 @@ export const useProjects = () => {
   const refreshProjects = async () => {
     setProjects([...globalProjects]);
   };
-
-  
 
   // Fonction pour mettre à jour un projet
   const updateProject = async (id, projectData) => {
@@ -145,7 +123,6 @@ export const useProjects = () => {
     isLoading,
     error,
     fetchProjects,
-    saveProjects,
     deleteProject,
     addProject,
     updateProject
