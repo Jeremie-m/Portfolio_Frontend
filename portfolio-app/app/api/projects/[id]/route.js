@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 // Import des mocks pour le mode fallback
 import { projects as mockProjects } from '../../../../features/projects/mocks/projects';
+import path from 'path';
+import fs from 'fs/promises';
 
 // GET /api/projects/:id - Récupérer un projet spécifique
 export async function GET(request, { params }) {
@@ -42,10 +44,8 @@ export async function GET(request, { params }) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les éventuels headers d'authentification si nécessaire
-          ...(request.headers.get('Cookie') ? { Cookie: request.headers.get('Cookie') } : {})
-        },
-        credentials: 'include',
+          'Authorization': request.headers.get('Authorization')
+        }
       });
       
       // Vérifier si la requête a réussi
@@ -109,7 +109,7 @@ export async function GET(request, { params }) {
 // PUT /api/projects/:id - Mettre à jour un projet existant (protégé par authentification)
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Vérifier si on doit utiliser les mocks ou le backend réel
     const useMockApi = process.env.USE_MOCK_API === 'true';
@@ -129,6 +129,19 @@ export async function PUT(request, { params }) {
         );
       }
       
+      // Si l'image a changé, supprimer l'ancienne image
+      const oldImageUrl = mockProjects[projectIndex].image_url;
+      if (data.image_url && data.image_url !== oldImageUrl && !oldImageUrl.includes('default')) {
+        try {
+          const oldImagePath = path.join(process.cwd(), 'public', oldImageUrl);
+          await fs.unlink(oldImagePath);
+          console.log(`Ancienne image supprimée: ${oldImagePath}`);
+        } catch (err) {
+          console.error('Erreur lors de la suppression de l\'ancienne image:', err);
+          // Continuer même si la suppression échoue
+        }
+      }
+      
       // Simuler la mise à jour d'un projet
       const updatedProject = {
         ...mockProjects[projectIndex],
@@ -136,44 +149,72 @@ export async function PUT(request, { params }) {
         updated_at: new Date().toISOString(),
       };
       
-      // Dans une vraie application, nous mettrions à jour le projet dans la base de données
-      // projects[projectIndex] = updatedProject;
-      
       return NextResponse.json(updatedProject);
     } else {
       // ---------- MODE RÉEL (connexion au backend) ----------
-      // Récupérer l'URL de l'API depuis les variables d'environnement
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         throw new Error('La variable d\'environnement NEXT_PUBLIC_API_URL n\'est pas définie');
       }
       
-      console.log(`Mise à jour du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
+      // Récupérer le header d'autorisation
+      const authHeader = request.headers.get('Authorization');
+      console.log('Token reçu du frontend:', authHeader); // Debug
       
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
+      if (!authHeader) {
+        return NextResponse.json(
+          { error: 'Token d\'authentification manquant' },
+          { status: 401 }
+        );
+      }
+      
+      // Récupérer d'abord le projet actuel pour avoir l'ancienne URL d'image
+      const currentProjectResponse = await fetch(`${apiUrl}/projects/${id}`, {
+        headers: {
+          'Authorization': authHeader
+        }
+      });
+      
+      if (currentProjectResponse.ok) {
+        const currentProject = await currentProjectResponse.json();
+        
+        // Si l'image a changé, supprimer l'ancienne image
+        if (data.image_url && data.image_url !== currentProject.image_url && !currentProject.image_url.includes('default')) {
+          try {
+            const oldImagePath = path.join(process.cwd(), 'public', currentProject.image_url);
+            await fs.unlink(oldImagePath);
+            console.log(`Ancienne image supprimée: ${oldImagePath}`);
+          } catch (err) {
+            console.error('Erreur lors de la suppression de l\'ancienne image:', err);
+            // Continuer même si la suppression échoue
+          }
+        }
+      }
+      
+      console.log(`Mise à jour du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
       
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
+          'Authorization': authHeader
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
       
+      console.log('Status backend:', backendResponse.status); // Debug
+      
       // Récupérer les données de la réponse
       const responseData = await backendResponse.json();
+      console.log('Réponse backend:', responseData); // Debug
       
       // Vérifier si la requête a réussi
       if (backendResponse.ok) {
         return NextResponse.json(responseData);
       } else {
         return NextResponse.json(
-          { error: responseData.error || `Erreur lors de la mise à jour du projet ${id}` },
+          { error: responseData.error || responseData.message || `Erreur lors de la mise à jour du projet ${id}` },
           { status: backendResponse.status }
         );
       }
@@ -226,18 +267,13 @@ export async function DELETE(request, { params }) {
       
       console.log(`Suppression du projet ${id} via le backend: ${apiUrl}/projects/${id}`);
       
-      // Récupérer le token d'authentification depuis les cookies
-      const authCookie = request.headers.get('Cookie');
-      
       // Effectuer la requête au backend
       const backendResponse = await fetch(`${apiUrl}/projects/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les headers d'authentification
-          ...(authCookie ? { Cookie: authCookie } : {})
-        },
-        credentials: 'include',
+          'Authorization': request.headers.get('Authorization')
+        }
       });
       
       // Vérifier si la requête a réussi

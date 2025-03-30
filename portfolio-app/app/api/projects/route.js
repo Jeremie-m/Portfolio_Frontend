@@ -31,11 +31,8 @@ export async function GET(request) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // Ajouter les éventuels headers d'authentification si nécessaire
-          ...(request.headers.get('Cookie') ? { Cookie: request.headers.get('Cookie') } : {})
-        },
-        // Transmettre les credentials si nécessaire pour les cookies
-        credentials: 'include',
+          'Authorization': request.headers.get('Authorization')
+        }
       });
       
       // Vérifier si la requête a réussi

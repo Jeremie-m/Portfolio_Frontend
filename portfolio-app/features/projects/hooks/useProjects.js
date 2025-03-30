@@ -86,34 +86,52 @@ export const useProjects = () => {
     }
   };
   
-  // Ajouter cette fonction pour forcer la synchronisation
-  const refreshProjects = async () => {
-    setProjects([...globalProjects]);
-  };
-
   // Fonction pour mettre à jour un projet
   const updateProject = async (id, projectData) => {
+    setIsLoading(true);
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch(`/api/projects/${id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(projectData),
-      // });
-      const updatedProject = {
-        id,
-        ...projectData
+      // Récupérer le token d'authentification
+      const token = getAuthToken();
+      console.log('Token récupéré pour update:', token); // Debug
+
+      if (!token) {
+        throw new Error('Vous devez être connecté pour modifier un projet');
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       };
-      const updatedProjects = projects.map(project => 
-        project.id === id ? updatedProject : project
+      console.log('Headers pour update:', headers); // Debug
+
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(projectData)
+      });
+
+      console.log('Status de la réponse update:', response.status); // Debug
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.');
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error || 'Erreur lors de la mise à jour du projet');
+      }
+
+      const updatedProject = await response.json();
+      console.log('Projet mis à jour:', updatedProject); // Debug
+
+      setGlobalProjects(prevProjects =>
+        prevProjects.map(project => project.id === id ? updatedProject : project)
       );
-      setGlobalProjects(updatedProjects);
-      setProjects(updatedProjects);
       return updatedProject;
     } catch (err) {
-      throw new Error('Erreur lors de la mise à jour du projet');
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,7 +141,7 @@ export const useProjects = () => {
   }, []);
 
   return {
-    globalProjects,
+    projects: globalProjects,
     isLoading,
     error,
     fetchProjects,

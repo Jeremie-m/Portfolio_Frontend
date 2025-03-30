@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Modal from '@/components/modals/Modal';
 import Button from '@/components/common/Button';
@@ -20,13 +20,12 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
   const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const fileInputRef = useRef(null);
   
   // État pour les erreurs de validation
   const [errors, setErrors] = useState({
     title: '',
     description: '',
-    technologies: '',
+    skills: '',
     github_link: '',
     demo_link: '',
     image_url: ''
@@ -36,7 +35,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
   const [projectData, setProjectData] = useState({
     title: '',
     description: '',
-    technologies: [],
+    skills: [],
     github_link: '',
     demo_link: '',
     image_url: '/images/projects/default.jpg'
@@ -48,7 +47,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
       setProjectData({
         title: project.title || '',
         description: project.description || '',
-        technologies: project.technologies || [],
+        skills: project.skills || [],
         github_link: project.github_link || '',
         demo_link: project.demo_link || '',
         image_url: project.image_url || '/images/projects/default.jpg'
@@ -58,7 +57,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
       setErrors({
         title: '',
         description: '',
-        technologies: '',
+        skills: '',
         github_link: '',
         demo_link: '',
         image_url: ''
@@ -96,7 +95,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
           errorMessage = 'La description est obligatoire';
         }
         break;
-      case 'technologies':
+      case 'skills':
         if (value.length === 0) {
           errorMessage = 'Au moins une technologie est requise';
         }
@@ -130,32 +129,66 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      setUploadError('Le fichier est trop volumineux. Taille maximale : 4MB');
+    if (file.size > 10 * 1024 * 1024) { // 10MB max pour les projets
+      setUploadError('Le fichier est trop volumineux. Taille maximale : 10MB');
       setErrors({
         ...errors,
-        image_url: 'Le fichier est trop volumineux. Taille maximale : 4MB'
+        image_url: 'Le fichier est trop volumineux. Taille maximale : 10MB'
       });
       return;
     }
 
-    const imageUrl = URL.createObjectURL(file);
-    setTempImageUrl(imageUrl);
-    setProjectData({
-      ...projectData,
-      image_url: imageUrl
-    });
-    setUploadError(null);
-    setErrors({
-      ...errors,
-      image_url: ''
-    });
+    try {
+      // Créer un FormData pour envoyer le fichier
+      const formData = new FormData();
+      formData.append('image', file);
+      // Ajouter le projectId s'il existe
+      if (project?.id) {
+        formData.append('projectId', project.id);
+      }
 
-    console.log('Image sélectionnée (mock) :', {
-      fileName: file.name,
-      fileSize: file.size,
-      mimeType: file.type
-    });
+      // Récupérer le token d'authentification
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant');
+      }
+
+      // Envoyer le fichier à la route d'upload
+      const response = await fetch('/api/projects/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'upload de l\'image');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour l'URL de l'image dans le state
+      setTempImageUrl(data.imageUrl);
+      setProjectData({
+        ...projectData,
+        image_url: data.imageUrl
+      });
+      setUploadError(null);
+      setErrors({
+        ...errors,
+        image_url: ''
+      });
+
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'image:', error);
+      setUploadError(error.message || 'Erreur lors de l\'upload de l\'image');
+      setErrors({
+        ...errors,
+        image_url: error.message || 'Erreur lors de l\'upload de l\'image'
+      });
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -231,18 +264,18 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
   };
 
   const handleAddSkill = (skillName) => {
-    if (!projectData.technologies.includes(skillName)) {
-      const newTechnologies = [...projectData.technologies, skillName];
+    if (!projectData.skills.includes(skillName)) {
+      const newskills = [...projectData.skills, skillName];
       setProjectData({
         ...projectData,
-        technologies: newTechnologies
+        skills: newskills
       });
       
-      // Valider le champ technologies
-      const errorMessage = validateField('technologies', newTechnologies);
+      // Valider le champ skills
+      const errorMessage = validateField('skills', newskills);
       setErrors({
         ...errors,
-        technologies: errorMessage
+        skills: errorMessage
       });
     }
     setShowSkillsDropdown(false);
@@ -250,17 +283,17 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
   };
 
   const handleRemoveSkill = (skillName) => {
-    const newTechnologies = projectData.technologies.filter(tech => tech !== skillName);
+    const newskills = projectData.skills.filter(tech => tech !== skillName);
     setProjectData({
       ...projectData,
-      technologies: newTechnologies
+      skills: newskills
     });
     
-    // Valider le champ technologies
-    const errorMessage = validateField('technologies', newTechnologies);
+    // Valider le champ skills
+    const errorMessage = validateField('skills', newskills);
     setErrors({
       ...errors,
-      technologies: errorMessage
+      skills: errorMessage
     });
   };
 
@@ -269,7 +302,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
     const newErrors = {
       title: validateField('title', projectData.title),
       description: validateField('description', projectData.description),
-      technologies: validateField('technologies', projectData.technologies),
+      skills: validateField('skills', projectData.skills),
       github_link: validateField('github_link', projectData.github_link),
       demo_link: validateField('demo_link', projectData.demo_link),
       image_url: ''
@@ -300,8 +333,11 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
       setSuccessMessage('Projet mis à jour avec succès !');
       setShowSuccessToast(true);
       
-      // Fermer la modal après succès
-      onClose();
+      // Attendre un peu avant de fermer la modal
+      setTimeout(() => {
+        onClose();
+      }, 1000); // Attendre 1 seconde avant de fermer
+
     } catch (error) {
       console.error('Erreur lors de la mise à jour du projet:', error);
       setUploadError('Erreur lors de la mise à jour du projet. Veuillez réessayer.');
@@ -409,7 +445,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
               {errors.description && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.description}</p>}
             </div>
             
-            {/* Champ technologies avec autocomplétion */}
+            {/* Champ skills avec autocomplétion */}
             <div className="mb-4 md:mb-5 lg:mb-6">
               <label className="block text-white text-sm md:text-base lg:text-lg font-montserrat mb-2">
                 Skills
@@ -420,7 +456,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
                   type="text"
                   onChange={(e) => handleSkillInput(e.target.value)}
                   onFocus={handleSkillFocus}
-                  className={`w-full bg-primary-dark border ${errors.technologies ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
+                  className={`w-full bg-primary-dark border ${errors.skills ? 'border-white' : 'border-white/30'} rounded px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 text-white text-sm md:text-base lg:text-lg font-montserrat focus:outline-none focus:border-white/100 transition-colors duration-200`}
                   placeholder="Ajouter un skill..."
                 />
                 {showSkillsDropdown && (
@@ -446,9 +482,9 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
                 )}
               </div>
               
-              {/* Afficher les technologies sélectionnées */}
+              {/* Afficher les skills sélectionnées */}
               <div className="flex flex-wrap gap-2 mt-2">
-                {projectData.technologies.map((tech, index) => (
+                {projectData.skills.map((tech, index) => (
                   <div 
                     key={index}
                     className="bg-primary border border-primary px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-full flex items-center gap-1 text-xs md:text-sm lg:text-base text-white"
@@ -465,7 +501,7 @@ const ProjectEditModal = ({ isOpen, onClose, project }) => {
                   </div>
                 ))}
               </div>
-              {errors.technologies && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.technologies}</p>}
+              {errors.skills && <p className={`${errorStyle} md:text-sm lg:text-base`}>{errors.skills}</p>}
             </div>
             
             {/* Champ lien GitHub */}

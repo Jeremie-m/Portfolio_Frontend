@@ -11,7 +11,7 @@ import Loader from '@/components/common/Loader';
 
 const Projects = ({ onOpenModal, activeModal }) => {
   const { isAdmin } = useAuth();
-  const { globalProjects, isLoading, error } = useProjects();
+  const { projects, isLoading, error } = useProjects();
   const [visibleProjects, setVisibleProjects] = useState(2);
   const [projectsPerLoad, setProjectsPerLoad] = useState(2);
   const [isTablet, setIsTablet] = useState(false);
@@ -143,13 +143,13 @@ const Projects = ({ onOpenModal, activeModal }) => {
 
   // Fonction corrigée pour charger plus de projets
   const loadMoreProjects = () => {
-    if (globalProjects) {  // Ajout d'une vérification de sécurité
-      setVisibleProjects(prev => Math.min(prev + projectsPerLoad, globalProjects.length));
+    if (projects) {  // Ajout d'une vérification de sécurité
+      setVisibleProjects(prev => Math.min(prev + projectsPerLoad, projects.length));
     }
   };
 
   // Déterminer les projets à afficher
-  const projectsToDisplay = globalProjects ? globalProjects.slice(0, visibleProjects) : [];
+  const projectsToDisplay = projects ? projects.slice(0, visibleProjects) : [];
 
   // Obtenir les dimensions initiales des icônes
   const getIconDimensions = (type) => {
@@ -210,7 +210,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
   };
   
   // Afficher le loader si les données sont en cours de chargement ou le composant n'est pas monté
-  if (isLoading || !isMounted || !globalProjects) {
+  if (isLoading || !isMounted || !projects) {
     return (
       <div className="w-full flex flex-col gap-[10px] px-[10px] py-[16px]">
         <div className="flex justify-center items-center h-[300px] md:h-[400px] lg:h-[500px]">
@@ -230,7 +230,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
     );
   }
 
-  if (!globalProjects || !Array.isArray(globalProjects)) {
+  if (!projects || !Array.isArray(projects)) {
     return <div>Aucun projet disponible</div>;
   }
 
@@ -336,7 +336,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
         </motion.div>
         
         {/* Afficher le bouton "Voir plus" s'il reste des projets à afficher */}
-        {visibleProjects < globalProjects.length && (
+        {visibleProjects < projects.length && (
           <motion.button 
             onClick={loadMoreProjects}
             className={`h-12 md:h-18 lg:h-20 w-[143px] md:w-[280px] lg:w-[320px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}

@@ -12,7 +12,7 @@ import Image from 'next/image';
 import SuccessToast from '@/components/common/SuccessToast';
 
 const ProjectsEditModal = ({ isOpen, onClose }) => {
-  const { globalProjects, isLoading, deleteProject, saveProjects, editProject } = useProjects();
+  const { projects, isLoading, deleteProject, saveProjects, editProject } = useProjects();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
@@ -25,9 +25,9 @@ const ProjectsEditModal = ({ isOpen, onClose }) => {
   // Initialiser localProjects avec les projets actuels quand le modal s'ouvre
   useEffect(() => {
     if (isOpen) {
-      setLocalProjects([...globalProjects]);
+      setLocalProjects([...projects]);
     }
-  }, [isOpen, globalProjects]);
+  }, [isOpen, projects]);
 
   const handleDeleteClick = (id, e) => {
     e.stopPropagation(); // Empêcher le déclenchement du handleEdit sur le parent
