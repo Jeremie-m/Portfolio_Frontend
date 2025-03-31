@@ -41,15 +41,15 @@ const Header = ({ onOpenModal, activeModal }) => {
       animate="visible"
       variants={headerVariants}
     >
-      <div className="flex items-center justify-between px-[10px] py-[10px] md:py-[16px] lg:py-[22px]">
-        <Link className="flex items-center gap-4 lg:gap-1" href="/">
-          <span className="font-bold text-[14px] md:text-[18px] lg:text-[28px] text-white cursor-pointer font-jetbrains-mono">
+      <div className="w-full max-w-[1300px] mx-auto flex items-center justify-between px-[8px] py-[6px] md:py-[10px] lg:py-[14px]">
+        <Link className="flex items-center gap-3 lg:gap-1" href="/">
+          <span className="font-bold text-[12px] md:text-[16px] lg:text-[22px] text-white cursor-pointer font-jetbrains-mono">
             {isAdmin ? '< Admin />' : '< jeremie-m.dev />'}
           </span>
           {isAdmin && (
             <button
               onClick={handleLogout}
-              className="text-[12px] md:text-[14px] lg:text-[16px] font-jetbrains-mono text-white hover:text-red-500 transition-colors duration-200"
+              className="text-[10px] md:text-[12px] lg:text-[14px] font-jetbrains-mono text-white hover:text-red-500 transition-colors duration-200"
             >
               Log Out
             </button>

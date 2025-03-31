@@ -10,29 +10,29 @@ const Card = ({ skill }) => {
   return (
     <div 
     className={`
-      w-[96px] 
-      h-[170px] 
-      md:w-[237px]
-      md:h-[419px]
-      lg:w-[338px]
-      lg:h-[600px]
+      w-[67px] 
+      h-[117px] 
+      md:w-[166px]
+      md:h-[293px]
+      lg:w-[236px]
+      lg:h-[420px]
       ${isAdmin ? 'bg-[#caaa08]' : 'bg-[#0A52D0]'}
-      px-4 
-      py-3.5 
-      md:px-8
-      md:py-6
-      lg:px-12
-      lg:py-10
+      rounded-[8px]
+      md:rounded-[16px]
+      lg:rounded-[24px]
       flex 
       flex-col 
       items-center 
-      gap-7
-      md:gap-10
-      lg:gap-16
-      rounded-lg
+      justify-center 
+      gap-1
+      md:gap-2
+      lg:gap-3
+      p-1
+      md:p-2
+      lg:p-3
     `}
     >
-      <div className="w-[76px] h-[76px] md:w-[200px] md:h-[200px] lg:w-[300px] lg:h-[300px] relative">
+      <div className="w-[53px] h-[53px] md:w-[133px] md:h-[133px] lg:w-[180px] lg:h-[180px] relative">
         <Image
           src={skill.image_url}
           alt={`${skill.name} icon`}
@@ -40,7 +40,7 @@ const Card = ({ skill }) => {
           className="object-contain"
         />
       </div>
-      <h3 className="text-white text-[16px] md:text-[32px] lg:text-[48px] font-bold font-montserrat text-center">
+      <h3 className="text-white text-[14px] md:text-[24px] lg:text-[34px] font-bold font-montserrat text-center">
         {skill.name}
       </h3>
     </div>

@@ -48,8 +48,8 @@ const About = ({ onOpenModal, activeModal }) => {
       )}
       <div className="w-full px-2 py-4">
         <div className="relative w-full md:max-w-4xl lg:max-w-6xl mx-auto">
-          <h2 id="about-heading" className="text-2xl md:text-[40px] lg:text-[64px] font-medium font-montserrat text-white mb-8 md:mb-[60px] lg:mb-[100px] text-center">Qui suis-je ?</h2>
-          <div className="text-lg md:text-[24px] lg:text-[32px] font-montserrat leading-relaxed whitespace-pre-wrap" aria-label="Présentation personnelle">
+          <h2 id="about-heading" className="text-xl md:text-[32px] lg:text-[48px] font-medium font-montserrat text-white mb-6 md:mb-[40px] lg:mb-[60px] text-center">Qui suis-je ?</h2>
+          <div className="text-base md:text-[20px] lg:text-[28px] font-montserrat leading-tight whitespace-pre-wrap" aria-label="Présentation personnelle">
             {text}
           </div>
         </div>

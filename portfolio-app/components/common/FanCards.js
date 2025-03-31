@@ -10,8 +10,8 @@ export default function FanCards() {
   const { skills } = useSkills();
   const [activeIndex, setActiveIndex] = useState(0)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0)
-  const totalAngleRange = 70
-  const startAngle = -30
+  const totalAngleRange = 80
+  const startAngle = -40
   
   // S'assurer que le code s'exécute uniquement côté client
   useEffect(() => {
@@ -111,15 +111,15 @@ export default function FanCards() {
     
     // Valeurs de base pour mobile
     let translateX = Math.sin((baseAngle * Math.PI) / 180) * 30
-    let translateY = index === activeIndex ? -20 : 0
+    let translateY = index === activeIndex ? -10 : 0
     
     // Ajustements pour tablette et desktop
     if (windowWidth >= 1024) { // Desktop
       translateX = Math.sin((baseAngle * Math.PI) / 180) * 120
-      translateY = index === activeIndex ? -80 : 0
+      translateY = index === activeIndex ? -40 : 0
     } else if (windowWidth >= 744) { // Tablette
       translateX = Math.sin((baseAngle * Math.PI) / 180) * 60
-      translateY = index === activeIndex ? -40 : 0
+      translateY = index === activeIndex ? -20 : 0
     }
     
     const brightness = getBrightness(index)
@@ -137,8 +137,8 @@ export default function FanCards() {
   }
 
   return (
-    <div id="fan-container" className="flex flex-col h-[280px] md:h-[600px] lg:h-[1000px] w-full max-w-full">
-      <div className="relative w-24 md:w-[397.5px] lg:w-[768px] mx-auto">
+    <div id="fan-container" className="flex flex-col h-[126px] md:h-[280px] lg:h-[490px] w-full max-w-full">
+      <div className="relative w-16 md:w-[278px] lg:w-[537px] mx-auto">
         <AnimatePresence>
           {skills.map((skill, index) => (
             <motion.div

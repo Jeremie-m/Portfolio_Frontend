@@ -36,28 +36,28 @@ const Contact = () => {
     const getDimensions = (type) => {
       // Mobile
       if (windowWidth < 768) {
-        return { width: 40, height: 40 };
+        return { width: 25, height: 25 };
       } 
       // Tablette
       else if (windowWidth >= 768) {
         switch(type) {
-          case 'email': return { width: 109, height: 109 };
-          case 'twitter': return { width: 127, height: 127 };
-          case 'discord': return { width: 112, height: 112 };
-          case 'github': return { width: 129, height: 129 };
-          default: return { width: 109, height: 109 };
+          case 'email': return { width: 60, height: 60 };
+          case 'twitter': return { width: 70, height: 70 };
+          case 'discord': return { width: 65, height: 65 };
+          case 'github': return { width: 70, height: 70 };
+          default: return { width: 60, height: 60 };
         }
       } 
-      // // Desktop
-      // else {
-      //   switch(type) {
-      //     case 'email': return { width: 208, height: 208 };
-      //     case 'twitter': return { width: 239, height: 239 };
-      //     case 'discord': return { width: 209, height: 209 };
-      //     case 'github': return { width: 250, height: 250 };
-      //     default: return { width: 208, height: 208 };
-      //   }
-      // }
+      // Desktop
+      else {
+        switch(type) {
+          case 'email': return { width: 90, height: 90 };
+          case 'twitter': return { width: 100, height: 100 };
+          case 'discord': return { width: 95, height: 95 };
+          case 'github': return { width: 100, height: 100 };
+          default: return { width: 90, height: 90 };
+        }
+      }
     };
     
     // Parcourir toutes les références d'icônes
@@ -81,31 +81,31 @@ const Contact = () => {
   // Obtenir les dimensions initiales des icônes
   const getIconDimensions = (type) => {
     if (!isMounted) {
-      return { width: 40, height: 40 };
+      return { width: 25, height: 25 };
     }
     
     // Mobile
     if (windowWidth < 768) {
-      return { width: 40, height: 40 };
+      return { width: 25, height: 25 };
     } 
     // Tablette
     else if (windowWidth >= 768 && windowWidth < 1024) {
       switch(type) {
-        case 'email': return { width: 109, height: 109 };
-        case 'twitter': return { width: 127, height: 127 };
-        case 'discord': return { width: 112, height: 112 };
-        case 'github': return { width: 129, height: 129 };
-        default: return { width: 109, height: 109 };
+        case 'email': return { width: 60, height: 60 };
+        case 'twitter': return { width: 70, height: 70 };
+        case 'discord': return { width: 65, height: 65 };
+        case 'github': return { width: 70, height: 70 };
+        default: return { width: 60, height: 60 };
       }
     } 
     // Desktop
     else {
       switch(type) {
-        case 'email': return { width: 208, height: 208 };
-        case 'twitter': return { width: 239, height: 239 };
-        case 'discord': return { width: 209, height: 209 };
-        case 'github': return { width: 250, height: 250 };
-        default: return { width: 208, height: 208 };
+        case 'email': return { width: 90, height: 90 };
+        case 'twitter': return { width: 100, height: 100 };
+        case 'discord': return { width: 95, height: 95 };
+        case 'github': return { width: 100, height: 100 };
+        default: return { width: 90, height: 90 };
       }
     }
   };
@@ -143,18 +143,18 @@ const Contact = () => {
 
   return (
     <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20" aria-labelledby="contact-heading">
-      <h2 id="contact-heading" className="font-medium text-[24px] md:text-[40px] lg:text-[64px] font-montserrat text-center text-white mb-8 md:mb-12 lg:mb-16">
+      <h2 id="contact-heading" className="font-medium text-xl md:text-[32px] lg:text-[48px] font-montserrat text-center text-white mb-6 md:mb-[40px] lg:mb-[60px]">
         Contact
       </h2>
       
-      <div className="w-full max-w-full flex flex-col gap-4 md:gap-8 lg:gap-12" role="list">
+      <div className="w-full max-w-[600px] flex flex-col gap-4 md:gap-8 lg:gap-12 self-end" role="list">
         {contactInfo.map((item) => (
           <a 
             key={item.id} 
             href={item.link} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center w-full max-w-full gap-4 md:gap-8 lg:gap-12"
+            className="flex items-center w-full max-w-[600px] gap-2 md:gap-4 lg:gap-6"
             aria-label={`Me contacter par ${item.type}: ${item.value} (s'ouvre dans un nouvel onglet)`}
             role="listitem"
           >
@@ -171,8 +171,8 @@ const Contact = () => {
                 aria-hidden="true"
               />
             </div>
-            <div className="flex-grow overflow-hidden">
-              <span className="text-[14px] md:text-[24px] lg:text-[36px] leading-[16px] md:leading-[32px] lg:leading-[48px] font-montserrat text-right text-white block truncate float-right w-full">
+            <div className="flex-1 min-w-0">
+              <span className="text-sm md:text-base lg:text-xl leading-relaxed font-montserrat text-white block text-right truncate">
                 {item.value}
               </span>
             </div>

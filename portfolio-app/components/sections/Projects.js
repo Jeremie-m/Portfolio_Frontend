@@ -174,6 +174,17 @@ const Projects = ({ onOpenModal, activeModal }) => {
         staggerChildren: 0.3,
         delayChildren: 0.1
       }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      style: {
+        transformOrigin: "center bottom"
+      },
+      transition: {
+        duration: 0.5,
+        ease: "easeInOut"
+      }
     }
   };
 
@@ -241,117 +252,111 @@ const Projects = ({ onOpenModal, activeModal }) => {
           <EditBtn onOpenModal={onOpenModal} section="projects" />
         </div>
       )}
-      <section id="projects" className="w-full flex flex-col items-center gap-8 md:gap-16 lg:gap-24 md:mb-8 lg:mb-12">
-        <h2 className="font-medium text-[24px] md:text-[40px] lg:text-[64px] leading-[16px] text-center text-white font-montserrat">
+      <section id="projects" className="w-full flex flex-col items-center gap-8 md:gap-16 lg:gap-24 md:mb-4 lg:mb-6">
+        <h2 className="font-medium text-xl md:text-[32px] lg:text-[48px] leading-[16px] text-center text-white font-montserrat">
           Mes Projets
         </h2>
         
         <motion.div 
-          className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-5 md:px-10 lg:px-20"
+          className="w-full max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-5 md:px-10 lg:px-20"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          exit="exit"
         >
-          <AnimatePresence>
-            {projectsToDisplay.map((project) => (
-              <motion.div 
-                key={project.id}
-                variants={projectVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className={`w-full h-full flex flex-col header-bg rounded-lg overflow-hidden ${isAdmin ? '[filter:drop-shadow(0_4px_10px_#EED40B)]' : '[filter:drop-shadow(0_4px_10px_#0B61EE)]'}`}
-              >
-                <div className="w-full h-40 md:h-60 lg:h-80 relative">
-                  <Image 
-                    src={project.image_url} 
-                    alt={project.title} 
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                  <div className="w-full h-full flex items-center justify-center text-white">
-                    Image du projet: {project.title}
-                  </div>
+          {projectsToDisplay.map((project) => (
+            <motion.div
+              key={project.id}
+              variants={projectVariants}
+              className={`w-full h-full flex flex-col header-bg rounded-lg overflow-hidden ${isAdmin ? '[filter:drop-shadow(0_4px_10px_#EED40B)]' : '[filter:drop-shadow(0_4px_10px_#0B61EE)]'}`}
+            >
+              <div className="w-full h-40 md:h-60 lg:h-80 relative">
+                <Image
+                  src={project.image_url}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                />
+                <div className="w-full h-full flex items-center justify-center text-white">
+                  Image du projet: {project.title}
                 </div>
-                <div className="p-3 flex flex-col justify-between flex-grow">
-                  <div>
-                    <h3 className="text-[24px] md:text-[32px] lg:text-[40px] font-bold text-white mb-4 md:mb-6 lg:mb-8" id={`project-title-${project.id}`}>{project.title}</h3>
-                    <h4 className="text-sm md:text-[16px] lg:text-[24px] font-montserrat text-white mb-6 md:mb-8 lg:mb-10 leading-relaxed" id={`project-description-${project.id}`} aria-describedby={`project-title-${project.id}`}>{project.description}</h4>
+              </div>
+              <div className="p-3 flex flex-col justify-between flex-grow">
+                <div>
+                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-4 md:mb-6 lg:mb-8" id={`project-title-${project.id}`}>
+                    {project.title}
+                  </h3>
+                  <p className="text-sm md:text-base lg:text-lg text-gray-300 mb-6 md:mb-8 lg:mb-10 leading-relaxed" id={`project-description-${project.id}`} aria-describedby={`project-title-${project.id}`}>
+                    {project.description}
+                  </p>
+                </div>
+                
+                <div className="mt-auto pt-4 md:pt-6 lg:pt-8">
+                  <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8" aria-label="Technologies utilisées">
+                    {project.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm text-white border border-white rounded-full font-montserrat"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                   </div>
                   
-                  <div className="mt-auto pt-4 md:pt-6 lg:pt-8">
-                    <div className="flex flex-wrap gap-2 mb-4 md:mb-6 lg:mb-8" aria-label="Technologies utilisées">
-                      {project.skills.map((tech, index) => (
-                        <span key={index} className="text-xs md:text-[16px] lg:text-[24px] font-montserrat text-white bg-primary-dark px-2 py-1 border border-primary rounded-xl" role="listitem">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <a 
-                        href={project.github_link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex flex-col justify-center items-center"
-                        aria-label={`Voir le code source de ${project.title} sur GitHub (s'ouvre dans un nouvel onglet)`}
-                      >
-                        <Image 
-                          ref={el => { githubIconRefs.current[project.id] = el }}
-                          src="/images/github-logo.svg" 
-                          alt="" 
-                          width={getIconDimensions('github').width}
-                          height={getIconDimensions('github').height}
-                          className="w-auto h-auto"
-                          unoptimized={true}
-                          style={{}}
-                          aria-hidden="true"
-                        />
-                      </a>
-                      <a 
-                        href={project.demo_link} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        aria-label={`Voir la démo de ${project.title} (s'ouvre dans un nouvel onglet)`}
-                      >
-                        <Image 
-                          ref={el => { demoIconRefs.current[project.id] = el }}
-                          src="/images/arrow.svg" 
-                          alt="" 
-                          width={getIconDimensions('demo').width}
-                          height={getIconDimensions('demo').height}
-                          className="w-auto h-auto"
-                          unoptimized={true}
-                          style={{}}
-                          aria-hidden="true"
-                        />
-                      </a>
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <a
+                      href={project.github_link} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center"
+                      aria-label={`Voir le code source de ${project.title} sur GitHub (s'ouvre dans un nouvel onglet)`}
+                    >
+                      <Image
+                        ref={el => githubIconRefs.current[project.id] = el}
+                        src="/images/github-logo.svg" 
+                        alt="" 
+                        width={getIconDimensions('github').width}
+                        height={getIconDimensions('github').height}
+                        className="w-auto h-auto"
+                        unoptimized={true}
+                        style={{}}
+                        aria-hidden="true"
+                      />
+                    </a>
+                    <a
+                      href={project.demo_link} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center"
+                      aria-label={`Voir la démo de ${project.title} (s'ouvre dans un nouvel onglet)`}
+                    >
+                      <Image
+                        ref={el => demoIconRefs.current[project.id] = el}
+                        src="/images/arrow.svg" 
+                        alt="" 
+                        width={getIconDimensions('demo').width}
+                        height={getIconDimensions('demo').height}
+                        className="w-auto h-auto"
+                        unoptimized={true}
+                        style={{}}
+                        aria-hidden="true"
+                      />
+                    </a>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
         
-        {/* Afficher le bouton "Voir plus" s'il reste des projets à afficher */}
         {visibleProjects < projects.length && (
-          <motion.button 
+          <button
             onClick={loadMoreProjects}
-            className={`h-12 md:h-18 lg:h-20 w-[143px] md:w-[280px] lg:w-[320px] flex flex-col justify-center items-center gap-2 rounded-lg cursor-pointer header-bg ${isAdmin ? '[filter:drop-shadow(0_2px_4px_#EED40B)]' : '[filter:drop-shadow(0_2px_4px_#0B61EE)]'}`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="mt-1 md:mt-2 lg:mt-3 px-6 md:px-8 py-2 md:py-3 bg-[#0A52D0] text-white rounded-full hover:bg-[#083ba3] transition-colors duration-300 font-montserrat text-sm md:text-base lg:text-lg"
           >
-            <div className="self-stretch grow px-2 py-2.5 flex flex-col justify-center items-center">
-              <span className="font-medium text-xs md:text-[20px] lg:text-[24px] text-center text-white font-inter">
-                Voir plus de projets
-                {isDesktop && <span className="hidden lg:inline"> (+3)</span>}
-                {isTablet && <span className="hidden md:inline lg:hidden"> (+2)</span>}
-                {!isTablet && !isDesktop && <span className="inline md:hidden"> (+2)</span>}
-              </span>
-            </div>
-          </motion.button>
+            Voir plus de projets
+          </button>
         )}
       </section>
 

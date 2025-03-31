@@ -44,14 +44,14 @@ const Skills = ({ onOpenModal, activeModal }) => {
   }
   
   return (
-    <section id="skills" className="w-full flex flex-col gap-[10px] px-[10px] md:px-[20px] lg:px-[40px] py-[16px]" aria-labelledby="skills-heading">
+    <section id="skills" className="w-full flex flex-col gap-[10px] px-[10px] md:px-[20px] lg:px-[40px] py-[8px]" aria-labelledby="skills-heading">
       {isAdmin && (
-        <div className="w-full flex justify-center mb-2 md:mb-[40px]">
+        <div className="w-full flex justify-center mb-2 md:mb-[20px]">
           <EditBtn onOpenModal={onOpenModal} section="skills" />
         </div>
       )}
-      <div className="w-full flex flex-col items-center gap-8 md:gap-20 lg:gap-30">
-        <h2 id="skills-heading" className="font-medium text-[24px] md:text-[40px] lg:text-[64px] text-center text-white font-montserrat">
+      <div className="w-full flex flex-col items-center gap-12 md:gap-16 lg:gap-24">
+        <h2 id="skills-heading" className="font-medium text-xl md:text-[32px] lg:text-[48px] text-center text-white font-montserrat">
           Mes Compétences
         </h2>
         <div className="w-full">

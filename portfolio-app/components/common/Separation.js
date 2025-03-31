@@ -48,7 +48,7 @@ const Separation = () => {
       animate="visible"
       variants={separationVariants}
     >
-      <motion.div className="w-[90%] h-[1px] bg-white"></motion.div>
+      <motion.div className="w-full max-w-[1200px] mx-auto h-[1px] bg-white"></motion.div>
     </motion.div>
   );
 };
