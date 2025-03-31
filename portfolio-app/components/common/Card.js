@@ -12,8 +12,8 @@ const Card = ({ skill }) => {
     className={`
       w-[67px] 
       h-[117px] 
-      md:w-[166px]
-      md:h-[293px]
+      md:w-[140px]
+      md:h-[247px]
       lg:w-[236px]
       lg:h-[420px]
       ${isAdmin ? 'bg-[#caaa08]' : 'bg-[#0A52D0]'}
@@ -32,7 +32,7 @@ const Card = ({ skill }) => {
       lg:p-3
     `}
     >
-      <div className="w-[53px] h-[53px] md:w-[133px] md:h-[133px] lg:w-[180px] lg:h-[180px] relative">
+      <div className="w-[53px] h-[53px] md:w-[112px] md:h-[112px] lg:w-[180px] lg:h-[180px] relative">
         <Image
           src={skill.image_url}
           alt={`${skill.name} icon`}
@@ -40,7 +40,7 @@ const Card = ({ skill }) => {
           className="object-contain"
         />
       </div>
-      <h3 className="text-white text-[14px] md:text-[24px] lg:text-[34px] font-bold font-montserrat text-center">
+      <h3 className="text-white text-[12px] md:text-[20px] lg:text-[34px] font-bold font-montserrat text-center">
         {skill.name}
       </h3>
     </div>

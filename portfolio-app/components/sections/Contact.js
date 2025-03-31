@@ -51,11 +51,11 @@ const Contact = () => {
       // Desktop
       else {
         switch(type) {
-          case 'email': return { width: 90, height: 90 };
-          case 'twitter': return { width: 100, height: 100 };
-          case 'discord': return { width: 95, height: 95 };
-          case 'github': return { width: 100, height: 100 };
-          default: return { width: 90, height: 90 };
+          case 'email': return { width: 70, height: 70 };
+          case 'twitter': return { width: 80, height: 80 };
+          case 'discord': return { width: 75, height: 75 };
+          case 'github': return { width: 80, height: 80 };
+          default: return { width: 70, height: 70 };
         }
       }
     };
@@ -101,11 +101,11 @@ const Contact = () => {
     // Desktop
     else {
       switch(type) {
-        case 'email': return { width: 90, height: 90 };
-        case 'twitter': return { width: 100, height: 100 };
-        case 'discord': return { width: 95, height: 95 };
-        case 'github': return { width: 100, height: 100 };
-        default: return { width: 90, height: 90 };
+        case 'email': return { width: 70, height: 70 };
+        case 'twitter': return { width: 80, height: 80 };
+        case 'discord': return { width: 75, height: 75 };
+        case 'github': return { width: 80, height: 80 };
+        default: return { width: 70, height: 70 };
       }
     }
   };
@@ -142,12 +142,12 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[270px] md:min-h-[400px] lg:min-h-[600px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20" aria-labelledby="contact-heading">
-      <h2 id="contact-heading" className="font-medium text-xl md:text-[32px] lg:text-[48px] font-montserrat text-center text-white mb-6 md:mb-[40px] lg:mb-[60px]">
+    <section id="contact" className="flex flex-col gap-2 md:gap-4 lg:gap-8 items-center self-stretch h-auto min-h-[200px] md:min-h-[300px] lg:min-h-[350px] lg:w-[800px] lg:mx-auto px-5 md:px-10 lg:px-20" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" className="font-medium text-xl md:text-[32px] lg:text-[40px] font-montserrat text-center text-white mb-6 md:mb-[40px] lg:mb-[60px]">
         Contact
       </h2>
       
-      <div className="w-full max-w-[600px] flex flex-col gap-4 md:gap-8 lg:gap-12 self-end" role="list">
+      <div className="w-full max-w-[800px] grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 lg:gap-12 self-end" role="list">
         {contactInfo.map((item) => (
           <a 
             key={item.id} 
@@ -172,7 +172,7 @@ const Contact = () => {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-sm md:text-base lg:text-xl leading-relaxed font-montserrat text-white block text-right truncate">
+              <span className="text-sm md:text-base lg:text-base leading-relaxed font-montserrat text-white block text-right truncate">
                 {item.value}
               </span>
             </div>
