@@ -58,41 +58,6 @@ export default function FanCards() {
     
   }, [windowWidth])
 
-  useEffect(() => {
-    
-    const handleWheel = (e) => {
-      // Si on défile vers le bas
-      if (e.deltaY > 0) {
-        // Si on n'est pas à la dernière carte, on prévient le comportement par défaut
-        if (activeIndex < skills.length - 1) {
-          e.preventDefault();
-          setActiveIndex((prev) => Math.min(prev + 1, skills.length - 1));
-        }
-        // Sinon, on laisse le scroll de la page se faire normalement
-      } 
-      // Si on défile vers le haut
-      else {
-        // Si on n'est pas à la première carte, on prévient le comportement par défaut
-        if (activeIndex > 0) {
-          e.preventDefault();
-          setActiveIndex((prev) => Math.max(prev - 1, 0));
-        }
-        // Sinon, on laisse le scroll de la page se faire normalement
-      }
-    }
-
-    const container = document.getElementById("fan-container")
-    if (container) {
-      container.addEventListener("wheel", handleWheel, { passive: false })
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener("wheel", handleWheel)
-      }
-    }
-  }, [skills.length, activeIndex])
-
   const getBrightness = (index) => {
     const distance = Math.abs(index - activeIndex)
 
@@ -136,6 +101,10 @@ export default function FanCards() {
     setActiveIndex(index)
   }
 
+  const handleHover = (index) => {
+    setActiveIndex(index)
+  }
+
   return (
     <div id="fan-container" className="flex flex-col h-[126px] md:h-[280px] lg:h-[490px] w-full max-w-full">
       <div className="relative w-16 md:w-[278px] lg:w-[537px] mx-auto">
@@ -150,6 +119,7 @@ export default function FanCards() {
               exit={{ opacity: 1, y: 20 }}
               transition={{ duration: 0.3 }}
               onClick={() => handleCardClick(index)}
+              onMouseEnter={() => handleHover(index)}
               className="absolute left-1/2 -translate-x-1/2 cursor-pointer"
             >
               <Card skill={skill} />
