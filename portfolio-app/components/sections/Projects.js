@@ -302,7 +302,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                     {project.skills.map((skill, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm text-white border border-white rounded-full font-montserrat"
+                        className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm text-white border border-white rounded-full font-montserrat select-none"
                       >
                         {skill}
                       </span>
