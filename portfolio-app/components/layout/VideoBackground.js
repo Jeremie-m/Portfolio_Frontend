@@ -18,13 +18,15 @@ const VideoBackground = () => {
   useEffect(() => {
     if (!videoSrc || !videoRef.current) return;
 
+    const video = videoRef.current;
+
     // Fonction pour gérer le chargement de la vidéo
     const handleVideoLoad = () => {
       setIsLoaded(true);
       
       // Tenter de lire la vidéo une fois chargée
-      if (videoRef.current) {
-        videoRef.current.play()
+      if (video) {
+        video.play()
           .then(() => {
             setIsPlaying(true);
           })
@@ -36,31 +38,31 @@ const VideoBackground = () => {
 
     // Fonction pour gérer la fin de la vidéo
     const handleEnded = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play();
+      if (video) {
+        video.currentTime = 0;
+        video.play();
       }
     };
 
     // Vérifier si la vidéo est déjà mise en cache
-    if (videoRef.current.readyState >= 3) {
+    if (video.readyState >= 3) {
       handleVideoLoad();
     } else {
       // Sinon, attendre que la vidéo soit suffisamment chargée
-      videoRef.current.addEventListener('canplay', handleVideoLoad);
+      video.addEventListener('canplay', handleVideoLoad);
       
       // Précharger la vidéo en arrière-plan
-      videoRef.current.load();
+      video.load();
     }
 
     // Ajouter l'écouteur pour la fin de la vidéo
-    videoRef.current.addEventListener('ended', handleEnded);
+    video.addEventListener('ended', handleEnded);
 
     return () => {
       // Nettoyage des écouteurs d'événements
-      if (videoRef.current) {
-        videoRef.current.removeEventListener('canplay', handleVideoLoad);
-        videoRef.current.removeEventListener('ended', handleEnded);
+      if (video) {
+        video.removeEventListener('canplay', handleVideoLoad);
+        video.removeEventListener('ended', handleEnded);
       }
     };
   }, [videoSrc]);

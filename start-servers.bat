@@ -12,7 +12,7 @@ set "YELLOW=[33m"
 set "CYAN=[36m"
 set "RESET=[0m"
 
-echo %CYAN%🚀 Démarrage des serveurs...%RESET%
+echo %CYAN%🚀 Préparation des serveurs en production...%RESET%
 
 :: Vérification des chemins
 if not exist "%FRONTEND_PATH%" (
@@ -48,13 +48,33 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
+:: Build du frontend
+echo %CYAN%📦 Build du Frontend...%RESET%
+cd /d "%FRONTEND_PATH%"
+call npm run build
+if %ERRORLEVEL% NEQ 0 (
+    echo %RED%❌ Erreur lors du build du frontend%RESET%
+    pause
+    exit /b 1
+)
+
+:: Build du backend
+echo %CYAN%📦 Build du Backend...%RESET%
+cd /d "%BACKEND_PATH%"
+call npm run build
+if %ERRORLEVEL% NEQ 0 (
+    echo %RED%❌ Erreur lors du build du backend%RESET%
+    pause
+    exit /b 1
+)
+
 :: Démarrage du frontend
 echo %GREEN%📦 Démarrage du Frontend...%RESET%
-start "Frontend" cmd /c "cd /d "%FRONTEND_PATH%" && npm install && npm run dev"
+start "Frontend" cmd /c "cd /d "%FRONTEND_PATH%" && npm start"
 
 :: Démarrage du backend
 echo %GREEN%📦 Démarrage du Backend...%RESET%
-start "Backend" cmd /c "cd /d "%BACKEND_PATH%" && npm install && npm run start:dev"
+start "Backend" cmd /c "cd /d "%BACKEND_PATH%" && npm run start:prod"
 
 echo.
 echo %CYAN%✨ Serveurs démarrés avec succès !%RESET%
@@ -63,4 +83,4 @@ echo %GREEN%Backend: http://localhost:3001%RESET%
 echo.
 echo %YELLOW%⚠️ Pour arrêter les serveurs, fermez simplement les fenêtres de commande%RESET%
 echo.
-pause 
+pause

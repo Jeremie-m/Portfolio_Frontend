@@ -74,7 +74,7 @@ const NavLinks = ({ onClick, isModal }) => {
           aria-label="Télécharger mon CV au format PDF"
           rel="noopener noreferrer"
         >
-          Voir mon CV <span className="sr-only">(s'ouvre dans un nouvel onglet, format PDF)</span>
+          Voir mon CV <span className="sr-only">(s&apos;ouvre dans un nouvel onglet, format PDF)</span>
         </Link>
       ) : (
         <Link
@@ -84,7 +84,7 @@ const NavLinks = ({ onClick, isModal }) => {
           aria-label="Télécharger mon CV au format PDF"
           rel="noopener noreferrer"
         >
-          Voir mon CV <span className="sr-only">(s'ouvre dans un nouvel onglet, format PDF)</span>
+          Voir mon CV <span className="sr-only">(s&apos;ouvre dans un nouvel onglet, format PDF)</span>
         </Link>
       )}
     </div>
