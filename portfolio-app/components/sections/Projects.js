@@ -253,7 +253,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
         </div>
       )}
       <section id="projects" className="w-full flex flex-col items-center gap-8 md:gap-16 lg:gap-24 md:mb-4 lg:mb-6">
-        <h2 className="font-medium text-xl md:text-[32px] lg:text-[48px] leading-[16px] text-center text-white font-montserrat">
+        <h2 className="font-medium text-xl md:text-[32px] lg:text-[48px] leading-[16px] text-center text-white font-montserrat select-none">
           Mes Projets
         </h2>
         
@@ -283,16 +283,16 @@ const Projects = ({ onOpenModal, activeModal }) => {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
                 />
-                <div className="w-full h-full flex items-center justify-center text-white">
+                <div className="w-full h-full flex items-center justify-center text-white select-none">
                   Image du projet: {project.title}
                 </div>
               </div>
               <div className="p-3 flex flex-col justify-between flex-grow">
                 <div>
-                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-4 md:mb-6 lg:mb-8" id={`project-title-${project.id}`}>
+                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-4 md:mb-6 lg:mb-8 select-none" id={`project-title-${project.id}`}>
                     {project.title}
                   </h3>
-                  <p className="text-sm md:text-base lg:text-lg text-gray-300 mb-6 md:mb-8 lg:mb-10 leading-relaxed" id={`project-description-${project.id}`} aria-describedby={`project-title-${project.id}`}>
+                  <p className="text-sm md:text-base lg:text-lg text-gray-300 mb-6 md:mb-8 lg:mb-10 leading-relaxed select-none" id={`project-description-${project.id}`} aria-describedby={`project-title-${project.id}`}>
                     {project.description}
                   </p>
                 </div>
@@ -314,7 +314,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                       href={project.github_link} 
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center"
+                      className="flex items-center justify-center select-none"
                       aria-label={`Voir le code source de ${project.title} sur GitHub (s'ouvre dans un nouvel onglet)`}
                     >
                       <Image
@@ -333,7 +333,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
                       href={project.demo_link} 
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center"
+                      className="flex items-center justify-center select-none"
                       aria-label={`Voir la démo de ${project.title} (s'ouvre dans un nouvel onglet)`}
                     >
                       <Image
@@ -358,7 +358,7 @@ const Projects = ({ onOpenModal, activeModal }) => {
         {visibleProjects < projects.length && (
           <button
             onClick={loadMoreProjects}
-            className="mt-1 md:mt-2 lg:mt-3 px-6 md:px-8 py-2 md:py-3 bg-[#0A52D0] text-white rounded-full hover:bg-[#083ba3] transition-colors duration-300 font-montserrat text-sm md:text-base lg:text-lg"
+            className="mt-1 md:mt-2 lg:mt-3 px-6 md:px-8 py-2 md:py-3 bg-[#0A52D0] text-white rounded-full hover:bg-[#083ba3] transition-colors duration-300 font-montserrat text-sm md:text-base lg:text-lg select-none"
           >
             Voir plus de projets
           </button>

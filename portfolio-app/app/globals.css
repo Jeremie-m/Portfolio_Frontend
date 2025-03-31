@@ -6,6 +6,14 @@
   --bg-dark: #000000;
 }
 
+/* Empêcher la sélection de texte sur tout le site */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 /* Styles spécifiques pour la scrollbar du modal Skills */
 .skills-scrollbar::-webkit-scrollbar {
   width: 6px;
